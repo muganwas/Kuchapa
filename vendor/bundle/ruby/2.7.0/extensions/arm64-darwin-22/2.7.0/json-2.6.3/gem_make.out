@@ -1,0 +1,13 @@
+current directory: /Volumes/Misc/GitHub/Kuchapa/vendor/bundle/ruby/2.7.0/gems/json-2.6.3/ext/json
+/Users/stevenmuganwa/.rvm/rubies/ruby-2.7.2/bin/ruby -I /Users/stevenmuganwa/.rvm/rubies/ruby-2.7.2/lib/ruby/2.7.0 -r ./siteconf20230708-12425-18260iu.rb extconf.rb
+creating Makefile
+
+current directory: /Volumes/Misc/GitHub/Kuchapa/vendor/bundle/ruby/2.7.0/gems/json-2.6.3/ext/json
+make "DESTDIR=" clean
+
+current directory: /Volumes/Misc/GitHub/Kuchapa/vendor/bundle/ruby/2.7.0/gems/json-2.6.3/ext/json
+make "DESTDIR="
+make: Nothing to be done for `all'.
+
+current directory: /Volumes/Misc/GitHub/Kuchapa/vendor/bundle/ruby/2.7.0/gems/json-2.6.3/ext/json
+make "DESTDIR=" install
