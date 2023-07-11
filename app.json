@@ -1,4 +1,7 @@
 {
   "name": "Kuchapa",
-  "displayName": "Kuchapa"
+  "displayName": "Kuchapa",
+  "expo": {
+    "userInterfaceStyle": "automatic"
+  }
 }
