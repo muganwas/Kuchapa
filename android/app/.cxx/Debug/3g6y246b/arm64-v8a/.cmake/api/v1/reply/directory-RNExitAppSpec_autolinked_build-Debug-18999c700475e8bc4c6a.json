@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "RNExitAppSpec_autolinked_build",
+		"source" : "/Volumes/Misc/GitHub/Kuchapa/node_modules/react-native-exit-app/android/build/generated/source/codegen/jni"
+	}
+}
