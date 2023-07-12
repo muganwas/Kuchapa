@@ -184,3 +184,6 @@ android/app/release/app-release.aab
 *.apk
 ios/kuchapa/GoogleService-Info.plist
 *.hprof
+
+# Custom
+config.json
