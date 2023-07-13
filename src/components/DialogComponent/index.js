@@ -1,14 +1,13 @@
 import React from 'react';
-import { 
-    View, 
-    Text, 
-    Modal, 
+import {
+    View,
+    Text,
+    Modal,
     TouchableOpacity,
     Dimensions,
     StyleSheet,
     ActivityIndicator
 } from 'react-native';
-import PropTypes from 'prop-types';
 import { white, themeRed, colorGreen, black, colorBg } from '../../Constants/colors'
 
 const screenWidth = Dimensions.get('screen').width;
@@ -19,7 +18,7 @@ const DialogComponent = ({
     transparent = true,
     animation = 'fade',
     changeDialogVisibility,
-    width=defaultWidth,
+    width = defaultWidth,
     rightButtonAction,
     leftButtonAction,
     titleText,
@@ -27,7 +26,7 @@ const DialogComponent = ({
     leftButtonText = 'Cancel',
     rightButtonText = 'Ok',
     isLoading,
-    styles=localStyles
+    styles = localStyles
 }) => {
     return (
         <Modal transparent={transparent} visible={isDialogVisible} animationType={animation}
@@ -39,14 +38,14 @@ const DialogComponent = ({
                         <Text style={[styles.text, { color: white, textAlign: 'center' }]}>{descText}</Text>
                     </View>
                     <View style={styles.buttonView}>
-                        { leftButtonAction && <TouchableOpacity style={styles.touchableHighlight} onPress={leftButtonAction}
+                        {leftButtonAction && <TouchableOpacity style={styles.touchableHighlight} onPress={leftButtonAction}
                             underlayColor={colorBg}>
                             <Text style={[styles.text, { color: colorGreen }]}>{leftButtonText}</Text>
-                        </TouchableOpacity> }
-                        { rightButtonAction && <TouchableOpacity style={styles.touchableHighlight} onPress={rightButtonAction}
+                        </TouchableOpacity>}
+                        {rightButtonAction && <TouchableOpacity style={styles.touchableHighlight} onPress={rightButtonAction}
                             underlayColor={colorBg}>
                             <Text style={[styles.text, { color: themeRed }]}>{rightButtonText}</Text>
-                        </TouchableOpacity> }
+                        </TouchableOpacity>}
                     </View>
 
                     {isLoading && (
@@ -61,21 +60,6 @@ const DialogComponent = ({
             </TouchableOpacity>
         </Modal>
     )
-}
-
-DialogComponent.propTypes = {
-    isDialogVisible: PropTypes.bool.isRequired,
-    transparent: PropTypes.bool,
-    animation: PropTypes.string,
-    changeDialogVisibility: PropTypes.func.isRequired,
-    width: PropTypes.number,
-    rightButtonAction: PropTypes.func,
-    leftButtonAction: PropTypes.func,
-    titleText: PropTypes.string.isRequired,
-    descText: PropTypes.string.isRequired,
-    leftButtonText: PropTypes.string,
-    rightButtonText: PropTypes.string,
-    isLoading: PropTypes.bool.isRequired
 }
 
 const localStyles = StyleSheet.create({

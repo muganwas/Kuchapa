@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   Text,
   StyleSheet,
@@ -13,9 +13,9 @@ import {
   Modal,
   Platform,
   ScrollView,
-  YellowBox,
+  LogBox,
 } from 'react-native';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import {
   startFetchingNotification,
   notificationsFetched,
@@ -25,8 +25,8 @@ import RNExitApp from 'react-native-exit-app';
 import Toast from 'react-native-simple-toast';
 import WaitingDialog from '../WaitingDialog';
 import Hamburger from '../Hamburger';
-import {updateLatestChats} from '../../Redux/Actions/messageActions';
-import {getAllRecentChats} from '../../controllers/chats';
+import { updateLatestChats } from '../../Redux/Actions/messageActions';
+import { getAllRecentChats } from '../../controllers/chats';
 import {
   startFetchingJobCustomer,
   fetchedJobCustomerInfo,
@@ -46,11 +46,11 @@ import {
   black,
 } from '../../Constants/colors';
 import images from '../../Constants/images';
-import {jobCancelTask, fetchServices} from '../../controllers/jobs';
+import { jobCancelTask, fetchServices } from '../../controllers/jobs';
 
 const screenWidth = Dimensions.get('window').width;
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
-YellowBox.ignoreWarnings(['']);
+LogBox.ignoreAllLogs();
 
 const StatusBarPlaceHolder = () => {
   return Platform.OS === 'ios' ? (
@@ -82,11 +82,11 @@ class DashboardScreen extends Component {
   }
 
   buttonType = buttonType1 => {
-    this.setState({buttonType: buttonType1});
+    this.setState({ buttonType: buttonType1 });
   };
 
   componentDidMount = () => {
-    const {navigation} = this.props;
+    const { navigation } = this.props;
     this.onRefresh();
     navigation.addListener('willFocus', async () => {
       //this.onRefresh();
@@ -101,7 +101,7 @@ class DashboardScreen extends Component {
   };
 
   _spring = () => {
-    this.setState({backClickCount: 1}, () => {
+    this.setState({ backClickCount: 1 }, () => {
       Animated.sequence([
         Animated.spring(this.springValue, {
           toValue: -0.15 * 1,
@@ -115,7 +115,7 @@ class DashboardScreen extends Component {
           useNativeDriver: true,
         }),
       ]).start(() => {
-        this.setState({backClickCount: 0});
+        this.setState({ backClickCount: 0 });
       });
     });
   };
@@ -165,7 +165,7 @@ class DashboardScreen extends Component {
   };
 
   //GridView Items
-  renderItem = ({item, index}) => {
+  renderItem = ({ item, index }) => {
     if (item)
       return (
         <TouchableOpacity
@@ -176,7 +176,7 @@ class DashboardScreen extends Component {
             margin: 5,
             padding: 10,
             shadowColor: '#000',
-            shadowOffset: {width: 0, height: 3},
+            shadowOffset: { width: 0, height: 3 },
             shadowOpacity: 0.75,
             shadowRadius: 5,
             elevation: 5,
@@ -240,7 +240,7 @@ class DashboardScreen extends Component {
   };
 
   _spring = () => {
-    this.setState({backClickCount: 1}, () => {
+    this.setState({ backClickCount: 1 }, () => {
       Animated.sequence([
         Animated.spring(this.springValue, {
           toValue: -0.15 * 1,
@@ -254,25 +254,25 @@ class DashboardScreen extends Component {
           useNativeDriver: true,
         }),
       ]).start(() => {
-        this.setState({backClickCount: 0});
+        this.setState({ backClickCount: 0 });
       });
     });
   };
 
   renderSeparator = () => {
-    return <View style={{height: 1, width: '100%', backgroundColor: black}} />;
+    return <View style={{ height: 1, width: '100%', backgroundColor: black }} />;
   };
 
   onRefresh = async () => {
     const {
       getAllWorkRequestClient,
-      userInfo: {userDetails},
+      userInfo: { userDetails },
     } = this.props;
     if (
       !this.state.dataSource ||
       (this.state.dataSource && this.state.dataSource.length === 0)
     ) {
-      this.setState({isLoading: true});
+      this.setState({ isLoading: true });
       try {
         await fetchServices({
           onSuccess: data => {
@@ -283,7 +283,7 @@ class DashboardScreen extends Component {
           },
           onError: err => {
             this.showToast(err);
-            this.setState({isLoading: false});
+            this.setState({ isLoading: false });
           },
         });
       } catch (e) {
@@ -300,7 +300,7 @@ class DashboardScreen extends Component {
     await getAllWorkRequestClient(userDetails.userId);
     //await getPendingJobRequest(this.props, userDetails.userId);
     await this.getAllRecentChatsCustomer();
-    this.setState({isLoading: false});
+    this.setState({ isLoading: false });
   };
 
   //Recent Chat Message
@@ -310,12 +310,12 @@ class DashboardScreen extends Component {
       dataSource: this.props?.messagesInfo?.latestChats,
       onSuccess: data => {
         this.props.updateLatestChats(data);
-        this.setState({isLoading: false, isRecentMessage: true});
+        this.setState({ isLoading: false, isRecentMessage: true });
       },
     });
 
   goToNextPage = (chat_status, jobInfo) => {
-    const {dispatchSelectedJobRequest, fetchedNotifications} = this.props;
+    const { dispatchSelectedJobRequest, fetchedNotifications } = this.props;
     if (chat_status === '0') {
       this.showToast('Your chat request has been accepted yet. Please wait...');
     } else {
@@ -335,7 +335,7 @@ class DashboardScreen extends Component {
       let currentPostInAllJobs = currentPos;
       dispatchSelectedJobRequest(jobInfo);
       if (jobInfo.status.toLowerCase() === 'pending') {
-        fetchedNotifications({type: 'messages', value: 0});
+        fetchedNotifications({ type: 'messages', value: 0 });
         this.props.navigation.navigate('Chat', {
           providerId: employee_id,
           fcmId: fcm_id,
@@ -395,7 +395,7 @@ class DashboardScreen extends Component {
               borderWidth: 0.5,
               borderColor: lightGray,
               backgroundColor: themeRed,
-              shadowOffset: {width: 0, height: 3},
+              shadowOffset: { width: 0, height: 3 },
               shadowOpacity: 0.75,
               shadowRadius: 5,
               elevation: 5,
@@ -428,7 +428,7 @@ class DashboardScreen extends Component {
               }}
               source={
                 image && imageAvailable
-                  ? {uri: image}
+                  ? { uri: image }
                   : require('../../images/generic_avatar.png')
               }
             />
@@ -468,8 +468,8 @@ class DashboardScreen extends Component {
                 {chat_status === '0'
                   ? 'New job application'
                   : status === 'Pending'
-                  ? 'Chat request accepted'
-                  : 'Job Accepted'}
+                    ? 'Chat request accepted'
+                    : 'Job Accepted'}
               </Text>
             </View>
             <View style={styles.pendingRightSide}>
@@ -495,10 +495,10 @@ class DashboardScreen extends Component {
 
   render() {
     const {
-      jobsInfo: {jobRequests, requestsFetched},
+      jobsInfo: { jobRequests, requestsFetched },
       navigation,
     } = this.props;
-    const {isLoading} = this.state;
+    const { isLoading } = this.state;
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
@@ -525,7 +525,7 @@ class DashboardScreen extends Component {
         </View>
 
         <View
-          style={{width: screenWidth, height: 1, backgroundColor: '#D95E5E'}}
+          style={{ width: screenWidth, height: 1, backgroundColor: '#D95E5E' }}
         />
 
         <View
@@ -539,7 +539,7 @@ class DashboardScreen extends Component {
             paddingTop: 5,
             paddingBottom: 5,
             shadowColor: black,
-            shadowOffset: {width: 0, height: 0},
+            shadowOffset: { width: 0, height: 0 },
             shadowOpacity: 0.75,
             shadowRadius: 5,
             elevation: 5,
@@ -550,7 +550,7 @@ class DashboardScreen extends Component {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Text style={{color: themeRed, fontSize: 20, fontWeight: 'bold'}}>
+            <Text style={{ color: themeRed, fontSize: 20, fontWeight: 'bold' }}>
               Available Services
             </Text>
           </View>
@@ -559,9 +559,9 @@ class DashboardScreen extends Component {
         <ScrollView
           style={[
             styles.gridView,
-            {flex: 1, marginBottom: jobRequests.length === 0 ? 0 : 45},
+            { flex: 1, marginBottom: jobRequests.length === 0 ? 0 : 45 },
           ]}>
-          <View style={{height: '100%'}}>
+          <View style={{ height: '100%' }}>
             <FlatList
               keyboardShouldPersistTaps={'handled'}
               numColumns={3}
@@ -571,7 +571,7 @@ class DashboardScreen extends Component {
               showsVerticalScrollIndicator={false}
               onRefresh={this.onRefresh}
               refreshing={this.state.isLoading}
-              style={{paddingBottom: 20}}
+              style={{ paddingBottom: 20 }}
             />
           </View>
         </ScrollView>
@@ -585,7 +585,7 @@ class DashboardScreen extends Component {
         <Animated.View
           style={[
             styles.animatedView,
-            {transform: [{translateY: this.springValue}]},
+            { transform: [{ translateY: this.springValue }] },
           ]}>
           <Text style={styles.exitTitleText}>Press back again to exit app</Text>
           <TouchableOpacity
@@ -673,7 +673,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: colorPrimary,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -758,7 +758,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -771,7 +771,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     shadowColor: black,
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -816,7 +816,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     backgroundColor: white,
     shadowColor: darkGray,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,

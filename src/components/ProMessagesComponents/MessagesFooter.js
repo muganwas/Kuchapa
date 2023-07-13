@@ -1,7 +1,6 @@
-import React, {useState} from 'react';
-import {View, TouchableOpacity, TextInput, Image} from 'react-native';
+import React, { useState } from 'react';
+import { View, TouchableOpacity, TextInput, Image } from 'react-native';
 import style from './styles';
-import PropTypes from 'prop-types';
 
 const MessagesFooter = ({
   inputMesage,
@@ -21,7 +20,7 @@ const MessagesFooter = ({
           />
         </TouchableOpacity>
         <TextInput
-          style={[style.textInput, {height: inputHeight}]}
+          style={[style.textInput, { height: inputHeight }]}
           placeholder="Type message"
           value={inputMesage}
           multiline={true}
@@ -43,14 +42,6 @@ const MessagesFooter = ({
       </View>
     </>
   );
-};
-
-MessagesFooter.propTypes = {
-  inputMesage: PropTypes.string,
-  textChangeAction: PropTypes.func.isRequired,
-  sendMessageTask: PropTypes.func.isRequired,
-  attachFileTask: PropTypes.func.isRequired,
-  showButton: PropTypes.bool.isRequired,
 };
 
 export default MessagesFooter;

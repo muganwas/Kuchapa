@@ -1,12 +1,11 @@
-import React, {Component} from 'react';
-import {Dimensions} from 'react-native';
-import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { Dimensions } from 'react-native';
+import { connect } from 'react-redux';
 import RNExitApp from 'react-native-exit-app';
 import rNES from 'react-native-encrypted-storage';
 import firebaseAuth from '@react-native-firebase/auth';
 import DialogComponent from '../DialogComponent';
-import {resetUserDetails} from '../../Redux/Actions/userActions';
+import { resetUserDetails } from '../../Redux/Actions/userActions';
 import Config from '../Config';
 
 class ProDialogLogout extends Component {
@@ -22,7 +21,7 @@ class ProDialogLogout extends Component {
   }
 
   closeDialogLogout = async action => {
-    const {resetUserDetails, changeDialogVisibility} = this.props;
+    const { resetUserDetails, changeDialogVisibility } = this.props;
     if (action === 'Ok') {
       if (firebaseAuth().currentUser) firebaseAuth().signOut();
       await rNES.removeItem('userId');
@@ -71,11 +70,6 @@ const mapDispatchToPRops = dispatch => ({
     dispatch(resetUserDetails());
   },
 });
-
-ProDialogLogout.propTypes = {
-  isDialogLogoutVisible: PropTypes.bool.isRequired,
-  changeDialogVisibility: PropTypes.func.isRequired,
-};
 
 export default connect(
   mapStateToProps,

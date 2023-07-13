@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {connect} from 'react-redux';
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import _ from 'lodash';
 import RNFS from 'react-native-fs';
 import rNES from 'react-native-encrypted-storage';
 import RNFetchBlob from 'rn-fetch-blob';
-import {chatDate} from '../../misc/helpers';
+import { chatDate } from '../../misc/helpers';
 import XlsIcon from '../../images/svg/xls.svg';
 import PdfIcon from '../../images/svg/pdf.svg';
 import GenericDocIcon from '../../images/svg/other.svg';
@@ -26,9 +26,8 @@ import TiffIcon from '../../images/svg/tiff.svg';
 import TextIcon from '../../images/svg/txt.svg';
 import ZipIcon from '../../images/svg/zip.svg';
 import style from './styles';
-import PropTypes from 'prop-types';
 import SimpleToast from 'react-native-simple-toast';
-import {white} from '../../Constants/colors';
+import { white } from '../../Constants/colors';
 
 const screenWidth = Dimensions.get('window').width;
 const Android = Platform.OS === 'android';
@@ -40,7 +39,7 @@ const ProMessagesComponent = ({
   uploadingImage,
 }) => {
   const [downloading, updateDownloading] = useState({});
-  const downloadFile = ({name, fileType, url, key, index}) => {
+  const downloadFile = ({ name, fileType, url, key, index }) => {
     let newDownloading = _.cloneDeep(downloading);
     let path = RNFS.DocumentDirectoryPath + '/' + name;
     let DownloadFileOptions = {
@@ -52,7 +51,7 @@ const ProMessagesComponent = ({
       progressDivider: 1,
       discretionary: true,
       begin: res => {
-        let {statusCode} = res;
+        let { statusCode } = res;
         if (statusCode === 200) {
           let newDownloading = _.cloneDeep(downloading);
           if (newDownloading[key]) {
@@ -75,15 +74,15 @@ const ProMessagesComponent = ({
       },
       progress: prog => {
         let newDownloading = _.cloneDeep(downloading);
-        let {bytesWritten, contentLength} = prog;
+        let { bytesWritten, contentLength } = prog;
         let percentage = (bytesWritten / contentLength) * 100;
         if (newDownloading[key]) {
           if (newDownloading[key][index])
             newDownloading[key][index].percentage = percentage;
-          else newDownloading[key][index] = {percentage, path, name};
+          else newDownloading[key][index] = { percentage, path, name };
         } else {
           newDownloading[key] = {
-            [index]: {percentage, path, name},
+            [index]: { percentage, path, name },
           };
         }
         updateDownloading(newDownloading);
@@ -167,7 +166,7 @@ const ProMessagesComponent = ({
             source={{
               uri: message,
             }}
-            style={{width: 100, height: 100}}
+            style={{ width: 100, height: 100 }}
             resizeMode={'contain'}
           />
         ) : (
@@ -177,7 +176,7 @@ const ProMessagesComponent = ({
     );
   };
   const renderMessages = () => {
-    const {messages} = messagesInfo;
+    const { messages } = messagesInfo;
     if (senderId && receiverId) {
       return (
         <View
@@ -235,9 +234,9 @@ const ProMessagesComponent = ({
                                     )
                                       Android
                                         ? RNFetchBlob.android.actionViewIntent(
-                                            downloading[key][index].path,
-                                            file.fileType,
-                                          )
+                                          downloading[key][index].path,
+                                          file.fileType,
+                                        )
                                         : null;
                                     else
                                       downloadFile({
@@ -293,7 +292,7 @@ const ProMessagesComponent = ({
                               <>
                                 {local && notUploaded && uploadingImage ? (
                                   <ActivityIndicator
-                                    style={{height: 80}}
+                                    style={{ height: 80 }}
                                     color="red"
                                     size="large"
                                   />
@@ -314,16 +313,16 @@ const ProMessagesComponent = ({
                                           (downloading[key] &&
                                             downloading[key][index] &&
                                             downloading[key][index].percentage >
-                                              90)
+                                            90)
                                         )
                                           Android
                                             ? RNFetchBlob.android.actionViewIntent(
-                                                (downloading[key] &&
-                                                  downloading[key][index]
-                                                    .path) ||
-                                                  file.path,
-                                                file.fileType,
-                                              )
+                                              (downloading[key] &&
+                                                downloading[key][index]
+                                                  .path) ||
+                                              file.path,
+                                              file.fileType,
+                                            )
                                             : null;
                                         else
                                           downloadFile({
@@ -340,7 +339,7 @@ const ProMessagesComponent = ({
                                       downloading[key][index] &&
                                       downloading[key][index].percentage > 0 &&
                                       downloading[key][index].percentage <
-                                        90 && (
+                                      90 && (
                                         <View
                                           style={{
                                             display: 'flex',
@@ -360,8 +359,8 @@ const ProMessagesComponent = ({
                                       <Text style={style.sentMsg}>
                                         {file_name.length > 10
                                           ? file_name.substring(0, 10) +
-                                            '..' +
-                                            ext
+                                          '..' +
+                                          ext
                                           : file_name}
                                       </Text>
                                     )}
@@ -383,13 +382,6 @@ const ProMessagesComponent = ({
     }
   };
   return <View style={style.listView}>{renderMessages()}</View>;
-};
-
-ProMessagesComponent.propTypes = {
-  senderId: PropTypes.string.isRequired,
-  receiverId: PropTypes.string.isRequired,
-  messagesInfo: PropTypes.object,
-  uploadingImage: PropTypes.bool,
 };
 
 const mapStateToProps = state => {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+// import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import DashboardScreen from '../DashboardScreen';
 import MapDirectionScreen from '../MapDirectionScreen';
@@ -30,51 +30,50 @@ import ForgotPasswordScreen from '../ForgotPasswordScreen';
 import SelectAddressScreen from '../SelectAddressScreen';
 import ProForgotPasswordScreen from '../ProForgotPasswordScreen';
 
-const MyDrawerNavigator = createDrawerNavigator(
-  {
-    ProDashboard: { screen: ProDrawerNavigator },
-    FacebookGoogle: { screen: FacebookGoogleScreen },
-    Register: { screen: RegisterScreen },
-    ProRegisterFB: { screen: ProRegisterFBScreen },
-    ForgotPassword: { screen: ForgotPasswordScreen },
-    ProForgotPassword: { screen: ProForgotPasswordScreen },
-    ProRegister: { screen: ProRegisterScreen },
-    MapDirection: { screen: MapDirectionScreen },
-    AfterSplash: { screen: AfterSplashScreen },
-    AccountType: { screen: AccountTypeScreen },
-    Chat: { screen: ChatScreen },
-    Home: { screen: DashboardScreen },
-    ProHome: { screen: () => <ProDrawerNavigator /> },
-    ProAccountType: { screen: ProAccountTypeScreen },
-    Dashboard: { screen: DashboardScreen },
-    ProviderDetails: { screen: ProviderDetailsScreen },
-    ProFacebookGoogle: { screen: ProFacebookGoogleScreen },
-    ListOfProviders: { screen: ListOfProviderScreen },
-    LoginPhoneScreen: { screen: LoginPhoneScreen },
-    ProLoginPhoneScreen: { screen: ProLoginPhoneScreen },
-    AddAddress: { screen: AddAddressScreen },
-    MyProfile: { screen: MyProfileScreen },
-    Booking: { screen: BookingScreen },
-    BookingDetails: { screen: BookingDetailsScreen },
-    ChatAfterBookingDetails: { screen: ChatAfterBookingDetailsScreen },
-    ContactUs: { screen: ContactUsScreen },
-    AllMessage: { screen: AllMessageScreen },
-    Notifications: { screen: NotificationsScreen },
-    SelectAddress: { screen: SelectAddressScreen },
-  },
-  {
-    initialRouteName: 'Dashboard',
-    drawerWidth: 275,
-    drawerPosition: 'left',
-    drawerType: 'push-screen',
-    contentComponent: CustomMenuLayout,
-  },
-);
-
-const AppContainer = <NavigationContainer>{MyDrawerNavigator}</NavigationContainer>;
+const Drawer = createDrawerNavigator();
 
 export default class DrawerNavigator extends Component {
   render() {
-    return <AppContainer />;
+    return (
+      <Drawer.Navigator
+        initialRouteName='Dashboard'
+        drawerContent={CustomMenuLayout}
+        screenOptions={{
+          drawerPosition: "left",
+          drawerStyle: { width: 275 },
+          drawerType: "slide"
+        }}
+      >
+        <Drawer.Screen name="Dashboard" component={DashboardScreen} />
+        <Drawer.Screen name="ProDashboard" component={() => <ProDrawerNavigator />} />
+        <Drawer.Screen name="FacebookGoogle" component={FacebookGoogleScreen} />
+        <Drawer.Screen name="Register" component={RegisterScreen} />
+        <Drawer.Screen name="ProRegisterFB" component={ProRegisterFBScreen} />
+        <Drawer.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+        <Drawer.Screen name="ProForgotPassword" component={ProForgotPasswordScreen} />
+        <Drawer.Screen name="ProRegister" component={ProRegisterScreen} />
+        <Drawer.Screen name="MapDirection" component={MapDirectionScreen} />
+        <Drawer.Screen name="AfterSplash" component={AfterSplashScreen} />
+        <Drawer.Screen name="AccountType" component={AccountTypeScreen} />
+        <Drawer.Screen name="Chat" component={ChatScreen} />
+        <Drawer.Screen name="Home" component={DashboardScreen} />
+        <Drawer.Screen name="ProHome" component={() => <ProDrawerNavigator />} />
+        <Drawer.Screen name="ProAccountType" component={ProAccountTypeScreen} />
+        <Drawer.Screen name="ProviderDetails" component={ProviderDetailsScreen} />
+        <Drawer.Screen name="ProFacebookGoogle" component={ProFacebookGoogleScreen} />
+        <Drawer.Screen name="ListOfProviders" component={ListOfProviderScreen} />
+        <Drawer.Screen name="LoginPhoneScreen" component={LoginPhoneScreen} />
+        <Drawer.Screen name="ProLoginPhoneScreen" component={ProLoginPhoneScreen} />
+        <Drawer.Screen name="AddAddress" component={AddAddressScreen} />
+        <Drawer.Screen name="MyProfile" component={MyProfileScreen} />
+        <Drawer.Screen name="Booking" component={BookingScreen} />
+        <Drawer.Screen name="BookingDetails" component={BookingDetailsScreen} />
+        <Drawer.Screen name="ChatAfterBookingDetails" component={ChatAfterBookingDetailsScreen} />
+        <Drawer.Screen name="ContactUs" component={ContactUsScreen} />
+        <Drawer.Screen name="AllMessage" component={AllMessageScreen} />
+        <Drawer.Screen name="Notifications" component={NotificationsScreen} />
+        <Drawer.Screen name="SelectAddress" component={SelectAddressScreen} />
+      </Drawer.Navigator>
+    )
   }
 }

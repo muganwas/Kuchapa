@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import { AppRegistry } from 'react-native';
+import { AppRegistry, Text, View } from 'react-native';
 import App from './src/components/SplashScreen';
 import { name as appName } from './app.json';
 import configureStore from './store';
@@ -11,7 +11,7 @@ const store = configureStore();
 const IniApp = () => (
     <Provider store={store}>
         <App />
-    </Provider>
+    </Provider >
 );
 
 AppRegistry.registerComponent(appName, () => IniApp);

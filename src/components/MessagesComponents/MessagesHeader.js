@@ -1,8 +1,7 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, Image} from 'react-native';
-import PropTypes from 'prop-types';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import Availability from '../AvailabilityComponent';
-import {colorPrimary, black} from '../../Constants/colors';
+import { colorPrimary, black } from '../../Constants/colors';
 
 const MessagesHeader = ({
   receiverImage,
@@ -23,9 +22,9 @@ const MessagesHeader = ({
         paddingTop: 5,
         paddingBottom: 5,
       }}>
-      <View style={{flex: 1, flexDirection: 'row'}}>
+      <View style={{ flex: 1, flexDirection: 'row' }}>
         <TouchableOpacity
-          style={{width: 20, height: 20, alignSelf: 'center'}}
+          style={{ width: 20, height: 20, alignSelf: 'center' }}
           onPress={handleBackButtonClick}>
           <Image
             style={{
@@ -48,7 +47,7 @@ const MessagesHeader = ({
           }}
           source={
             imageAvailable
-              ? {uri: receiverImage}
+              ? { uri: receiverImage }
               : require('../../images/generic_avatar.png')
           }
         />
@@ -66,14 +65,6 @@ const MessagesHeader = ({
       <Availability online={online} />
     </View>
   );
-};
-
-MessagesHeader.propTypes = {
-  handleBackButtonClick: PropTypes.func.isRequired,
-  receiverName: PropTypes.string.isRequired,
-  imageAvailable: PropTypes.bool.isRequired,
-  receiverImage: PropTypes.string,
-  online: PropTypes.bool.isRequired,
 };
 
 export default MessagesHeader;

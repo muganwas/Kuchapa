@@ -4,7 +4,6 @@ import {
     Text,
 } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import PropTypes from 'prop-types';
 import { font_size } from '../../Constants/metrics';
 import { white, themeRed, colorGreen } from '../../Constants/colors';
 
@@ -70,11 +69,6 @@ class SwipeableBtn extends React.Component {
             </>
         )
     }
-}
-
-SwipeableBtn.propTypes = {
-    onSwipeableLeftOpen: PropTypes.func,
-    onSwipeableRightOpen: PropTypes.func
 }
 
 export default SwipeableBtn;

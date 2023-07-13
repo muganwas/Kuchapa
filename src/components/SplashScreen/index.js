@@ -9,8 +9,8 @@ import {
   BackHandler,
   Dimensions,
 } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createCompatNavigatorFactory } from '@react-navigation/compat';
 import rNES from 'react-native-encrypted-storage';
 import RNExitApp from 'react-native-exit-app';
 import HomeScreen from '../HomeScreen';
@@ -305,125 +305,37 @@ const SplashScreenComponent = connect(
   mapDispatchToProps,
 )(SplashScreen);
 
-const AppStackNavigator = createCompatNavigatorFactory(createNativeStackNavigator)({
-  Splash: {
-    screen: SplashScreenComponent,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  AfterSplash: {
-    screen: AfterSplashScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  FacebookGoogle: {
-    screen: FacebookGoogleScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  ForgotPassword: {
-    screen: ForgotPasswordScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  Register: {
-    screen: RegisterScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  LoginPhoneScreen: {
-    screen: LoginPhoneScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  ProLoginPhoneScreen: {
-    screen: ProLoginPhoneScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  Dashboard: {
-    screen: DashboardScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  ProDashboard: {
-    screen: ProDashboardScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  Home: {
-    screen: HomeScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  AccountType: {
-    screen: AccountTypeScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  ProFacebookGoogle: {
-    screen: ProFacebookGoogleScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  ProForgotPassword: {
-    screen: ProForgotPasswordScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  ProAccountType: {
-    screen: ProAccountTypeScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  ProRegisterFB: {
-    screen: ProRegisterFBScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  ProRegister: {
-    screen: ProRegisterScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  ProServiceSelect: {
-    screen: ProServiceSelectScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  SelectAddress: {
-    screen: SelectAddressScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-  ProHome: {
-    screen: ProHomeScreen,
-    navigationOptions: {
-      header: null,
-    },
-  },
-});
+const Stack = createNativeStackNavigator();
 
-const App = createAppContainer(AppStackNavigator);
-export default App;
+export default class App extends Component {
+  render() {
+    return (
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName='Splash'>
+          <Stack.Screen name="Splash" component={SplashScreenComponent} options={{ header: () => <></> }} />
+          <Stack.Screen name="AfterSplash" component={AfterSplashScreen} options={{ header: () => <></> }} />
+          <Stack.Screen name="FacebookGoogle" component={FacebookGoogleScreen} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="LoginPhoneScreen" component={LoginPhoneScreen} />
+          <Stack.Screen name="ProLoginPhoneScreen" component={ProLoginPhoneScreen} />
+          <Stack.Screen name="Dashboard" component={DashboardScreen} />
+          <Stack.Screen name="ProDashboard" component={ProDashboardScreen} />
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="AccountType" component={AccountTypeScreen} />
+          <Stack.Screen name="ProFacebookGoogle" component={ProFacebookGoogleScreen} />
+          <Stack.Screen name="ProForgotPassword" component={ProForgotPasswordScreen} />
+          <Stack.Screen name="ProAccountType" component={ProAccountTypeScreen} />
+          <Stack.Screen name="ProRegisterFB" component={ProRegisterFBScreen} />
+          <Stack.Screen name="ProRegister" component={ProRegisterScreen} />
+          <Stack.Screen name="ProServiceSelect" component={ProServiceSelectScreen} />
+          <Stack.Screen name="SelectAddress" component={SelectAddressScreen} />
+          <Stack.Screen name="ProHome" component={ProHomeScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    )
+  }
+};
 
 const styles = {
   container: {
