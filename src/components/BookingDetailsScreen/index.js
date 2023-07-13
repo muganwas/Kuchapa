@@ -13,7 +13,7 @@ import {
   Platform,
 } from 'react-native';
 import { connect } from 'react-redux';
-import { withNavigation } from '@react-navigation';
+import { withNavigation } from '@react-navigation/compat';
 import { cloneDeep } from 'lodash';
 import { AirbnbRating } from 'react-native-ratings';
 import ReviewDialogCustomer from '../ReviewDialogCustomer';

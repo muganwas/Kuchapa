@@ -1,9 +1,0 @@
-{
-  "enabled": true,
-  "prefabPath": "/Users/stevenmuganwa/.gradle/caches/modules-2/files-2.1/com.google.prefab/cli/2.0.0/f2702b5ca13df54e3ca92f29d6b403fb6285d8df/cli-2.0.0-all.jar",
-  "packages": [
-    "/Users/stevenmuganwa/.gradle/caches/transforms-3/664c97227dd75490cd28043862185c21/transformed/jetified-react-android-0.72.1-release/prefab",
-    "/Users/stevenmuganwa/.gradle/caches/transforms-3/92e8b0f660cacc4a49ba1ca5bd31bfa3/transformed/jetified-hermes-android-0.72.1-release/prefab",
-    "/Users/stevenmuganwa/.gradle/caches/transforms-3/1f270319c1822ad5cabdce3576db51bd/transformed/jetified-fbjni-0.3.0/prefab"
-  ]
-}

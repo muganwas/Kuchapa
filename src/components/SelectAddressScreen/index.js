@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   Image,
@@ -13,7 +13,7 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import {MAPS_API_KEY} from 'react-native-dotenv';
+import Config from '../Config';
 import {
   colorPrimary,
   colorBg,
@@ -26,11 +26,11 @@ const screenWidth = Dimensions.get('window').width;
 
 const GOOGLE_ADDRESS_SERVICE =
   'https://maps.googleapis.com/maps/api/place/autocomplete/json?key=' +
-  MAPS_API_KEY +
+  Config.mapsApiKey +
   '&types=geocode&language=en&input=';
 const LAT_LNG_URL =
   'https://maps.googleapis.com/maps/api/place/details/json?key=' +
-  MAPS_API_KEY +
+  Config.mapsApiKey +
   '&placeid=';
 
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
@@ -63,7 +63,7 @@ export default class SelectAddressScreen extends Component {
   }
 
   componentWillMount() {
-    const {navigation} = this.props;
+    const { navigation } = this.props;
     navigation.addListener('willFocus', async () => {
       BackHandler.addEventListener('hardwareBackPress', () =>
         this.handleBackButtonClick(),
@@ -78,7 +78,7 @@ export default class SelectAddressScreen extends Component {
   }
 
   handleBackButtonClick = () => {
-    const {navigation} = this.props;
+    const { navigation } = this.props;
     const from = navigation.getParam('from');
     const onGoBack = navigation.getParam('onGoBack');
     if (from === 'profile-screen') {
@@ -131,7 +131,7 @@ export default class SelectAddressScreen extends Component {
       fetch(LAT_LNG_URL + placeId)
         .then(response => response.json())
         .then(responseJson => {
-          const {navigation} = this.props;
+          const { navigation } = this.props;
           const from = navigation.getParam('from');
           const onGoBack = navigation.getParam('onGoBack');
           this.setState({
@@ -181,7 +181,7 @@ export default class SelectAddressScreen extends Component {
         }>
         <View style={styles.touchaleHighlight}>
           <Image
-            style={{width: 20, height: 20, alignSelf: 'center'}}
+            style={{ width: 20, height: 20, alignSelf: 'center' }}
             source={require('../../icons/maps_location.png')}
           />
         </View>
@@ -195,7 +195,7 @@ export default class SelectAddressScreen extends Component {
       <View style={styles.container}>
         <StatusBarPlaceHolder />
         <View style={styles.header}>
-          <View style={{flex: 1, flexDirection: 'row'}}>
+          <View style={{ flex: 1, flexDirection: 'row' }}>
             <TouchableOpacity
               style={{
                 width: 35,
@@ -204,7 +204,7 @@ export default class SelectAddressScreen extends Component {
                 justifyContent: 'center',
               }}
               onPress={() => {
-                const {navigation} = this.props;
+                const { navigation } = this.props;
                 const from = navigation.getParam('from');
                 const onGoBack = navigation.getParam('onGoBack');
                 if (from === 'profile-screen') {
@@ -258,13 +258,13 @@ export default class SelectAddressScreen extends Component {
               borderRadius: 5,
               backgroundColor: 'white',
               shadowColor: '#000',
-              shadowOffset: {width: 0, height: 0},
+              shadowOffset: { width: 0, height: 0 },
               shadowOpacity: 0.75,
               shadowRadius: 5,
               elevation: 5,
             }}>
             <Image
-              style={{width: 15, height: 15, marginLeft: 20}}
+              style={{ width: 15, height: 15, marginLeft: 20 }}
               source={require('../../icons/search.png')}
             />
             <TextInput
@@ -286,7 +286,7 @@ export default class SelectAddressScreen extends Component {
 
         {this.state.isLoading && (
           <View style={styles.loaderStyle}>
-            <ActivityIndicator style={{height: 80}} color="#C00" size="large" />
+            <ActivityIndicator style={{ height: 80 }} color="#C00" size="large" />
           </View>
         )}
       </View>
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     paddingBottom: 5,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: white,
     shadowColor: black,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -12,11 +12,11 @@ import {
   StatusBar,
   Modal,
 } from 'react-native';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import Geolocation from 'react-native-geolocation-service';
 import Toast from 'react-native-simple-toast';
 import WaitingDialog from '../WaitingDialog';
-import {updateUserDetails} from '../../Redux/Actions/userActions';
+import { updateUserDetails } from '../../Redux/Actions/userActions';
 import {
   colorPrimary,
   colorBg,
@@ -25,7 +25,6 @@ import {
   white,
   black,
 } from '../../Constants/colors';
-import {MAPS_API_KEY} from 'react-native-dotenv';
 import Config from '../Config';
 
 const screenWidth = Dimensions.get('window').width;
@@ -52,7 +51,7 @@ class AddAddressScreen extends Component {
   constructor(props) {
     super();
     const {
-      userInfo: {userDetails},
+      userInfo: { userDetails },
     } = props;
     this.state = {
       latitude: userDetails.lat,
@@ -68,7 +67,7 @@ class AddAddressScreen extends Component {
   watchID = null;
 
   componentDidMount() {
-    const {navigation} = this.props;
+    const { navigation } = this.props;
     navigation.addListener('willFocus', async () => {
       BackHandler.addEventListener('hardwareBackPress', () =>
         this.handleBackButtonClick(),
@@ -81,7 +80,7 @@ class AddAddressScreen extends Component {
       );
     });
     const {
-      userInfo: {userDetails},
+      userInfo: { userDetails },
     } = this.props;
     if (this.state.address != '') {
       this.setState({
@@ -112,7 +111,7 @@ class AddAddressScreen extends Component {
   async getCurrentLocation() {
     const {
       updateUserDetails,
-      userInfo: {userDetails},
+      userInfo: { userDetails },
     } = this.props;
 
     if (Platform.OS === 'ios') {
@@ -129,17 +128,17 @@ class AddAddressScreen extends Component {
             //Update Address to Database
             fetch(
               'https://maps.googleapis.com/maps/api/geocode/json?address=' +
-                position.coords.latitude +
-                ',' +
-                position.coords.longitude +
-                '&key=' +
-                MAPS_API_KEY,
+              position.coords.latitude +
+              ',' +
+              position.coords.longitude +
+              '&key=' +
+              Config.mapsApiKey,
             )
               .then(response => response.json())
               .then(responseJson => {
                 console.log(
                   'ADDRESS GEOCODE is BACK!! => ' +
-                    JSON.stringify(responseJson.results[0].formatted_address),
+                  JSON.stringify(responseJson.results[0].formatted_address),
                 );
 
                 this.setState({
@@ -217,7 +216,7 @@ class AddAddressScreen extends Component {
           });
           this.showToast(error.message);
         },
-        {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
       );
     } else {
       const granted = await PermissionsAndroid.check(
@@ -235,16 +234,16 @@ class AddAddressScreen extends Component {
               //Update Address to Database
               fetch(
                 'https://maps.googleapis.com/maps/api/geocode/json?address=' +
-                  position.coords.latitude +
-                  ',' +
-                  position.coords.longitude +
-                  '&key=' +
-                  MAPS_API_KEY,
+                position.coords.latitude +
+                ',' +
+                position.coords.longitude +
+                '&key=' +
+                Config.mapsApiKey,
               )
                 .then(response => response.json())
                 .then(responseJson => {
                   const {
-                    userInfo: {userDetails},
+                    userInfo: { userDetails },
                     updateUserDetails,
                   } = this.props;
                   this.setState({
@@ -320,7 +319,7 @@ class AddAddressScreen extends Component {
             });
             this.showToast(error.message);
           },
-          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
         );
       } else {
         this.permissionRequest();
@@ -328,7 +327,7 @@ class AddAddressScreen extends Component {
     }
     this.watchID = Geolocation.watchPosition(position => {
       const lastPosition = JSON.stringify(position);
-      this.setState({lastPosition});
+      this.setState({ lastPosition });
     });
   }
 
@@ -347,17 +346,17 @@ class AddAddressScreen extends Component {
           try {
             fetch(
               'https://maps.googleapis.com/maps/api/geocode/json?address=' +
-                position.coords.latitude +
-                ',' +
-                position.coords.longitude +
-                '&key=' +
-                MAPS_API_KEY,
+              position.coords.latitude +
+              ',' +
+              position.coords.longitude +
+              '&key=' +
+              Config.mapsApiKey,
             )
               .then(response => response.json())
               .then(responseJson => {
                 console.log(
                   'ADDRESS GEOCODE is BACK!! ==> ' +
-                    JSON.stringify(responseJson.results[0].formatted_address),
+                  JSON.stringify(responseJson.results[0].formatted_address),
                 );
 
                 this.updateAddressToDatabase(
@@ -402,7 +401,7 @@ class AddAddressScreen extends Component {
       lang: longitude,
     };
     const {
-      userInfo: {userDetails},
+      userInfo: { userDetails },
       updateUserDetails,
     } = this.props;
     try {
@@ -477,7 +476,7 @@ class AddAddressScreen extends Component {
         <StatusBarPlaceHolder />
 
         <View style={styles.header}>
-          <View style={{flex: 1, flexDirection: 'row'}}>
+          <View style={{ flex: 1, flexDirection: 'row' }}>
             <TouchableOpacity
               style={{
                 width: 35,
@@ -529,19 +528,19 @@ class AddAddressScreen extends Component {
               alignContent: 'center',
               padding: 20,
               shadowColor: black,
-              shadowOffset: {width: 0, height: 3},
+              shadowOffset: { width: 0, height: 3 },
               shadowOpacity: 0.75,
               shadowRadius: 5,
               elevation: 5,
               marginTop: 15,
             }}>
-            <Text style={{color: white, fontWeight: 'bold', fontSize: 16}}>
+            <Text style={{ color: white, fontWeight: 'bold', fontSize: 16 }}>
               {this.state.address}
             </Text>
           </View>
 
           <TouchableOpacity
-            style={[styles.buttonContainer, {marginTop: 40}]}
+            style={[styles.buttonContainer, { marginTop: 40 }]}
             onPress={() =>
               this.props.navigation.navigate('SelectAddress', {
                 onGoBack: this.getDataFromAddAddressScreen,
@@ -602,7 +601,7 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     paddingBottom: 5,
     shadowColor: black,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -618,7 +617,7 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: white,
     shadowColor: black,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,

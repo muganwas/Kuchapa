@@ -1,21 +1,21 @@
 import axios from 'axios';
-import {PermissionsAndroid, Platform} from 'react-native';
+import { PermissionsAndroid, Platform } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import Polyline from '@mapbox/polyline';
 import messaging from '@react-native-firebase/messaging';
-import {exitApp} from 'react-native-exit-app';
-import {MAPS_API_KEY} from 'react-native-dotenv';
-import {PhoneNumberUtil} from 'google-libphonenumber';
+import { exitApp } from 'react-native-exit-app';
+import { PhoneNumberUtil } from 'google-libphonenumber';
 import ImagePicker from 'react-native-image-picker';
-import {cloneDeep} from 'lodash';
+import { cloneDeep } from 'lodash';
 import SimpleToast from 'react-native-simple-toast';
 import moment from 'moment';
+import { Config } from '../components/Config';
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 const emailRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
 const passwordRegex = /[^\w\d]*(([0-9]+.*[A-Z]+.*)|[A-Z]+.*([0-9]+.*))/;
 
-export const locationPermissionRequest = async (action = () => {}) => {
+export const locationPermissionRequest = async (action = () => { }) => {
   try {
     if (Platform.OS === 'ios') Geolocation.requestAuthorization();
     else {
@@ -34,8 +34,8 @@ export const locationPermissionRequest = async (action = () => {}) => {
   }
 };
 
-export const returnCoordDetails = async ({lat = '', lng = ''}) => {
-  let url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${MAPS_API_KEY}`;
+export const returnCoordDetails = async ({ lat = '', lng = '' }) => {
+  let url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${Config.mapsApiKey}`;
   let msg = {};
   lat &&
     lng &&
@@ -47,11 +47,11 @@ export const returnCoordDetails = async ({lat = '', lng = ''}) => {
             address: resp?.results[0]?.formatted_address,
             msg: 'ok',
           };
-        else msg = {msg: 'error'};
+        else msg = { msg: 'error' };
       })
       .catch(e => {
         console.log('address error ', e);
-        msg = {msg: 'error'};
+        msg = { msg: 'error' };
       }));
   return msg;
 };
@@ -234,7 +234,7 @@ export const sortByTime = (array, ascending = true) => {
       return parseFloat(a.time) - parseFloat(b.time);
     });
   else
-    messages.sort(function(a, b) {
+    messages.sort(function (a, b) {
       return parseFloat(b.time) - parseFloat(a.time);
     });
   return messages;
@@ -269,7 +269,7 @@ export const selectPhoto = async callback => {
     } else if (response.error) {
       SimpleToast.show('Something went wrong, try again.');
     } else {
-      const source = {uri: response.uri};
+      const source = { uri: response.uri };
       callback({
         imageURI: source,
         imageDataObject: response,
@@ -279,11 +279,11 @@ export const selectPhoto = async callback => {
   });
 };
 
-export const getDirections = async ({startLoc, destinationLoc, onSuccess}) => {
+export const getDirections = async ({ startLoc, destinationLoc, onSuccess }) => {
   if (startLoc && destinationLoc) {
     try {
       fetch(
-        `https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}&key=${MAPS_API_KEY}`,
+        `https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}&key=${Config.mapsApiKey}`,
       )
         .then(resp => resp.json())
         .then(async respJson => {
