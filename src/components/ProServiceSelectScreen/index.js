@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   Text,
   StyleSheet,
@@ -13,7 +13,7 @@ import {
 import CheckBox from 'react-native-check-box';
 import SimpleToast from 'react-native-simple-toast';
 import images from '../../Constants/images';
-import {fetchServices} from '../../controllers/jobs';
+import { fetchServices } from '../../controllers/jobs';
 import {
   colorBg,
   colorPrimary,
@@ -87,9 +87,9 @@ export default class ProServiceSelectScreen extends Component {
   };
 
   checkValidation = () => {
-    const {navigation} = this.props;
-    const origin = navigation.getParam('from');
-    const onGoBack = navigation.getParam('onGoBack');
+    const { navigation, route } = this.props;
+    const origin = route.params.from;
+    const onGoBack = route.params.onGoBack;
     if (this.state.selectedServiceId.length > 0) {
       navigation.state.params.onGoBack(
         this.state.selectedServiceId + '/' + this.state.selectedServiceName,
@@ -158,7 +158,7 @@ export default class ProServiceSelectScreen extends Component {
   };
 
   render() {
-    const {navigation} = this.props;
+    const { navigation, route } = this.props;
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
@@ -186,8 +186,8 @@ export default class ProServiceSelectScreen extends Component {
                 justifyContent: 'center',
               }}
               onPress={() => {
-                const origin = navigation.getParam('from');
-                const onGoBack = navigation.getParam('onGoBack');
+                const origin = route.params.from;
+                const onGoBack = route.params.onGoBack;
                 if (origin === 'profile-screen') {
                   this.props.navigation.navigate('ProMyProfile', {
                     onGoBack,
@@ -238,7 +238,7 @@ export default class ProServiceSelectScreen extends Component {
 
         {this.state.isLoading && (
           <View style={styles.loaderStyle}>
-            <ActivityIndicator style={{height: 80}} color="#C00" size="large" />
+            <ActivityIndicator style={{ height: 80 }} color="#C00" size="large" />
           </View>
         )}
       </View>
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: 'white',
     shadowColor: lightGray,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     height: 40,
     backgroundColor: white,
     shadowColor: black,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,

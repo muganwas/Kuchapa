@@ -8,6 +8,7 @@ import {
   Platform,
   BackHandler,
   Dimensions,
+  Text,
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -55,7 +56,7 @@ const screenWidth = Dimensions.get('screen').width;
 const Android = Platform.OS === 'android';
 
 class SplashScreen extends Component {
-  constructor(props) {
+  constructor() {
     super();
     this.state = {
       id: null,
@@ -314,23 +315,23 @@ export default class App extends Component {
         <Stack.Navigator initialRouteName='Splash'>
           <Stack.Screen name="Splash" component={SplashScreenComponent} options={{ header: () => <></> }} />
           <Stack.Screen name="AfterSplash" component={AfterSplashScreen} options={{ header: () => <></> }} />
-          <Stack.Screen name="FacebookGoogle" component={FacebookGoogleScreen} />
-          <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-          <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen name="LoginPhoneScreen" component={LoginPhoneScreen} />
-          <Stack.Screen name="ProLoginPhoneScreen" component={ProLoginPhoneScreen} />
-          <Stack.Screen name="Dashboard" component={DashboardScreen} />
-          <Stack.Screen name="ProDashboard" component={ProDashboardScreen} />
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="AccountType" component={AccountTypeScreen} />
-          <Stack.Screen name="ProFacebookGoogle" component={ProFacebookGoogleScreen} />
-          <Stack.Screen name="ProForgotPassword" component={ProForgotPasswordScreen} />
-          <Stack.Screen name="ProAccountType" component={ProAccountTypeScreen} />
-          <Stack.Screen name="ProRegisterFB" component={ProRegisterFBScreen} />
-          <Stack.Screen name="ProRegister" component={ProRegisterScreen} />
-          <Stack.Screen name="ProServiceSelect" component={ProServiceSelectScreen} />
-          <Stack.Screen name="SelectAddress" component={SelectAddressScreen} />
-          <Stack.Screen name="ProHome" component={ProHomeScreen} />
+          <Stack.Screen name="FacebookGoogle" component={FacebookGoogleScreen} options={{ title: "Login" }} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ title: "Forgot Password" }} />
+          <Stack.Screen name="Register" component={RegisterScreen} options={{ title: "Register" }} />
+          <Stack.Screen name="LoginPhoneScreen" component={LoginPhoneScreen} options={{ title: "Phone Login" }} />
+          <Stack.Screen name="ProLoginPhoneScreen" component={ProLoginPhoneScreen} options={{ title: "Phone Login" }} />
+          <Stack.Screen name="Dashboard" component={DashboardScreen} options={{ title: "Dashboard" }} />
+          <Stack.Screen name="ProDashboard" component={ProDashboardScreen} options={{ title: "Dashboard" }} />
+          <Stack.Screen name="Home" component={HomeScreen} options={{ title: "Home" }} />
+          <Stack.Screen name="AccountType" component={AccountTypeScreen} options={{ title: "Account Type" }} />
+          <Stack.Screen name="ProFacebookGoogle" component={ProFacebookGoogleScreen} options={{ title: "Login" }} />
+          <Stack.Screen name="ProForgotPassword" component={ProForgotPasswordScreen} options={{ title: "Forgot Password" }} />
+          <Stack.Screen name="ProAccountType" component={ProAccountTypeScreen} options={{ title: "Account Type" }} />
+          <Stack.Screen name="ProRegisterFB" component={ProRegisterFBScreen} options={{ title: "Register" }} />
+          <Stack.Screen name="ProRegister" component={ProRegisterScreen} options={{ title: "Register" }} />
+          <Stack.Screen name="ProServiceSelect" component={ProServiceSelectScreen} options={{ title: "Select Services" }} />
+          <Stack.Screen name="SelectAddress" component={SelectAddressScreen} options={{ title: "Select Address" }} />
+          <Stack.Screen name="ProHome" component={ProHomeScreen} options={{ title: "Home" }} />
         </Stack.Navigator>
       </NavigationContainer>
     )

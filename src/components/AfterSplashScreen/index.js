@@ -9,7 +9,6 @@ import {
   Platform,
   StyleSheet,
 } from 'react-native';
-import { withNavigation } from '@react-navigation/compat';
 import RNExitApp from 'react-native-exit-app';
 import { themeRed, white, black } from '../../Constants/colors';
 
@@ -64,7 +63,7 @@ class AfterSplashScreen extends Component {
   }
 }
 
-export default withNavigation(AfterSplashScreen);
+export default AfterSplashScreen;
 
 const styles = StyleSheet.create({
   container: {

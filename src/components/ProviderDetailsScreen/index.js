@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   View,
   StyleSheet,
@@ -14,7 +14,7 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import {AirbnbRating} from 'react-native-ratings';
+import { AirbnbRating } from 'react-native-ratings';
 import Toast from 'react-native-simple-toast';
 import {
   startFetchingJobCustomer,
@@ -25,7 +25,7 @@ import {
   getPendingJobRequest,
 } from '../../Redux/Actions/jobsActions';
 import WaitingDialog from '../WaitingDialog';
-import {cloneDeep} from 'lodash';
+import { cloneDeep } from 'lodash';
 import {
   updateUserDetails,
   updateProviderDetails,
@@ -39,7 +39,7 @@ import {
   setOnlineStatusListener,
   deregisterOnlineStatusListener,
 } from '../../controllers/chats';
-import {requestForBooking} from '../../controllers/bookings';
+import { requestForBooking } from '../../controllers/bookings';
 import {
   lightGray,
   themeRed,
@@ -145,18 +145,18 @@ class ProviderDetailsScreen extends Component {
     });
 
   goBack = () => {
-    this.setState({isLoading: false, requestStatus: ''});
+    this.setState({ isLoading: false, requestStatus: '' });
     this.props.navigation.goBack();
   };
 
   componentDidUpdate() {
     const {
-      jobsInfo: {activeRequest},
-      generalInfo: {OnlineUsers},
+      jobsInfo: { activeRequest },
+      generalInfo: { OnlineUsers },
     } = this.props;
-    const {requestStatus, liveChatStatus} = this.state;
+    const { requestStatus, liveChatStatus } = this.state;
     if (!activeRequest && requestStatus === 'Waiting for acceptance...')
-      this.setState({requestStatus: ''});
+      this.setState({ requestStatus: '' });
     const currentliveChatStatus = OnlineUsers[this.state.providerId]
       ? OnlineUsers[this.state.providerId].status
       : '0';
@@ -171,7 +171,7 @@ class ProviderDetailsScreen extends Component {
 
   componentDidMount() {
     this.initialRender();
-    const {navigation} = this.props;
+    const { navigation } = this.props;
     navigation.addListener('willFocus', async () => {
       //this.initialRender();
       BackHandler.addEventListener('hardwareBackPress', () =>
@@ -188,7 +188,7 @@ class ProviderDetailsScreen extends Component {
         this.handleBackButtonClick,
       );
       const {
-        userInfo: {userDetails},
+        userInfo: { userDetails },
         getPendingJobRequest,
       } = this.props;
       getPendingJobRequest(this.props, userDetails.userId);
@@ -198,7 +198,8 @@ class ProviderDetailsScreen extends Component {
   initialRender = async () => {
     const {
       navigation,
-      generalInfo: {OnlineUsers},
+      route,
+      generalInfo: { OnlineUsers },
     } = this.props;
     const liveChatStatus = OnlineUsers[navigation.state.params.providerId]
       ? OnlineUsers[navigation.state.params.providerId].status
@@ -232,7 +233,7 @@ class ProviderDetailsScreen extends Component {
       body: '',
       data: '',
     });
-    const providerId = navigation.getParam('providerId');
+    const providerId = route.params.providerId;
     providerId &&
       setOnlineStatusListener({
         OnlineUsers,
@@ -252,8 +253,8 @@ class ProviderDetailsScreen extends Component {
 
   goToChatScreen = () => {
     const {
-      userInfo: {userDetails},
-      jobsInfo: {jobRequests},
+      userInfo: { userDetails },
+      jobsInfo: { jobRequests },
       fetchedPendingJobInfo,
     } = this.props;
     let newJobRequests = cloneDeep(jobRequests);
@@ -309,17 +310,17 @@ class ProviderDetailsScreen extends Component {
 
   componentWillUnmount() {
     const {
-      userInfo: {userDetails},
+      userInfo: { userDetails },
       getPendingJobRequest,
-      navigation,
+      route,
     } = this.props;
     getPendingJobRequest(this.props, userDetails.userId);
-    const providerId = navigation.getParam('providerId');
+    const providerId = route.params.providerId;
     providerId && deregisterOnlineStatusListener(providerId);
   }
 
   changeDialogVisibility = () =>
-    this.setState(prevState => ({showDialog: !prevState.showDialog}));
+    this.setState(prevState => ({ showDialog: !prevState.showDialog }));
 
   render() {
     const {
@@ -348,7 +349,7 @@ class ProviderDetailsScreen extends Component {
           rightButtonText={dialogRightText}
         />
         <View style={styles.header}>
-          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
             <TouchableOpacity
               style={{
                 width: 35,
@@ -356,9 +357,9 @@ class ProviderDetailsScreen extends Component {
                 justifyContent: 'center',
                 marginLeft: 5,
               }}
-              onPress={this.props.navigation.getParam('onGoBack')}>
+              onPress={this.props.route.params.onGoBack}>
               <Image
-                style={{width: 20, height: 20, alignSelf: 'center'}}
+                style={{ width: 20, height: 20, alignSelf: 'center' }}
                 source={require('../../icons/arrow_back.png')}
               />
             </TouchableOpacity>
@@ -382,7 +383,7 @@ class ProviderDetailsScreen extends Component {
             flexDirection: 'row',
             backgroundColor: white,
             shadowColor: '#000',
-            shadowOffset: {width: 0, height: 0},
+            shadowOffset: { width: 0, height: 0 },
             shadowOpacity: 0.75,
             shadowRadius: 5,
             elevation: 5,
@@ -412,7 +413,7 @@ class ProviderDetailsScreen extends Component {
             paddingLeft: 5,
             paddingRight: 5,
           }}>
-          <View style={{flexDirection: 'column', marginLeft: 10}}>
+          <View style={{ flexDirection: 'column', marginLeft: 10 }}>
             <Image
               style={{
                 width: 60,
@@ -422,12 +423,12 @@ class ProviderDetailsScreen extends Component {
               }}
               source={
                 this.state.imageAvailable
-                  ? {uri: this.state.image}
+                  ? { uri: this.state.image }
                   : require('../../images/generic_avatar.png')
               }
             />
 
-            <View style={{backgroundColor: 'white', marginTop: 5}}>
+            <View style={{ backgroundColor: 'white', marginTop: 5 }}>
               <AirbnbRating
                 type="custom"
                 ratingCount={5}
@@ -439,15 +440,15 @@ class ProviderDetailsScreen extends Component {
               />
             </View>
           </View>
-          <View style={{flex: 1, flexDirection: 'column', marginLeft: 20}}>
+          <View style={{ flex: 1, flexDirection: 'column', marginLeft: 20 }}>
             <Text>
-              <Text style={{color: darkGray, fontWeight: 'bold'}}>
+              <Text style={{ color: darkGray, fontWeight: 'bold' }}>
                 Account Type:{' '}
               </Text>
               <Text>{this.state.accountType}</Text>
             </Text>
-            <View style={{flexDirection: 'row'}}>
-              <Text style={{color: darkGray, fontWeight: 'bold'}}>
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={{ color: darkGray, fontWeight: 'bold' }}>
                 Distance from you:{' '}
               </Text>
               {this.state.distance !== 'NaN' ? (
@@ -461,13 +462,13 @@ class ProviderDetailsScreen extends Component {
               )}
             </View>
             <Text>
-              <Text style={{color: darkGray, fontWeight: 'bold'}}>
+              <Text style={{ color: darkGray, fontWeight: 'bold' }}>
                 Current Location:{' '}
               </Text>
               <Text>{this.state.address}</Text>
             </Text>
             <Text>
-              <Text style={{color: darkGray, fontWeight: 'bold'}}>
+              <Text style={{ color: darkGray, fontWeight: 'bold' }}>
                 Self Description:{' '}
               </Text>
               <Text>{this.state.description}</Text>
@@ -475,84 +476,89 @@ class ProviderDetailsScreen extends Component {
           </View>
         </View>
 
-        {(this.state.requestStatus === '' ||
-          this.state.requestStatus === 'No Response') && (
-          <View style={[styles.bottomView, {flexDirection: 'row'}]}>
-            <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={this.requestProBooking}>
-              <Text style={styles.text}>Send Request</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        {
+          (this.state.requestStatus === '' ||
+            this.state.requestStatus === 'No Response') && (
+            <View style={[styles.bottomView, { flexDirection: 'row' }]}>
+              <TouchableOpacity
+                style={styles.buttonContainer}
+                onPress={this.requestProBooking}>
+                <Text style={styles.text}>Send Request</Text>
+              </TouchableOpacity>
+            </View>
+          )
+        }
 
-        {this.state.requestStatus === 'Chat Request Accepted' && (
-          <View style={styles.bottomView}>
-            <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={() => this.goToChatScreen()}>
-              <Text style={styles.text}>Message</Text>
-            </TouchableOpacity>
+        {
+          this.state.requestStatus === 'Chat Request Accepted' && (
+            <View style={styles.bottomView}>
+              <TouchableOpacity
+                style={styles.buttonContainer}
+                onPress={() => this.goToChatScreen()}>
+                <Text style={styles.text}>Message</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.buttonContainer}
-              onPress={this.callPhoneTask}>
-              <Text style={styles.text}>Call</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.buttonContainer}
+                onPress={this.callPhoneTask}>
+                <Text style={styles.text}>Call</Text>
+              </TouchableOpacity>
 
-            {this.state.isJobAccepted && (
-              <View
-                style={{
-                  flexDirection: 'column',
-                  width: screenWidth,
-                  height: 50,
-                  backgroundColor: 'white',
-                  borderRadius: 2,
-                  alignItems: 'center',
-                  justifyContent: 'flex-start',
-                }}>
+              {this.state.isJobAccepted && (
                 <View
                   style={{
+                    flexDirection: 'column',
                     width: screenWidth,
-                    height: 1,
-                    backgroundColor: lightGray,
-                  }}
-                />
-                <TouchableOpacity
-                  style={styles.textViewDirection}
-                  onPress={this.goToMapDirection}>
-                  <Image
-                    style={{width: 20, height: 20, marginLeft: 20}}
-                    source={require('../../icons/mobile_gps.png')}
-                  />
-                  <Text
+                    height: 50,
+                    backgroundColor: 'white',
+                    borderRadius: 2,
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                  }}>
+                  <View
                     style={{
-                      color: 'black',
-                      fontWeight: 'bold',
-                      fontSize: 16,
-                      textAlign: 'center',
-                      marginLeft: 10,
-                    }}>
-                    Track Service Provider
-                  </Text>
-                  <Image
-                    style={{
-                      width: 20,
-                      height: 20,
-                      marginLeft: 20,
-                      position: 'absolute',
-                      end: 0,
-                      marginRight: 15,
+                      width: screenWidth,
+                      height: 1,
+                      backgroundColor: lightGray,
                     }}
-                    source={require('../../icons/right_arrow.png')}
                   />
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
-        )}
+                  <TouchableOpacity
+                    style={styles.textViewDirection}
+                    onPress={this.goToMapDirection}>
+                    <Image
+                      style={{ width: 20, height: 20, marginLeft: 20 }}
+                      source={require('../../icons/mobile_gps.png')}
+                    />
+                    <Text
+                      style={{
+                        color: 'black',
+                        fontWeight: 'bold',
+                        fontSize: 16,
+                        textAlign: 'center',
+                        marginLeft: 10,
+                      }}>
+                      Track Service Provider
+                    </Text>
+                    <Image
+                      style={{
+                        width: 20,
+                        height: 20,
+                        marginLeft: 20,
+                        position: 'absolute',
+                        end: 0,
+                        marginRight: 15,
+                      }}
+                      source={require('../../icons/right_arrow.png')}
+                    />
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          )
+        }
 
-        {this.state.requestStatus === 'Request Sending...' ||
+        {
+          this.state.requestStatus === 'Request Sending...' ||
           (this.state.requestStatus === 'Waiting for acceptance...' && (
             <View style={styles.loaderStyle}>
               <ActivityIndicator
@@ -577,7 +583,8 @@ class ProviderDetailsScreen extends Component {
                 {this.state.requestStatus}
               </Text>
             </View>
-          ))}
+          ))
+        }
         <Modal
           transparent={true}
           visible={this.state.isLoading}
@@ -587,7 +594,7 @@ class ProviderDetailsScreen extends Component {
             changeWaitingDialogVisibility={this.changeWaitingDialogVisibility}
           />
         </Modal>
-      </View>
+      </View >
     );
   }
 }
@@ -655,7 +662,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: themeRed,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -664,7 +671,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     margin: 10,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -699,7 +706,7 @@ const styles = StyleSheet.create({
     height: 20,
     textAlign: 'center',
     shadowColor: themeRed,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 10,
@@ -736,7 +743,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -750,7 +757,7 @@ const styles = StyleSheet.create({
     backgroundColor: white,
     shadowColor: black,
     borderColor: lightGray,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -773,7 +780,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,

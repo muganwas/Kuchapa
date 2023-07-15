@@ -157,7 +157,7 @@ class BookingDetailsScreen extends Component {
           mainId: '',
           isErrorToast: false,
         });
-        const pos = this.props.navigation.getParam('position');
+        const pos = this.props.route.params.position;
         let newCompletedBookingData = cloneDeep(
           this.props.jobsInfo.bookingCompleteData,
         );

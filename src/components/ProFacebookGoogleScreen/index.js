@@ -64,7 +64,7 @@ const StatusBarPlaceHolder = () => {
 class FacebookGoogleScreen extends Component {
   constructor(props) {
     super();
-    const accountType = props.navigation.getParam('accountType');
+    const accountType = props.route.params.accountType;
     this.state = {
       accountType,
       email: '',

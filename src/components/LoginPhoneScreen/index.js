@@ -14,6 +14,7 @@ import {
   BackHandler,
   ActivityIndicator,
 } from 'react-native';
+import { withNavigation } from '@react-navigation/compat';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 import 'react-native-gesture-handler';
 import {
@@ -70,8 +71,9 @@ const StatusBarPlaceHolder = () => {
 class LoginPhoneScreen extends Component {
   constructor(props) {
     super();
+    console.log("route ", props.route.params)
     this.state = {
-      accountType: props.navigation.getParam('accountType'),
+      accountType: props.route.params.accountType,
       opacity: 1,
       isLoading: false,
       isErrorToast: '',
@@ -310,40 +312,6 @@ class LoginPhoneScreen extends Component {
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag">
           <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-            <View
-              style={{
-                height: 200,
-                width: screenWidth,
-                backgroundColor: white,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <TouchableOpacity
-                style={{
-                  width: 35,
-                  height: 35,
-                  alignSelf: 'flex-start',
-                  justifyContent: 'center',
-                  marginLeft: 5,
-                  marginTop: 15,
-                }}
-                onPress={this.handleBackButtonClick}>
-                <Image
-                  style={{
-                    width: 20,
-                    tintColor: black,
-                    height: 20,
-                    alignSelf: 'center',
-                  }}
-                  source={require('../../icons/arrow_back.png')}
-                />
-              </TouchableOpacity>
-              <Image
-                style={{ width: 140, height: 140 }}
-                source={require('../../images/kuchapa_logo.png')}
-                resizeMode="contain"
-              />
-            </View>
             <View style={styles.logincontainer}>
               <View style={{ padding: 20 }}>
                 <Text style={{ textAlign: 'center', fontWeight: '500' }}>
@@ -503,7 +471,7 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(LoginPhoneScreen);
+)(withNavigation(LoginPhoneScreen));
 
 const styles = StyleSheet.create({
   container: {

@@ -78,9 +78,9 @@ export default class SelectAddressScreen extends Component {
   }
 
   handleBackButtonClick = () => {
-    const { navigation } = this.props;
-    const from = navigation.getParam('from');
-    const onGoBack = navigation.getParam('onGoBack');
+    const { navigation, route } = this.props;
+    const from = route.params.from;
+    const onGoBack = route.params.onGoBack;
     if (from === 'profile-screen') {
       this.props.navigation.navigate('ProMyProfile', {
         onGoBack,
@@ -131,9 +131,9 @@ export default class SelectAddressScreen extends Component {
       fetch(LAT_LNG_URL + placeId)
         .then(response => response.json())
         .then(responseJson => {
-          const { navigation } = this.props;
-          const from = navigation.getParam('from');
-          const onGoBack = navigation.getParam('onGoBack');
+          const { navigation, route } = this.props;
+          const from = route.params.from;
+          const onGoBack = route.params.onGoBack;
           this.setState({
             isLoading: false,
             address: description,
@@ -204,9 +204,9 @@ export default class SelectAddressScreen extends Component {
                 justifyContent: 'center',
               }}
               onPress={() => {
-                const { navigation } = this.props;
-                const from = navigation.getParam('from');
-                const onGoBack = navigation.getParam('onGoBack');
+                const { navigation, route } = this.props;
+                const from = route.params.from;
+                const onGoBack = route.params.onGoBack;
                 if (from === 'profile-screen') {
                   this.props.navigation.navigate('ProMyProfile', {
                     onGoBack,

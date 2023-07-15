@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   startFetchingNotification,
   notificationsFetched,
@@ -31,7 +31,7 @@ import {
   dbMessagesFetched,
   fetchClientMessages,
 } from '../../Redux/Actions/messageActions';
-import {jobCancelTask} from '../../controllers/jobs';
+import { jobCancelTask } from '../../controllers/jobs';
 import Config from '../Config';
 import {
   attachFile,
@@ -95,12 +95,12 @@ class ChatScreen extends Component {
     const {
       fetchedNotifications,
       jobsInfo: {
-        selectedJobRequest: {employee_id},
+        selectedJobRequest: { employee_id },
       },
       navigation,
     } = this.props;
     this.reInit(this.props);
-    fetchedNotifications({type: 'messages', value: 0});
+    fetchedNotifications({ type: 'messages', value: 0 });
     navigation.addListener('willFocus', async () => {
       this.reInit(this.props);
       BackHandler.addEventListener(
@@ -119,23 +119,24 @@ class ChatScreen extends Component {
 
   reInit = props => {
     const {
-      userInfo: {userDetails},
+      userInfo: { userDetails },
       jobsInfo: {
         jobRequests,
-        selectedJobRequest: {employee_id},
+        selectedJobRequest: { employee_id },
       },
-      messagesInfo: {dataChatSource, fetched},
-      generalInfo: {OnlineUsers},
+      messagesInfo: { dataChatSource, fetched },
+      generalInfo: { OnlineUsers },
       fetchClientMessages,
       navigation,
+      route,
     } = props;
     if (!socket.connected) {
       socket.close();
       socket.connect();
       fetchClientMessages(userDetails.userId);
     }
-    const currRequestPos = navigation.getParam('currentPosition');
-    const providerId = navigation.getParam('providerId', null) || employee_id;
+    const currRequestPos = route.params.currentPosition || 0;
+    const providerId = route.params.providerId || employee_id;
     this.setState({
       senderId: userDetails.userId,
       senderImage: userDetails.image,
@@ -198,17 +199,17 @@ class ChatScreen extends Component {
 
   componentDidUpdate() {
     const {
-      messagesInfo: {fetched, dataChatSource},
+      messagesInfo: { fetched, dataChatSource },
       jobsInfo: {
-        selectedJobRequest: {employee_id},
+        selectedJobRequest: { employee_id },
         jobRequests,
       },
-      generalInfo: {OnlineUsers},
-      navigation,
+      generalInfo: { OnlineUsers },
+      route,
     } = this.props;
-    const currRequestPos = navigation.getParam('currentPosition');
+    const currRequestPos = route.params.currentPosition || 0;
     const providerId =
-      navigation.getParam('providerId', null) ||
+      route.params.providerId ||
       jobRequests[currRequestPos].employee_id;
     const {
       isLoading,
@@ -217,11 +218,11 @@ class ChatScreen extends Component {
       selectedStatus,
     } = this.state;
     const localDataChatSource = this.state.dataChatSource;
-    if (fetched && isLoading) this.setState({isLoading: false});
+    if (fetched && isLoading) this.setState({ isLoading: false });
 
     if (
       JSON.stringify(dataChatSource[employee_id]) !==
-        JSON.stringify(localDataChatSource) &&
+      JSON.stringify(localDataChatSource) &&
       !dataChatSourceSynced
     )
       this.setState({
@@ -241,8 +242,8 @@ class ChatScreen extends Component {
   }
 
   handleBackButtonClick = () => {
-    const {titlePage} = this.state;
-    const {navigation} = this.props;
+    const { titlePage } = this.state;
+    const { navigation } = this.props;
     if (titlePage === 'MapDirection')
       navigation.navigate('MapDirection', {
         titlePage: 'Chat',
@@ -331,7 +332,7 @@ class ChatScreen extends Component {
   jobCancelTaskChat = async () =>
     await jobCancelTask({
       userType: 'Customer',
-      currRequestPos: this.props.navigation.getParam('currentPosition'),
+      currRequestPos: this.props.route.params.currentPosition || 0,
       toggleIsLoading: this.changeWaitingDialogVisibility,
       updatePendingJobInfo: this.props?.fetchedPendingJobInfo,
       jobRequests: this.props?.jobsInfo?.jobRequests,
@@ -365,8 +366,8 @@ class ChatScreen extends Component {
     });
 
   handleBackButtonClick = () => {
-    const {titlePage} = this.state;
-    const {navigation} = this.props;
+    const { titlePage } = this.state;
+    const { navigation } = this.props;
     if (titlePage === 'MapDirection')
       navigation.navigate('MapDirection', {
         titlePage: 'Chat',
@@ -379,7 +380,7 @@ class ChatScreen extends Component {
   };
 
   renderSeparator = () => {
-    return <View style={{height: 5, width: '100%'}} />;
+    return <View style={{ height: 5, width: '100%' }} />;
   };
 
   changeWaitingDialogVisibility = bool => {
@@ -389,7 +390,7 @@ class ChatScreen extends Component {
   };
 
   changeDialogVisibility = () =>
-    this.setState(prevState => ({showDialog: !prevState.showDialog}));
+    this.setState(prevState => ({ showDialog: !prevState.showDialog }));
 
   render() {
     console.log('reg chat');
@@ -441,7 +442,7 @@ class ChatScreen extends Component {
             handleBackButtonClick={this.handleBackButtonClick}
           />
           <ScrollView
-            style={{marginBottom: requestStatus === 'Pending' ? 100 : 50}}
+            style={{ marginBottom: requestStatus === 'Pending' ? 100 : 50 }}
             ref={ref => (this.scrollView = ref)}
             contentContainerStyle={{
               justifyContent: 'center',
@@ -449,7 +450,7 @@ class ChatScreen extends Component {
               alwaysBounceVertical: true,
             }}
             onContentSizeChange={(contentWidth, contentHeight) => {
-              this.scrollView.scrollToEnd({animated: true});
+              this.scrollView.scrollToEnd({ animated: true });
             }}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag">
@@ -463,7 +464,7 @@ class ChatScreen extends Component {
           {isLoading && (
             <View style={styles.loaderStyle}>
               <ActivityIndicator
-                style={{height: 80}}
+                style={{ height: 80 }}
                 color="red"
                 size="large"
               />
@@ -472,7 +473,7 @@ class ChatScreen extends Component {
           <View
             style={[
               styles.footerContainer,
-              {minHeight: requestStatus === 'Pending' ? 120 : 50},
+              { minHeight: requestStatus === 'Pending' ? 120 : 50 },
             ]}>
             {/*<View style={{ width: screenWidth, height: 1, backgroundColor: lightGray }}></View>*/}
             {requestStatus === 'Pending' ? (
@@ -496,7 +497,7 @@ class ChatScreen extends Component {
                     <Text
                       style={[
                         styles.text,
-                        {color: themeRed, fontWeight: 'bold'},
+                        { color: themeRed, fontWeight: 'bold' },
                       ]}>
                       Cancel Request
                     </Text>
@@ -537,7 +538,7 @@ class ChatScreen extends Component {
                     })
                   }>
                   <Image
-                    style={{width: 20, height: 20, marginLeft: 20}}
+                    style={{ width: 20, height: 20, marginLeft: 20 }}
                     source={require('../../icons/mobile_gps.png')}
                   />
                   <Text
@@ -585,7 +586,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: colorBg,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -622,7 +623,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: lightGray,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 7},
+    shadowOffset: { width: 0, height: 7 },
     shadowOpacity: 1,
     shadowRadius: 5,
     elevation: 10,
@@ -765,7 +766,7 @@ const mapDispatchToProps = dispatch => {
       dispatch(dbMessagesFetched(messages));
     },
     fetchClientMessages: (senderId, callBack) => {
-      dispatch(fetchClientMessages({senderId, callBack}));
+      dispatch(fetchClientMessages({ senderId, callBack }));
     },
   };
 };

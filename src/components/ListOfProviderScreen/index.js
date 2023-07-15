@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   View,
   StyleSheet,
@@ -14,12 +14,12 @@ import {
   Platform,
   Modal,
 } from 'react-native';
-import {AirbnbRating} from 'react-native-ratings';
+import { AirbnbRating } from 'react-native-ratings';
 import Toast from 'react-native-simple-toast';
 import WaitingDialog from '../WaitingDialog';
 import images from '../../Constants/images';
-import {colorBg, white, themeRed} from '../../Constants/colors';
-import {calculateDistance, getAllProviders} from '../../controllers/users';
+import { colorBg, white, themeRed } from '../../Constants/colors';
+import { calculateDistance, getAllProviders } from '../../controllers/users';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -60,7 +60,7 @@ class ListOfProviderScreen extends Component {
   }
 
   componentDidMount() {
-    const {navigation} = this.props;
+    const { navigation } = this.props;
     this.initialize();
     navigation.addListener('willFocus', async () => {
       /**
@@ -80,7 +80,7 @@ class ListOfProviderScreen extends Component {
   }
 
   initialize = async () => {
-    const {navigation} = this.props;
+    const { navigation } = this.props;
     this.setState({
       serviceName: navigation.state.params.serviceName,
       serviceId: navigation.state.params.serviceId,
@@ -100,10 +100,10 @@ class ListOfProviderScreen extends Component {
   getAllProvidersLocal = async () =>
     getAllProviders({
       userDetails: this.props?.userInfo?.userDetails,
-      serviceId: this.props.navigation.getParam('serviceId'),
+      serviceId: this.props.route.params.serviceId,
       toggleIsLoading: this.changeWaitingDialogVisibility,
       usersCoordinates: this.props?.generalInfo?.usersCoordinates,
-      setDistInfo: distInfo => this.setState({distInfo}),
+      setDistInfo: distInfo => this.setState({ distInfo }),
       setDistDataSource: dataSource => {
         this.setState({
           distCalculated: true,
@@ -129,7 +129,7 @@ class ListOfProviderScreen extends Component {
     calculateDistance({
       usersCoordinates: this.props?.generalInfo?.usersCoordinates,
       dataSource,
-      setDistInfo: distInfo => this.setState({distInfo}),
+      setDistInfo: distInfo => this.setState({ distInfo }),
       toggleIsRefreshing: this.toggleRefreshing,
       onSuccess: dataSource =>
         this.setState({
@@ -149,13 +149,14 @@ class ListOfProviderScreen extends Component {
     else Toast.show(message);
   };
 
-  renderItem = ({item}) => {
+  renderItem = ({ item }) => {
     const {
-      userInfo: {userDetails},
+      userInfo: { userDetails },
       navigation,
+      route,
     } = this.props;
-    const {accountType} = userDetails;
-    const {showClasses} = this.state;
+    const { accountType } = userDetails;
+    const { showClasses } = this.state;
     if (accountType === 'Individual' || item.invoice === 1)
       /** only return providers with invoices for enterprise clients */
       return (
@@ -164,29 +165,29 @@ class ListOfProviderScreen extends Component {
           onPress={() => {
             !showClasses
               ? navigation.navigate('ProviderDetails', {
-                  providerId: item.id,
-                  name: item.username,
-                  surname: item.surname,
-                  image: item.image,
-                  imageAvailable: item.imageAvailable,
-                  mobile: item.mobile,
-                  avgRating: item.avgRating,
-                  distance: item.hash,
-                  address: item.currentAddress || item.address,
-                  description: item.description,
-                  status: item.status,
-                  fcmId: item.fcm_id,
-                  accountType: item.account_type,
-                  serviceName: this.state.serviceName,
-                  serviceId: this.state.serviceId,
-                  serviceImage: navigation.getParam('serviceImage'),
-                  onGoBack: () =>
-                    navigation.navigate('ListOfProviders', {
-                      serviceName: this.state.serviceName,
-                      serviceId: this.state.serviceId,
-                      serviceImage: navigation.getParam('serviceImage'),
-                    }),
-                })
+                providerId: item.id,
+                name: item.username,
+                surname: item.surname,
+                image: item.image,
+                imageAvailable: item.imageAvailable,
+                mobile: item.mobile,
+                avgRating: item.avgRating,
+                distance: item.hash,
+                address: item.currentAddress || item.address,
+                description: item.description,
+                status: item.status,
+                fcmId: item.fcm_id,
+                accountType: item.account_type,
+                serviceName: this.state.serviceName,
+                serviceId: this.state.serviceId,
+                serviceImage: route.params.serviceImage,
+                onGoBack: () =>
+                  navigation.navigate('ListOfProviders', {
+                    serviceName: this.state.serviceName,
+                    serviceId: this.state.serviceId,
+                    serviceImage: route.params.serviceImage,
+                  }),
+              })
               : null;
           }}>
           <View
@@ -197,7 +198,7 @@ class ListOfProviderScreen extends Component {
               alignContent: 'center',
               padding: 10,
             }}>
-            <View style={{flexDirection: 'column', marginLeft: 10}}>
+            <View style={{ flexDirection: 'column', marginLeft: 10 }}>
               <Image
                 style={{
                   width: 60,
@@ -207,11 +208,11 @@ class ListOfProviderScreen extends Component {
                 }}
                 source={
                   item.imageAvailable
-                    ? {uri: item.image}
+                    ? { uri: item.image }
                     : require('../../images/generic_avatar.png')
                 }
               />
-              <View style={{backgroundColor: 'white', marginTop: 5}}>
+              <View style={{ backgroundColor: 'white', marginTop: 5 }}>
                 <AirbnbRating
                   type="custom"
                   ratingCount={5}
@@ -238,7 +239,7 @@ class ListOfProviderScreen extends Component {
                 {item.username + ' ' + item.surname}
               </Text>
               <Text>
-                <Text style={{fontWeight: 'bold'}}>Current Location: </Text>
+                <Text style={{ fontWeight: 'bold' }}>Current Location: </Text>
                 <Text
                   style={{
                     width: screenWidth - 120,
@@ -249,7 +250,7 @@ class ListOfProviderScreen extends Component {
                 </Text>
               </Text>
 
-              <View style={{marginTop: 5, flexDirection: 'row'}}>
+              <View style={{ marginTop: 5, flexDirection: 'row' }}>
                 <Text
                   style={{
                     fontWeight: 'bold',
@@ -295,19 +296,19 @@ class ListOfProviderScreen extends Component {
   };
 
   rerenderList = order => {
-    const {dataSource, reviewOrder, distanceOrder} = this.state;
+    const { dataSource, reviewOrder, distanceOrder } = this.state;
     let hashsArr = [];
     let ratingArr = [];
     let newDataSource = [];
     if (order === 'distance') {
       dataSource.map(obj => hashsArr.push([obj._id, obj.hash]));
       distanceOrder
-        ? hashsArr.sort(function(a, b) {
-            return a[1] - b[1];
-          })
-        : hashsArr.sort(function(a, b) {
-            return b[1] - a[1];
-          });
+        ? hashsArr.sort(function (a, b) {
+          return a[1] - b[1];
+        })
+        : hashsArr.sort(function (a, b) {
+          return b[1] - a[1];
+        });
       /**
        * rearrange datasource according to distance
        */
@@ -319,16 +320,16 @@ class ListOfProviderScreen extends Component {
           }
         });
       });
-      this.setState({dataSource: newDataSource, distanceOrder: !distanceOrder});
+      this.setState({ dataSource: newDataSource, distanceOrder: !distanceOrder });
     } else {
       dataSource.map(obj => ratingArr.push([obj._id, obj.avgRating]));
       reviewOrder
-        ? ratingArr.sort(function(a, b) {
-            return a[1] - b[1];
-          })
-        : ratingArr.sort(function(a, b) {
-            return b[1] - a[1];
-          });
+        ? ratingArr.sort(function (a, b) {
+          return a[1] - b[1];
+        })
+        : ratingArr.sort(function (a, b) {
+          return b[1] - a[1];
+        });
       /**
        * rearrange datasource according to ratings
        */
@@ -341,23 +342,23 @@ class ListOfProviderScreen extends Component {
           }
         });
       });
-      this.setState({dataSource: newDataSource, reviewOrder: !reviewOrder});
+      this.setState({ dataSource: newDataSource, reviewOrder: !reviewOrder });
     }
     this.toggleShowClasses();
   };
 
   toggleShowClasses = () => {
-    this.setState({showClasses: !this.state.showClasses});
+    this.setState({ showClasses: !this.state.showClasses });
   };
 
   render() {
-    const {showClasses, dataSource} = this.state;
-    const categoryImage = this.props.navigation.getParam('serviceImage', null);
+    const { showClasses, dataSource } = this.state;
+    const categoryImage = this.props.route.params.serviceImage;
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
         <View style={styles.header}>
-          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
             <TouchableOpacity
               style={{
                 width: 35,
@@ -367,7 +368,7 @@ class ListOfProviderScreen extends Component {
               }}
               onPress={() => this.handleBackButtonClick()}>
               <Image
-                style={{width: 20, height: 20, alignSelf: 'center'}}
+                style={{ width: 20, height: 20, alignSelf: 'center' }}
                 source={require('../../icons/arrow_back.png')}
               />
             </TouchableOpacity>
@@ -437,17 +438,17 @@ class ListOfProviderScreen extends Component {
               }}>
               {categoryImage ? (
                 <Image
-                  style={{width: 50, height: 50, tintColor: white}}
+                  style={{ width: 50, height: 50, tintColor: white }}
                   source={images[categoryImage]}
                 />
               ) : (
                 <Image
-                  style={{width: 50, height: 50}}
+                  style={{ width: 50, height: 50 }}
                   source={require('../../icons/service_provider_tool.png')}
                 />
               )}
             </View>
-            <Text style={{fontSize: 18, marginTop: 10}}>No provider found</Text>
+            <Text style={{ fontSize: 18, marginTop: 10 }}>No provider found</Text>
           </View>
         )}
         <Modal
@@ -476,7 +477,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: themeRed,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -498,7 +499,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: 'white',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     padding: 5,
@@ -537,7 +538,7 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     width: 100,

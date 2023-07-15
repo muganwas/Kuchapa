@@ -130,7 +130,7 @@ class ProAcceptRejectJobScreen extends Component {
       },
       messagesInfo: { dataChatSource, fetched },
       generalInfo: { OnlineUsers },
-      navigation,
+      route,
       fetchEmployeeMessages,
     } = props;
     if (!socket.connected) {
@@ -138,7 +138,7 @@ class ProAcceptRejectJobScreen extends Component {
       socket.connect();
       fetchEmployeeMessages(providerDetails.providerId);
     }
-    const currRequestPos = navigation.getParam('currentPos', 0);
+    const currRequestPos = route.params.currentPos || 0;
     this.setState({
       senderId: providerDetails.providerId,
       senderImage: providerDetails.imageSource,

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   Text,
@@ -11,14 +11,14 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import {connect} from 'react-redux';
-import {AirbnbRating} from 'react-native-ratings';
+import { connect } from 'react-redux';
+import { AirbnbRating } from 'react-native-ratings';
 import Toast from 'react-native-simple-toast';
 import ReviewDialog from '../ReviewDialog';
 import WaitingDialog from '../WaitingDialog';
 import Config from '../Config';
-import {reviewTask} from '../../controllers/bookings';
-import {cloneDeep} from 'lodash';
+import { reviewTask } from '../../controllers/bookings';
+import { cloneDeep } from 'lodash';
 import {
   setSelectedJobRequest,
   updateCompletedBookingData,
@@ -77,7 +77,7 @@ class ProBookingDetailsScreen extends Component {
   }
 
   componentDidMount() {
-    const {navigation} = this.props;
+    const { navigation } = this.props;
     navigation.addListener('willFocus', async () => {
       this.init(this.props);
       BackHandler.addEventListener('hardwareBackPress', () =>
@@ -120,7 +120,7 @@ class ProBookingDetailsScreen extends Component {
 
   //Call also from ReviewDialog
   changeDialogVisibility = async (bool, resp) => {
-    const {employee_rating, employee_review, bookingDetails} = this.state;
+    const { employee_rating, employee_review, bookingDetails } = this.state;
     this.setState({
       isRatingDialogVisible: bool,
       mainId: bookingDetails._id,
@@ -155,7 +155,7 @@ class ProBookingDetailsScreen extends Component {
           isReviewDialogVisible: false,
           mainId: '',
         });
-        const pos = this.props.navigation.getParam('position');
+        const pos = this.props.route.params.position;
         let newCompletedBookingData = cloneDeep(
           this.props.jobsInfo.bookingCompleteData,
         );
@@ -195,7 +195,7 @@ class ProBookingDetailsScreen extends Component {
   };
 
   render() {
-    const {dispatchSelectedJobRequest, navigation} = this.props;
+    const { dispatchSelectedJobRequest, navigation } = this.props;
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
@@ -210,7 +210,7 @@ class ProBookingDetailsScreen extends Component {
             paddingTop: 5,
             paddingBottom: 5,
           }}>
-          <View style={{flex: 1, flexDirection: 'row'}}>
+          <View style={{ flex: 1, flexDirection: 'row' }}>
             <TouchableOpacity
               style={{
                 width: 35,
@@ -219,7 +219,7 @@ class ProBookingDetailsScreen extends Component {
                 justifyContent: 'center',
               }}
               onPress={() =>
-                navigation.navigate('ProBooking', {from: 'detailsScreen'})
+                navigation.navigate('ProBooking', { from: 'detailsScreen' })
               }>
               <Image
                 style={{
@@ -255,7 +255,7 @@ class ProBookingDetailsScreen extends Component {
               borderBottomColor: lightGray,
               borderBottomWidth: 1,
             }}>
-            <Text style={{color: darkGray, fontWeight: 'bold', fontSize: 14}}>
+            <Text style={{ color: darkGray, fontWeight: 'bold', fontSize: 14 }}>
               Order number -{' '}
               {this.state.bookingDetails.order_id.replace('"', '')}
             </Text>
@@ -266,7 +266,7 @@ class ProBookingDetailsScreen extends Component {
                 style={styles.profilePicture}
                 source={
                   this.state.bookingDetails.user_details.image
-                    ? {uri: this.state.bookingDetails.user_details.image}
+                    ? { uri: this.state.bookingDetails.user_details.image }
                     : require('../../images/generic_avatar.png')
                 }
               />
@@ -384,7 +384,7 @@ class ProBookingDetailsScreen extends Component {
               borderTopColor: lightGray,
               borderTopWidth: 1,
             }}>
-            <Text style={{color: black, fontWeight: 'bold', fontSize: 14}}>
+            <Text style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
               Customer's rating of service
             </Text>
           </View>
@@ -413,7 +413,7 @@ class ProBookingDetailsScreen extends Component {
                   marginTop: 15,
                   marginLeft: 10,
                 }}>
-                <Text style={{color: black, fontWeight: 'bold', fontSize: 14}}>
+                <Text style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
                   Customer's review
                 </Text>
               </View>
@@ -424,7 +424,7 @@ class ProBookingDetailsScreen extends Component {
                   alignContent: 'flex-start',
                   margin: 10,
                 }}>
-                <Text style={{color: 'grey', fontSize: 14, padding: 10}}>
+                <Text style={{ color: 'grey', fontSize: 14, padding: 10 }}>
                   {this.state.customer_review}
                 </Text>
               </View>
@@ -441,7 +441,7 @@ class ProBookingDetailsScreen extends Component {
               borderTopColor: lightGray,
               borderTopWidth: 1,
             }}>
-            <Text style={{color: black, fontWeight: 'bold', fontSize: 14}}>
+            <Text style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
               Your rating of customer
             </Text>
           </View>
@@ -473,7 +473,7 @@ class ProBookingDetailsScreen extends Component {
                   marginTop: 15,
                   marginLeft: 10,
                 }}>
-                <Text style={{color: black, fontWeight: 'bold', fontSize: 14}}>
+                <Text style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
                   Your customer review
                 </Text>
               </View>
@@ -484,7 +484,7 @@ class ProBookingDetailsScreen extends Component {
                   alignContent: 'flex-start',
                   margin: 10,
                 }}>
-                <Text style={{color: 'grey', fontSize: 14, padding: 10}}>
+                <Text style={{ color: 'grey', fontSize: 14, padding: 10 }}>
                   {this.state.employee_review}
                 </Text>
               </View>
@@ -550,15 +550,15 @@ class ProBookingDetailsScreen extends Component {
           <ReviewDialog
             style={{
               shadowColor: black,
-              shadowOffset: {width: 0, height: 3},
+              shadowOffset: { width: 0, height: 3 },
               shadowOpacity: 0.75,
               shadowRadius: 5,
               elevation: 5,
             }}
             rating={this.state.employee_rating}
             review={this.state.employee_review}
-            updateReview={review => this.setState({employee_review: review})}
-            updateRating={rating => this.setState({employee_rating: rating})}
+            updateReview={review => this.setState({ employee_review: review })}
+            updateRating={rating => this.setState({ employee_rating: rating })}
             changeDialogVisibility={this.changeDialogVisibility}
             data={this.state.bookingDetails}
           />
@@ -606,7 +606,7 @@ const styles = StyleSheet.create({
     width: screenWidth,
     backgroundColor: 'white',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -662,7 +662,7 @@ const styles = StyleSheet.create({
     width: screenWidth,
     height: 50,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,

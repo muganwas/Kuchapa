@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   StyleSheet,
@@ -12,8 +12,8 @@ import {
   Platform,
   ActivityIndicator,
 } from 'react-native';
-import {connect} from 'react-redux';
-import {isEqual} from 'lodash';
+import { connect } from 'react-redux';
+import { isEqual } from 'lodash';
 import SimpleToast from 'react-native-simple-toast';
 import MapView from 'react-native-maps';
 import SlidingPanel from 'react-native-sliding-up-down-panels';
@@ -38,8 +38,8 @@ import {
   themeRed,
   colorGreen,
 } from '../../Constants/colors';
-import {jobCompleteTask, jobCancelTask} from '../../controllers/jobs';
-import {getDirections} from '../../misc/helpers';
+import { jobCompleteTask, jobCancelTask } from '../../controllers/jobs';
+import { getDirections } from '../../misc/helpers';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -66,15 +66,16 @@ class MapDirectionScreen extends Component {
   constructor(props) {
     super();
     const {
-      userInfo: {userDetails},
-      generalInfo: {usersCoordinates, othersCoordinates},
+      userInfo: { userDetails },
+      generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
         jobRequests,
-        selectedJobRequest: {employee_id},
+        selectedJobRequest: { employee_id },
       },
       navigation,
+      route,
     } = props;
-    const currRequestPos = navigation.getParam('currentPos', 0);
+    const currRequestPos = route.params.currentPos;
     const employeeLatitude = othersCoordinates[employee_id]
       ? othersCoordinates[employee_id].latitude
       : usersCoordinates.latitude;
@@ -130,15 +131,16 @@ class MapDirectionScreen extends Component {
 
   reInit = props => {
     const {
-      userInfo: {userDetails},
-      generalInfo: {usersCoordinates, othersCoordinates},
+      userInfo: { userDetails },
+      generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
         jobRequests,
-        selectedJobRequest: {employee_id},
+        selectedJobRequest: { employee_id },
       },
       navigation,
+      route,
     } = props;
-    const currRequestPos = navigation.getParam('currentPos', 0);
+    const currRequestPos = route.params.currentPos;
     if (
       (currRequestPos || currRequestPos === 0) &&
       jobRequests[currRequestPos]
@@ -198,9 +200,9 @@ class MapDirectionScreen extends Component {
 
   componentDidMount() {
     const {
-      generalInfo: {othersCoordinates, usersCoordinates},
+      generalInfo: { othersCoordinates, usersCoordinates },
       jobsInfo: {
-        selectedJobRequest: {employee_id},
+        selectedJobRequest: { employee_id },
       },
       navigation,
     } = this.props;
@@ -235,9 +237,9 @@ class MapDirectionScreen extends Component {
 
   componentDidUpdate(oldProps) {
     const {
-      generalInfo: {usersCoordinates, othersCoordinates},
+      generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
-        selectedJobRequest: {employee_id},
+        selectedJobRequest: { employee_id },
       },
     } = this.props;
     if (
@@ -268,17 +270,17 @@ class MapDirectionScreen extends Component {
 
   refetchDirections = () => {
     const {
-      generalInfo: {usersCoordinates, othersCoordinates},
+      generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
-        selectedJobRequest: {employee_id},
+        selectedJobRequest: { employee_id },
       },
     } = this.props;
-    const {latitude, longitude} = othersCoordinates[employee_id] || {};
-    const {destinationLat, destinationLng, coords} = this.state;
+    const { latitude, longitude } = othersCoordinates[employee_id] || {};
+    const { destinationLat, destinationLng, coords } = this.state;
     if (latitude !== undefined && longitude !== undefined) {
       if (
         Math.floor(parseInt(latitude)) !==
-          Math.floor(parseInt(destinationLat)) ||
+        Math.floor(parseInt(destinationLat)) ||
         Math.floor(parseInt(longitude)) !== Math.floor(parseInt(destinationLng))
       ) {
         this.setState({
@@ -304,7 +306,7 @@ class MapDirectionScreen extends Component {
       let actualLat1 = coords[0].latitude;
       let actualLong1 = coords[0].longitude;
       if (actualLat1 && actualLong1 && !this.state.keyReset)
-        this.setState({mapKey: Math.random(2), keyReset: true});
+        this.setState({ mapKey: Math.random(2), keyReset: true });
     }
   };
 
@@ -323,7 +325,7 @@ class MapDirectionScreen extends Component {
     await getDirections({
       startLoc,
       destinationLoc,
-      onSuccess: coords => this.setState({coords, isLoading: false}),
+      onSuccess: coords => this.setState({ coords, isLoading: false }),
     });
 
   callPhoneTask = () => {
@@ -385,7 +387,7 @@ class MapDirectionScreen extends Component {
   jobCancelTaskLocal = async () =>
     await jobCancelTask({
       userType: 'Customer',
-      currRequestPos: this.props.navigation.getParam('currentPos', 0),
+      currRequestPos: this.props.route.params.currentPos,
       toggleIsLoading: val => {
         this.toggleIsLoading(val);
         this.props.fetchingPendingJobInfo();
@@ -400,7 +402,7 @@ class MapDirectionScreen extends Component {
           showDialog: false,
         }),
       onError: msg => {
-        this.setState({isLoading: false});
+        this.setState({ isLoading: false });
         SimpleToast.show(msg);
       },
       navigate: this.props.navigation.navigate,
@@ -409,7 +411,7 @@ class MapDirectionScreen extends Component {
   jobCompleteTaskCustomer = async () =>
     await jobCompleteTask({
       userType: 'Customer',
-      currRequestPos: this.props.navigation.getParam('currentPos', 0),
+      currRequestPos: this.props.route.params.currentPos,
       jobRequests: this.props?.jobsInfo?.jobRequests,
       userDetails: this.props?.userInfo?.userDetails,
       updatePendingJobInfo: this.props.fetchedPendingJobInfo,
@@ -434,7 +436,7 @@ class MapDirectionScreen extends Component {
     });
 
   changeDialogVisibility = () =>
-    this.setState(prevState => ({showDialog: !prevState.showDialog}));
+    this.setState(prevState => ({ showDialog: !prevState.showDialog }));
 
   toggleIsLoading = bool =>
     this.setState(prevState => ({
@@ -443,8 +445,8 @@ class MapDirectionScreen extends Component {
 
   render() {
     const {
-      userInfo: {userDetails},
-      jobsInfo: {jobRequests},
+      userInfo: { userDetails },
+      jobsInfo: { jobRequests },
       fetchedNotifications,
     } = this.props;
     const {
@@ -494,9 +496,9 @@ class MapDirectionScreen extends Component {
             borderBottomColor: themeRed,
             borderBottomWidth: 1,
           }}>
-          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
             <TouchableOpacity
-              style={{width: 35, height: 35, justifyContent: 'center'}}
+              style={{ width: 35, height: 35, justifyContent: 'center' }}
               onPress={() => this.props.navigation.goBack()}>
               <Image
                 style={{
@@ -536,7 +538,7 @@ class MapDirectionScreen extends Component {
             maxZoomLevel={20}>
             {Platform.OS === 'ios' && (
               <View style={styles.header}>
-                <View style={{flex: 1, flexDirection: 'row', margin: 5}}>
+                <View style={{ flex: 1, flexDirection: 'row', margin: 5 }}>
                   <TouchableOpacity
                     style={{
                       width: 35,
@@ -546,7 +548,7 @@ class MapDirectionScreen extends Component {
                     }}
                     onPress={() => this.props.navigation.goBack()}>
                     <Image
-                      style={{width: 20, height: 20, alignSelf: 'center'}}
+                      style={{ width: 20, height: 20, alignSelf: 'center' }}
                       source={require('../../icons/back_arrow_double.png')}
                     />
                   </TouchableOpacity>
@@ -622,11 +624,11 @@ class MapDirectionScreen extends Component {
                       marginTop: 5,
                     }}>
                     <Image
-                      style={{width: 20, height: 20}}
+                      style={{ width: 20, height: 20 }}
                       source={require('../../icons/up_arrow.gif')}
                     />
                   </View>
-                  <View style={{flexDirection: 'row', flex: 1}}>
+                  <View style={{ flexDirection: 'row', flex: 1 }}>
                     <Image
                       style={{
                         height: 55,
@@ -639,8 +641,8 @@ class MapDirectionScreen extends Component {
                       }}
                       source={
                         jobRequests[currRequestPos] &&
-                        jobRequests[currRequestPos].imageAvailable
-                          ? {uri: jobRequests[currRequestPos].image}
+                          jobRequests[currRequestPos].imageAvailable
+                          ? { uri: jobRequests[currRequestPos].image }
                           : require('../../images/generic_avatar.png')
                       }
                     />
@@ -694,7 +696,7 @@ class MapDirectionScreen extends Component {
                           backgroundColor: white,
                           borderRadius: 5,
                           shadowColor: '#000',
-                          shadowOffset: {width: 0, height: 0},
+                          shadowOffset: { width: 0, height: 0 },
                           shadowOpacity: 0.75,
                           shadowRadius: 5,
                           elevation: 5,
@@ -703,7 +705,7 @@ class MapDirectionScreen extends Component {
                         }}
                         onPress={this.callPhoneTask}>
                         <Image
-                          style={[styles.call, {tintColor: themeRed}]}
+                          style={[styles.call, { tintColor: themeRed }]}
                           source={require('../../icons/call.png')}
                         />
                       </TouchableOpacity>
@@ -715,7 +717,7 @@ class MapDirectionScreen extends Component {
                           backgroundColor: white,
                           borderRadius: 5,
                           shadowColor: '#000',
-                          shadowOffset: {width: 0, height: 0},
+                          shadowOffset: { width: 0, height: 0 },
                           shadowOpacity: 0.75,
                           shadowRadius: 5,
                           elevation: 5,
@@ -741,7 +743,7 @@ class MapDirectionScreen extends Component {
                           });
                         }}>
                         <Image
-                          style={[styles.call, {tintColor: themeRed}]}
+                          style={[styles.call, { tintColor: themeRed }]}
                           source={require('../../icons/chat.png')}
                         />
                       </TouchableOpacity>
@@ -757,7 +759,7 @@ class MapDirectionScreen extends Component {
                     <TouchableOpacity
                       style={styles.buttonContainer}
                       onPress={this.openCompleteConfirmation}>
-                      <Text style={[styles.text, {color: colorGreen}]}>
+                      <Text style={[styles.text, { color: colorGreen }]}>
                         Completed
                       </Text>
                     </TouchableOpacity>
@@ -766,7 +768,7 @@ class MapDirectionScreen extends Component {
                   <TouchableOpacity
                     style={styles.buttonContainer}
                     onPress={this.openCancelConfirmation}>
-                    <Text style={[styles.text, {color: themeRed}]}>
+                    <Text style={[styles.text, { color: themeRed }]}>
                       {this.state.isJobAccepted
                         ? 'Cancel Job'
                         : 'Reject Request'}
@@ -803,7 +805,7 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     paddingBottom: 5,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -827,7 +829,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: lightGray,
     backgroundColor: themeRed,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     justifyContent: 'center',
@@ -857,7 +859,7 @@ const styles = StyleSheet.create({
     backgroundColor: white,
     shadowColor: black,
     borderColor: lightGray,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,

@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   View,
   StyleSheet,
@@ -14,7 +14,7 @@ import {
   Modal,
   ActivityIndicator,
 } from 'react-native';
-import {isEqual} from 'lodash';
+import { isEqual } from 'lodash';
 import MapView from 'react-native-maps';
 import SlidingPanel from 'react-native-sliding-up-down-panels';
 import SimpleToast from 'react-native-simple-toast';
@@ -41,8 +41,8 @@ import {
   themeRed,
   colorGreen,
 } from '../../Constants/colors';
-import {getDirections} from '../../misc/helpers';
-import {jobCompleteTask, jobCancelTask} from '../../controllers/jobs';
+import { getDirections } from '../../misc/helpers';
+import { jobCompleteTask, jobCancelTask } from '../../controllers/jobs';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -69,14 +69,15 @@ class ProMapDirectionScreen extends Component {
   constructor(props) {
     super();
     const {
-      generalInfo: {usersCoordinates, othersCoordinates},
+      generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
         jobRequestsProviders,
-        selectedJobRequest: {user_id},
+        selectedJobRequest: { user_id },
       },
       navigation,
+      route,
     } = props;
-    let currentPos = navigation.getParam('currentPos', 0);
+    let currentPos = route.params.currentPos;
     const currentRequest = jobRequestsProviders[currentPos] || {};
     this.state = {
       sourcesourceLocation:
@@ -119,9 +120,9 @@ class ProMapDirectionScreen extends Component {
 
   componentDidMount() {
     const {
-      generalInfo: {usersCoordinates, othersCoordinates},
+      generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
-        selectedJobRequest: {user_id},
+        selectedJobRequest: { user_id },
       },
       navigation,
     } = this.props;
@@ -149,9 +150,9 @@ class ProMapDirectionScreen extends Component {
 
   componentDidUpdate(oldProps) {
     const {
-      generalInfo: {usersCoordinates, othersCoordinates},
+      generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
-        selectedJobRequest: {user_id},
+        selectedJobRequest: { user_id },
       },
     } = this.props;
     if (
@@ -175,14 +176,15 @@ class ProMapDirectionScreen extends Component {
 
   onRefresh = props => {
     const {
-      generalInfo: {usersCoordinates, othersCoordinates},
+      generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
         jobRequestsProviders,
-        selectedJobRequest: {user_id},
+        selectedJobRequest: { user_id },
       },
       navigation,
+      route,
     } = props;
-    let currentPos = navigation.getParam('currentPos', 0);
+    let currentPos = route.params.currentPos || 0;
     const currentRequest = jobRequestsProviders[currentPos] || {};
     if (currentPos || (currentPos === 0 && jobRequestsProviders[currentPos])) {
       this.setState({
@@ -251,21 +253,21 @@ class ProMapDirectionScreen extends Component {
       startLoc,
       destinationLoc,
       onSuccess: routeCoordinates =>
-        this.setState({routeCoordinates, isLoading: false}),
+        this.setState({ routeCoordinates, isLoading: false }),
     });
 
   openCompleteConfirmation = () => {
-    this.setState({currentModal: 'complete', showDialog: true});
+    this.setState({ currentModal: 'complete', showDialog: true });
   };
 
   openCancelConfirmation = () => {
-    this.setState({currentModal: 'cancel', showDialog: true});
+    this.setState({ currentModal: 'cancel', showDialog: true });
   };
 
   jobCompleteTaskProvider = async () =>
     jobCompleteTask({
       userType: 'Provider',
-      currRequestPos: this.props.navigation.getParam('currentPos', 0),
+      currRequestPos: this.props.route.params.currentPos || 0,
       jobRequests: this.props?.jobsInfo?.jobRequestsProviders,
       userDetails: this.props?.userInfo?.providerDetails,
       updatePendingJobInfo: this.props.fetchedPendingJobInfo,
@@ -293,7 +295,7 @@ class ProMapDirectionScreen extends Component {
   jobCancelTaskLocal = async () =>
     await jobCancelTask({
       userType: 'Provider',
-      currRequestPos: this.props.navigation.getParam('currentPos', 0),
+      currRequestPos: this.props.route.params.currentPos || 0,
       toggleIsLoading: val => {
         this.changeWaitingDialogVisibility(val);
         this.props.fetchingPendingJobInfo();
@@ -324,7 +326,7 @@ class ProMapDirectionScreen extends Component {
   };
 
   changeDialogVisibility = () =>
-    this.setState(prevState => ({showDialog: !prevState.showDialog}));
+    this.setState(prevState => ({ showDialog: !prevState.showDialog }));
 
   render() {
     const {
@@ -341,7 +343,7 @@ class ProMapDirectionScreen extends Component {
       currentModal,
       showDialog,
     } = this.state;
-    const {fetchedNotifications} = this.props;
+    const { fetchedNotifications } = this.props;
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
@@ -379,9 +381,9 @@ class ProMapDirectionScreen extends Component {
             borderBottomColor: themeRed,
             borderBottomWidth: 1,
           }}>
-          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
             <TouchableOpacity
-              style={{width: 35, height: 35, justifyContent: 'center'}}
+              style={{ width: 35, height: 35, justifyContent: 'center' }}
               onPress={() => this.props.navigation.goBack()}>
               <Image
                 style={{
@@ -420,7 +422,7 @@ class ProMapDirectionScreen extends Component {
             maxZoomLevel={20}>
             {Platform.OS === 'ios' && (
               <View style={styles.header}>
-                <View style={{flex: 1, flexDirection: 'row', margin: 5}}>
+                <View style={{ flex: 1, flexDirection: 'row', margin: 5 }}>
                   <TouchableOpacity
                     style={{
                       width: 35,
@@ -430,7 +432,7 @@ class ProMapDirectionScreen extends Component {
                     }}
                     onPress={() => this.props.navigation.goBack()}>
                     <Image
-                      style={{width: 20, height: 20, alignSelf: 'center'}}
+                      style={{ width: 20, height: 20, alignSelf: 'center' }}
                       source={require('../../icons/back_arrow_double.png')}
                     />
                   </TouchableOpacity>
@@ -445,7 +447,7 @@ class ProMapDirectionScreen extends Component {
               title="You"
               description={''}>
               <Image
-                style={{width: 35, height: 35, backgroundColor: 'transparent'}}
+                style={{ width: 35, height: 35, backgroundColor: 'transparent' }}
                 source={require('../../icons/car_marker.png')}
               />
             </MapView.Marker>
@@ -457,7 +459,7 @@ class ProMapDirectionScreen extends Component {
               title="Destination"
               description={userName}>
               <Image
-                style={{width: 35, height: 35, backgroundColor: 'transparent'}}
+                style={{ width: 35, height: 35, backgroundColor: 'transparent' }}
                 source={require('../../icons/home_marker.png')}
               />
             </MapView.Marker>
@@ -483,7 +485,7 @@ class ProMapDirectionScreen extends Component {
           headerLayout={() => (
             <View style={styles.headerLayoutStyle}>
               <View
-                style={{flex: 1, flexDirection: 'column', width: screenWidth}}>
+                style={{ flex: 1, flexDirection: 'column', width: screenWidth }}>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -492,11 +494,11 @@ class ProMapDirectionScreen extends Component {
                     marginTop: 5,
                   }}>
                   <Image
-                    style={{width: 20, height: 20}}
+                    style={{ width: 20, height: 20 }}
                     source={require('../../icons/up_arrow.gif')}
                   />
                 </View>
-                <View style={{flexDirection: 'row', flex: 1}}>
+                <View style={{ flexDirection: 'row', flex: 1 }}>
                   <Image
                     style={{
                       height: 55,
@@ -509,12 +511,12 @@ class ProMapDirectionScreen extends Component {
                     }}
                     source={
                       proImageAvailable
-                        ? {uri: userImage}
+                        ? { uri: userImage }
                         : require('../../images/generic_avatar.png')
                     }
                   />
                   <View
-                    style={{flexDirection: 'column', justifyContent: 'center'}}>
+                    style={{ flexDirection: 'column', justifyContent: 'center' }}>
                     <Text
                       style={{
                         marginRight: 200,
@@ -558,7 +560,7 @@ class ProMapDirectionScreen extends Component {
                         backgroundColor: white,
                         borderRadius: 5,
                         shadowColor: '#000',
-                        shadowOffset: {width: 0, height: 0},
+                        shadowOffset: { width: 0, height: 0 },
                         shadowOpacity: 0.75,
                         shadowRadius: 5,
                         elevation: 5,
@@ -567,7 +569,7 @@ class ProMapDirectionScreen extends Component {
                       }}
                       onPress={this.callPhoneTask}>
                       <Image
-                        style={[styles.call, {tintColor: themeRed}]}
+                        style={[styles.call, { tintColor: themeRed }]}
                         source={require('../../icons/call.png')}
                       />
                     </TouchableOpacity>
@@ -578,7 +580,7 @@ class ProMapDirectionScreen extends Component {
                         backgroundColor: white,
                         borderRadius: 5,
                         shadowColor: '#000',
-                        shadowOffset: {width: 0, height: 0},
+                        shadowOffset: { width: 0, height: 0 },
                         shadowOpacity: 0.75,
                         shadowRadius: 5,
                         elevation: 5,
@@ -595,7 +597,7 @@ class ProMapDirectionScreen extends Component {
                         });
                       }}>
                       <Image
-                        style={[styles.call, {tintColor: themeRed}]}
+                        style={[styles.call, { tintColor: themeRed }]}
                         source={require('../../icons/chat.png')}
                       />
                     </TouchableOpacity>
@@ -614,7 +616,7 @@ class ProMapDirectionScreen extends Component {
                     <Text
                       style={[
                         styles.text,
-                        {color: colorGreen, fontWeight: 'bold'},
+                        { color: colorGreen, fontWeight: 'bold' },
                       ]}>
                       Completed
                     </Text>
@@ -626,7 +628,7 @@ class ProMapDirectionScreen extends Component {
                   <Text
                     style={[
                       styles.text,
-                      {color: themeRed, fontWeight: 'bold'},
+                      { color: themeRed, fontWeight: 'bold' },
                     ]}>
                     {this.state.isJobAccepted ? 'Cancel Job' : 'Reject Request'}
                   </Text>
@@ -670,7 +672,7 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     paddingBottom: 5,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -689,7 +691,7 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -718,7 +720,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: lightGray,
     backgroundColor: themeRed,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     justifyContent: 'center',
@@ -765,7 +767,7 @@ const styles = StyleSheet.create({
     backgroundColor: white,
     shadowColor: black,
     borderColor: lightGray,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
