@@ -57,7 +57,7 @@ class RegisterScreen extends Component {
   constructor(props) {
     super();
     this.state = {
-      accountType: props.navigation.state.params.accountType, //From AccountTypeScreen
+      accountType: props.route.params.accountType, //From AccountTypeScreen
       username: '',
       email: '',
       password: '',
@@ -123,12 +123,13 @@ class RegisterScreen extends Component {
   };
 
   selectPhotoReg = async () =>
-    await selectPhoto(obj =>
+    await selectPhoto(obj => {
       this.setState({
         imageURI: obj.imageURI,
         imageDataObject: obj.imageDataObject,
         error: obj.error,
-      }),
+      });
+    },
     );
 
   checkValidation = async () => {
@@ -314,40 +315,17 @@ class RegisterScreen extends Component {
             <View
               style={{
                 width: screenWidth,
-                height: screenWidth,
                 backgroundColor: '#D8D7D3',
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
               <ImageBackground
-                style={{ width: screenWidth, height: screenWidth }}
                 source={
                   this.state.imageURI != null
                     ? this.state.imageURI
                     : require('../../icons/user.png')
                 }>
                 <View style={{ width: screenWidth, height: screenWidth }}>
-                  <TouchableOpacity
-                    style={{
-                      width: 35,
-                      height: 35,
-                      position: 'absolute',
-                      justifyContent: 'center',
-                      start: 0,
-                      margin: 5,
-                    }}
-                    onPress={() => this.props.navigation.goBack()}>
-                    <Image
-                      style={{
-                        width: 20,
-                        height: 20,
-                        tintColor: black,
-                        alignSelf: 'center',
-                      }}
-                      source={require('../../icons/arrow_back.png')}
-                    />
-                  </TouchableOpacity>
-
                   <TouchableOpacity
                     style={{
                       width: 40,
@@ -380,7 +358,6 @@ class RegisterScreen extends Component {
                 </View>
               </ImageBackground>
             </View>
-
             <View style={styles.logincontainer}>
               {this.state.error && <Text style={styles.shakingText}>
                 {this.state.error}
@@ -528,7 +505,7 @@ class RegisterScreen extends Component {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.buttonContainer}
+                style={[styles.buttonContainer, { marginBottom: 100 }]}
                 onPress={this.checkValidation}>
                 <Text style={styles.text}>Register</Text>
               </TouchableOpacity>

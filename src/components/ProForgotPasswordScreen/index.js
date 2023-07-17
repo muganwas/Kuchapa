@@ -241,7 +241,7 @@ export default class ProForgotPasswordScreen extends Component {
                     marginBottom: 5,
                     textAlign: 'center',
                   }}>
-                  Please enter your registered Email address to access your pin
+                  Please enter your registered Email address to access your
                   account
                 </Text>
               </View>

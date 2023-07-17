@@ -5,7 +5,7 @@ import Polyline from '@mapbox/polyline';
 import messaging from '@react-native-firebase/messaging';
 import { exitApp } from 'react-native-exit-app';
 import { PhoneNumberUtil } from 'google-libphonenumber';
-import ImagePicker from 'react-native-image-picker';
+import ImagePicker, { launchImageLibrary } from 'react-native-image-picker';
 import { cloneDeep } from 'lodash';
 import SimpleToast from 'react-native-simple-toast';
 import moment from 'moment';
@@ -263,13 +263,13 @@ export const selectPhoto = async callback => {
     chooseFromLibraryButtonTitle: 'Choose from gallery',
     quality: 1,
   };
-  ImagePicker.showImagePicker(options, response => {
+  launchImageLibrary(options, response => {
     if (response.didCancel) {
       SimpleToast.show('You cancelled image selection', SimpleToast.SHORT);
     } else if (response.error) {
       SimpleToast.show('Something went wrong, try again.');
     } else {
-      const source = { uri: response.uri };
+      const source = { uri: response.assets[0].uri };
       callback({
         imageURI: source,
         imageDataObject: response,
