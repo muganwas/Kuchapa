@@ -14,10 +14,6 @@ import {
   FIREBASE_MESSAGING_SENDER_ID,
   MAPS_API_KEY
 } from "../../config.json";
-/** TODO: Get rid of dotenv
- * too many dependencies
- */
-//local_alt
 export default class Config {
   static clientId = WEB_CLIENT_ID;
   static baseURL = BASE_URL_LOCAL;
