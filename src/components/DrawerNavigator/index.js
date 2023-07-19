@@ -41,7 +41,8 @@ export default class DrawerNavigator extends Component {
         screenOptions={{
           drawerPosition: "left",
           drawerStyle: { width: 275 },
-          drawerType: "slide"
+          drawerType: "slide",
+          header: () => <></>
         }}
       >
         <Drawer.Screen name="Dashboard" component={DashboardScreen} />

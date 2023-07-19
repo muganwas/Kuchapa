@@ -42,7 +42,8 @@ export default class ProDrawerNavigator extends Component {
         screenOptions={{
           drawerPosition: "left",
           drawerStyle: { width: 275 },
-          drawerType: "slide"
+          drawerType: "slide",
+          header: () => <></>
         }}
       >
         <Drawer.Screen name="FacebookGoogle" component={FacebookGoogleScreen} />

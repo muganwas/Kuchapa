@@ -506,7 +506,7 @@ class DashboardScreen extends Component {
           <Hamburger navigation={navigation} text="kuchapa" />
           <TouchableOpacity
             style={{
-              width: '100%',
+              width: '80%',
               justifyContent: 'center',
               alignContent: 'center',
             }}
