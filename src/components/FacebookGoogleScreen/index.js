@@ -65,7 +65,6 @@ const StatusBarPlaceHolder = () => {
 class FacebookGoogleScreen extends Component {
   constructor(props) {
     super();
-    console.log("route ", props.route.params)
     this.state = {
       accountType: props.route.params.accountType,
       email: '',

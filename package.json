@@ -34,7 +34,6 @@
     "moment": "^2.29.4",
     "react": "18.2.0",
     "react-native": "0.72.1",
-    "react-native-cardview": "^2.0.5",
     "react-native-check-box": "^2.1.7",
     "react-native-encrypted-storage": "^4.0.3",
     "react-native-exit-app": "^2.0.0",

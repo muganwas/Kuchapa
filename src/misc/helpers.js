@@ -142,7 +142,7 @@ export const emailCheck = async (email = '', setEmail, setError) => {
   if (email) {
     if (email.match(emailRegex)) {
       if (setEmail && typeof setEmail === 'function') {
-        setEmail(email);
+        setEmail(email.trim());
         return;
       } else {
         return true;

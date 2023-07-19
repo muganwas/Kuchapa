@@ -493,8 +493,7 @@ export const fbGmailLoginTask = async ({
           onError(
             error.message || 'Something went wrong, please try again later.',
           );
-        })
-        .done();
+        });
     } catch (e) {
       console.log('fbgmail login err --', e);
       onError('Something went wrong, please try again later.');
@@ -957,8 +956,7 @@ export const phoneLoginTask = async ({
         .catch(error => {
           console.log('Phone auth err - 3 ', error);
           onError('Something went wrong');
-        })
-        .done();
+        });
     } catch (e) {
       console.log('Phone auth err - 4 ', e);
       onError('Something went wrong, try again.');
@@ -1053,6 +1051,7 @@ export const registerTask = async ({
                       'Please check your email inbox for an account verificatoin link.',
                     );
                   } else {
+                    console.log({ responseJson });
                     onError(
                       responseJson.data.message ||
                       'Something went wrong, try again later',
@@ -1062,8 +1061,7 @@ export const registerTask = async ({
                 .catch(error => {
                   console.log('registration err ', error);
                   onError('Something went wrong, please try again.');
-                })
-                .done();
+                });
             });
           }
         })

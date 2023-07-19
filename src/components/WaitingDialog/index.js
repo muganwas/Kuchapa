@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, ActivityIndicator, View } from 'react-native';
-import CardView from 'react-native-cardview';
 import { white } from '../../Constants/colors';
 
 export default class WaitingDialog extends Component {
     render() {
         return (
             <View style={styles.contentContainer}>
-                <CardView style={styles.modal}
+                <View style={styles.modal}
                     cardElevation={5}
                     cardMaxElevation={5}
                     cornerRadius={2}>
@@ -16,7 +15,7 @@ export default class WaitingDialog extends Component {
                         color="#C00"
                         size="large" />
                     <Text style={{ padding: 5, fontSize: 10, fontWeight: 'bold' }}>Loading...</Text>
-                </CardView>
+                </View>
             </View>
         );
     }

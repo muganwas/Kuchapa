@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,203 +8,186 @@ import {
   ScrollView,
   Modal,
 } from 'react-native';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { notificationsFetched } from '../../Redux/Actions/notificationActions';
-import { DrawerActions } from '@react-navigation/drawer';
+import { DrawerActions } from '@react-navigation/native';
 import DialogLogout from '../DialogLogout';
-import { imageExists } from '../../misc/helpers';
+import { imageExists as imgExists } from '../../misc/helpers';
 import { black, lightGray, themeRed, white } from '../../Constants/colors';
 
-class CustomMenuLayout extends Component {
-  constructor(props) {
-    super();
-    const {
-      userInfo: { userDetails },
-    } = props;
-    this.state = {
-      image: userDetails.image,
-      imageExists: true,
-      name: userDetails.username,
-      isDialogLogoutVisible: false,
-    };
-  }
+function CustomMenuLayout(props) {
+  const notificationsInfo = useSelector(state => state.notificationsInfo);
+  const { userDetails } = useSelector(state => state.userInfo);
+  const dispatch = useDispatch();
 
-  async componentDidMount() {
-    const {
-      userInfo: { userDetails },
-    } = this.props;
-    await imageExists(userDetails.image).then(result => {
-      this.setState({ imageExists: result });
+  const [imageExists, updateImageExists] = useState(true);
+  const [name] = useState(userDetails.username);
+  const [isDialogLogoutVisible, updateIsDialogLogoutVisible] = useState(false);
+  const [imageSource] = useState(userDetails.imageSource);
+  useEffect(() => {
+    imgExists(userDetails.image).then(result => {
+      updateImageExists(result);
     });
-  }
+  });
 
-  changeDialogVisibility = bool => {
-    this.props.navigation.dispatch(DrawerActions.closeDrawer());
-    this.setState({
-      isDialogLogoutVisible: bool,
-    });
+  const changeDialogVisibility = bool => {
+    console.log({ props, bool })
+    props.navigation.dispatch(DrawerActions.closeDrawer());
+    updateIsDialogLogoutVisible(bool);
   };
 
-  render() {
-    const {
-      userInfo: { userDetails },
-      notificationsInfo,
-      fetchedNotifications,
-    } = this.props;
-    const imageSource = userDetails.image;
-    return (
-      <TouchableOpacity activeOpacity={1} style={styles.drawerTransparent}>
-        <TouchableOpacity activeOpacity={1} style={styles.drawer}>
-          <ScrollView>
-            <View style={styles.header}>
+  return (
+    <TouchableOpacity activeOpacity={1} style={styles.drawerTransparent}>
+      <TouchableOpacity activeOpacity={1} style={styles.drawer}>
+        <ScrollView>
+          <View style={styles.header}>
+            <Image
+              source={
+                imageExists
+                  ? { uri: imageSource }
+                  : require('../../images/generic_avatar.png')
+              }
+              style={styles.headerImage}
+            />
+            <Text
+              style={{
+                fontSize: 12,
+                color: black,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: 5,
+              }}>
+              Welcome
+            </Text>
+            <Text style={[styles.textHeader, { color: black }]}>
+              {name}
+            </Text>
+          </View>
+          <TouchableOpacity
+            underlayColor={'rgba(0,0,0,0.2)'}
+            style={styles.menuButton}
+            onPress={() => {
+              props.navigation.navigate('Dashboard');
+              props.navigation.dispatch(DrawerActions.closeDrawer());
+            }}>
+            <View style={styles.row}>
               <Image
-                source={
-                  this.state.imageExists
-                    ? { uri: imageSource }
-                    : require('../../images/generic_avatar.png')
-                }
-                style={styles.headerImage}
+                source={require('../../icons/ic_home_64dp.png')}
+                style={styles.menuImage}
               />
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: black,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginTop: 5,
-                }}>
-                Welcome
-              </Text>
-              <Text style={[styles.textHeader, { color: black }]}>
-                {userDetails.username}
-              </Text>
+              <Text style={styles.textMenu}>Dashboard</Text>
             </View>
-            <TouchableOpacity
-              underlayColor={'rgba(0,0,0,0.2)'}
-              style={styles.menuButton}
-              onPress={() => {
-                this.props.navigation.navigate('Dashboard');
-                this.props.navigation.dispatch(DrawerActions.closeDrawer());
-              }}>
-              <View style={styles.row}>
-                <Image
-                  source={require('../../icons/ic_home_64dp.png')}
-                  style={styles.menuImage}
-                />
-                <Text style={styles.textMenu}>Dashboard</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              underlayColor={'rgba(0,0,0,0.2)'}
-              style={styles.menuButton}
-              onPress={() => {
-                this.props.navigation.navigate('MyProfile');
-                this.props.navigation.dispatch(DrawerActions.closeDrawer());
-              }}>
-              <View style={styles.row}>
-                <Image
-                  source={require('../../icons/ic_user_64dp.png')}
-                  style={styles.menuImage}
-                />
-                <Text style={styles.textMenu}>My Profile</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              underlayColor={'rgba(0,0,0,0.2)'}
-              style={styles.menuButton}
-              onPress={() => {
-                this.props.navigation.navigate('Booking');
-                this.props.navigation.dispatch(DrawerActions.closeDrawer());
-              }}>
-              <View style={styles.row}>
-                <Image
-                  source={require('../../icons/booking_history.png')}
-                  style={styles.menuImage}
-                />
-                <Text style={styles.textMenu}>Bookings</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              underlayColor={'rgba(0,0,0,0.2)'}
-              style={styles.menuButton}
-              onPress={() => {
-                fetchedNotifications({ type: 'generic', value: 0 });
-                this.props.navigation.navigate('Notifications');
-                this.props.navigation.dispatch(DrawerActions.closeDrawer());
-              }}>
-              <View style={styles.row}>
-                <Image
-                  source={require('../../icons/ic_notification.png')}
-                  style={styles.menuImage}
-                />
-                <Text style={styles.textMenu}>Notifications</Text>
-                {notificationsInfo.generic > 0 ? (
-                  <Text style={styles.menuNotifications}>
-                    {notificationsInfo.generic}
-                  </Text>
-                ) : null}
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              underlayColor={'rgba(0,0,0,0.2)'}
-              style={styles.menuButton}
-              onPress={() => {
-                fetchedNotifications({ type: 'messages', value: 0 });
-                this.props.navigation.navigate('AllMessage');
-                this.props.navigation.dispatch(DrawerActions.closeDrawer());
-              }}>
-              <View style={styles.row}>
-                <Image
-                  source={require('../../icons/message.png')}
-                  style={styles.menuImage}
-                />
-                <Text style={styles.textMenu}>Messages</Text>
-                {notificationsInfo.messages > 0 ? (
-                  <Text style={styles.menuNotifications}>
-                    {notificationsInfo.messages}
-                  </Text>
-                ) : null}
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              underlayColor={'rgba(0,0,0,0.2)'}
-              style={styles.menuButton}
-              onPress={() => this.props.navigation.navigate('ContactUs')}>
-              <View style={styles.row}>
-                <Image
-                  source={require('../../icons/ic_contact_us_64dp.png')}
-                  style={styles.menuImage}
-                />
-                <Text style={styles.textMenu}>Contact Us</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              underlayColor={'rgba(0,0,0,0.2)'}
-              style={styles.menuButton}
-              onPress={() => this.changeDialogVisibility(true)}>
-              <View style={styles.row}>
-                <Image
-                  source={require('../../icons/ic_logout.png')}
-                  style={styles.menuImage}
-                />
-                <Text style={styles.textMenu}>Log out</Text>
-              </View>
-            </TouchableOpacity>
-            <Modal
-              transparent={true}
-              visible={this.state.isDialogLogoutVisible}
-              animationType="fade"
-              onRequestClose={() => this.changeDialogVisibility(false)}>
-              <DialogLogout
-                navigation={this.props.navigation}
-                changeDialogVisibility={this.changeDialogVisibility}
+          </TouchableOpacity>
+          <TouchableOpacity
+            underlayColor={'rgba(0,0,0,0.2)'}
+            style={styles.menuButton}
+            onPress={() => {
+              props.navigation.navigate('MyProfile');
+              props.navigation.dispatch(DrawerActions.closeDrawer());
+            }}>
+            <View style={styles.row}>
+              <Image
+                source={require('../../icons/ic_user_64dp.png')}
+                style={styles.menuImage}
               />
-            </Modal>
-          </ScrollView>
-        </TouchableOpacity>
+              <Text style={styles.textMenu}>My Profile</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            underlayColor={'rgba(0,0,0,0.2)'}
+            style={styles.menuButton}
+            onPress={() => {
+              props.navigation.navigate('Booking');
+              props.navigation.dispatch(DrawerActions.closeDrawer());
+            }}>
+            <View style={styles.row}>
+              <Image
+                source={require('../../icons/booking_history.png')}
+                style={styles.menuImage}
+              />
+              <Text style={styles.textMenu}>Bookings</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            underlayColor={'rgba(0,0,0,0.2)'}
+            style={styles.menuButton}
+            onPress={() => {
+              dispatch(notificationsFetched({ type: 'generic', value: 0 }));
+              props.navigation.navigate('Notifications');
+              props.navigation.dispatch(DrawerActions.closeDrawer());
+            }}>
+            <View style={styles.row}>
+              <Image
+                source={require('../../icons/ic_notification.png')}
+                style={styles.menuImage}
+              />
+              <Text style={styles.textMenu}>Notifications</Text>
+              {notificationsInfo.generic > 0 ? (
+                <Text style={styles.menuNotifications}>
+                  {notificationsInfo.generic}
+                </Text>
+              ) : null}
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            underlayColor={'rgba(0,0,0,0.2)'}
+            style={styles.menuButton}
+            onPress={() => {
+              dispatch(notificationsFetched({ type: 'messages', value: 0 }));
+              props.navigation.navigate('AllMessage');
+              props.navigation.dispatch(DrawerActions.closeDrawer());
+            }}>
+            <View style={styles.row}>
+              <Image
+                source={require('../../icons/message.png')}
+                style={styles.menuImage}
+              />
+              <Text style={styles.textMenu}>Messages</Text>
+              {notificationsInfo.messages > 0 ? (
+                <Text style={styles.menuNotifications}>
+                  {notificationsInfo.messages}
+                </Text>
+              ) : null}
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            underlayColor={'rgba(0,0,0,0.2)'}
+            style={styles.menuButton}
+            onPress={() => props.navigation.navigate('ContactUs')}>
+            <View style={styles.row}>
+              <Image
+                source={require('../../icons/ic_contact_us_64dp.png')}
+                style={styles.menuImage}
+              />
+              <Text style={styles.textMenu}>Contact Us</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            underlayColor={'rgba(0,0,0,0.2)'}
+            style={styles.menuButton}
+            onPress={() => changeDialogVisibility(true)}>
+            <View style={styles.row}>
+              <Image
+                source={require('../../icons/ic_logout.png')}
+                style={styles.menuImage}
+              />
+              <Text style={styles.textMenu}>Log out</Text>
+            </View>
+          </TouchableOpacity>
+          <Modal
+            transparent={true}
+            visible={isDialogLogoutVisible}
+            animationType="fade"
+            onRequestClose={() => changeDialogVisibility(false)}>
+            <DialogLogout
+              navigation={props.navigation}
+              changeDialogVisibility={changeDialogVisibility}
+            />
+          </Modal>
+        </ScrollView>
       </TouchableOpacity>
-    );
-  }
+    </TouchableOpacity>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -291,22 +274,19 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = state => {
-  return {
-    notificationsInfo: state.notificationsInfo,
-    userInfo: state.userInfo,
-  };
-};
+// const mapStateToProps = state => {
+//   return {
+//     notificationsInfo: state.notificationsInfo,
+//     userInfo: state.userInfo,
+//   };
+// };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchedNotifications: data => {
-      dispatch(notificationsFetched(data));
-    },
-  };
-};
+// const mapDispatchToProps = dispatch => {
+//   return {
+//     fetchedNotifications: data => {
+//       dispatch(notificationsFetched(data));
+//     },
+//   };
+// };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(CustomMenuLayout);
+export default CustomMenuLayout;

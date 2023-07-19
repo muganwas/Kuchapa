@@ -56,7 +56,7 @@ export default class DrawerNavigator extends Component {
         <Drawer.Screen name="AfterSplash" component={AfterSplashScreen} />
         <Drawer.Screen name="AccountType" component={AccountTypeScreen} />
         <Drawer.Screen name="Chat" component={ChatScreen} />
-        <Drawer.Screen name="Home" component={DashboardScreen} />
+        <Drawer.Screen name="Home" component={DashboardScreen} options={{}} />
         <Drawer.Screen name="ProHome" component={() => <ProDrawerNavigator />} />
         <Drawer.Screen name="ProAccountType" component={ProAccountTypeScreen} />
         <Drawer.Screen name="ProviderDetails" component={ProviderDetailsScreen} />
