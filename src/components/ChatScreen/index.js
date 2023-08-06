@@ -167,7 +167,7 @@ class ChatScreen extends Component {
         jobRequests[currRequestPos] && jobRequests[currRequestPos].service_name,
       orderId:
         jobRequests[currRequestPos] && jobRequests[currRequestPos].order_id,
-      titlePage: navigation.state.params.titlePage,
+      titlePage: route.params.titlePage,
       provider_FCM_id:
         jobRequests[currRequestPos] &&
         jobRequests[currRequestPos].employee_details.fcm_id,

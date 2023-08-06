@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   StyleSheet,
@@ -12,7 +12,7 @@ import {
   Modal,
   ScrollView,
 } from 'react-native';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import Toast from 'react-native-simple-toast';
 import Config from '../Config';
 import WaitingDialog from '../WaitingDialog';
@@ -37,9 +37,9 @@ import {
   themeRed,
   colorGreen,
 } from '../../Constants/colors';
-import {acceptChatRequest, rejectChatRequest} from '../../controllers/chats';
+import { acceptChatRequest, rejectChatRequest } from '../../controllers/chats';
 import SimpleToast from 'react-native-simple-toast';
-import {fetchProfile} from '../../controllers/users';
+import { fetchProfile } from '../../controllers/users';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -64,7 +64,7 @@ const StatusBarPlaceHolder = () => {
 class ProChatAcceptScreen extends Component {
   constructor(props) {
     super();
-    const {navigation} = props;
+    const { navigation } = props;
     this.state = {
       userId: '',
       userName: '',
@@ -79,19 +79,19 @@ class ProChatAcceptScreen extends Component {
       distance: 'unavailable',
       isLoading: true,
       isErrorToast: false,
-      serviceName: navigation.state.params.serviceName,
-      orderId: navigation.state.params.orderId,
-      mainId: navigation.state.params.mainId,
-      delivery_address: navigation.state.params.delivery_address,
-      delivery_lat: navigation.state.params.delivery_lat,
-      delivery_lang: navigation.state.params.delivery_lang,
+      serviceName: route.params.serviceName,
+      orderId: route.params.orderId,
+      mainId: route.params.mainId,
+      delivery_address: route.params.delivery_address,
+      delivery_lat: route.params.delivery_lat,
+      delivery_lang: route.params.delivery_lang,
       secondTimeLoader: '',
     };
   }
 
   //get UserData
   componentDidMount() {
-    const {navigation} = this.props;
+    const { navigation } = this.props;
     navigation.addListener('willFocus', async () => {
       BackHandler.addEventListener('hardwareBackPress', () =>
         this.handleBackButtonClick(),
@@ -103,15 +103,15 @@ class ProChatAcceptScreen extends Component {
         this.handleBackButtonClick,
       );
       const {
-        userInfo: {providerDetails},
+        userInfo: { providerDetails },
         getPendingJobRequestProvider,
       } = this.props;
       getPendingJobRequestProvider(this.props, providerDetails.providerId);
     });
-    const userId = navigation.state.params.userId;
+    const userId = route.params.userId;
     fetchProfile({
       userId,
-      setDistance: distance => this.setState({distance}),
+      setDistance: distance => this.setState({ distance }),
       onSuccess: data => {
         this.setState({
           ...data,
@@ -171,7 +171,7 @@ class ProChatAcceptScreen extends Component {
         });
       },
       rejectionData: {
-        main_id: this.props.navigation.state.params.mainId,
+        main_id: this.props.route.params.mainId,
         chat_status: '0',
         status: 'Rejected',
         notification: {
@@ -187,12 +187,12 @@ class ProChatAcceptScreen extends Component {
             'Your request has been rejected by ' +
             this.props?.userInfo?.providerDetails?.name +
             ' Request Id : ' +
-            this.props.navigation.state.params.orderId,
+            this.props.route.params.orderId,
           data: {
             ProviderId: this.props?.userInfo?.providerDetails?.providerId,
             serviceName: this.state.serviceName,
-            orderId: this.props.navigation.state.params.orderId,
-            mainId: this.props.navigation.state.params.mainId,
+            orderId: this.props.route.params.orderId,
+            mainId: this.props.route.params.mainId,
           },
         },
       },
@@ -215,7 +215,7 @@ class ProChatAcceptScreen extends Component {
 
   componentWillUnmount() {
     const {
-      userInfo: {providerDetails},
+      userInfo: { providerDetails },
       getPendingJobRequestProvider,
     } = this.props;
     getPendingJobRequestProvider(this.props, providerDetails.providerId);
@@ -223,9 +223,9 @@ class ProChatAcceptScreen extends Component {
 
   render() {
     const {
-      userInfo: {providerDetails},
+      userInfo: { providerDetails },
     } = this.props;
-    const {imageAvailable} = this.state;
+    const { imageAvailable } = this.state;
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
@@ -239,12 +239,12 @@ class ProChatAcceptScreen extends Component {
             alignItems: 'center',
             paddingVertical: 10,
           }}>
-          <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
             <TouchableOpacity
-              style={{width: 35, justifyContent: 'center'}}
+              style={{ width: 35, justifyContent: 'center' }}
               onPress={this.handleBackButtonClick}>
               <Image
-                style={{width: 20, height: 20, tintColor: black}}
+                style={{ width: 20, height: 20, tintColor: black }}
                 resizeMode={'contain'}
                 source={require('../../icons/arrow_back.png')}
               />
@@ -264,7 +264,7 @@ class ProChatAcceptScreen extends Component {
           {!this.state.isLoading && this.state.secondTimeLoader != '' && (
             <View style={styles.headerLayoutStyle}>
               <View
-                style={[styles.mainContainer, {backgroundColor: lightGray}]}>
+                style={[styles.mainContainer, { backgroundColor: lightGray }]}>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -280,7 +280,7 @@ class ProChatAcceptScreen extends Component {
                     }}>
                     Hello,
                   </Text>
-                  <Text style={{color: 'black', fontSize: 16, marginLeft: 5}}>
+                  <Text style={{ color: 'black', fontSize: 16, marginLeft: 5 }}>
                     {providerDetails.name + ' ' + providerDetails.surname}
                   </Text>
                 </View>
@@ -293,10 +293,10 @@ class ProChatAcceptScreen extends Component {
                     marginTop: 15,
                   }}>
                   <Image
-                    style={{width: 80, height: 80, borderRadius: 100}}
+                    style={{ width: 80, height: 80, borderRadius: 100 }}
                     source={
                       imageAvailable
-                        ? {uri: this.state.userImage}
+                        ? { uri: this.state.userImage }
                         : require('../../images/generic_avatar.png')
                     }
                   />
@@ -310,7 +310,7 @@ class ProChatAcceptScreen extends Component {
                     marginTop: 15,
                   }}>
                   <Text
-                    style={{color: 'black', fontSize: 16, marginLeft: 5}}
+                    style={{ color: 'black', fontSize: 16, marginLeft: 5 }}
                     numberOfLines={2}>
                     {this.state.userName +
                       ' is looking for a ' +
@@ -331,7 +331,7 @@ class ProChatAcceptScreen extends Component {
                     <Text
                       style={[
                         styles.text,
-                        {color: themeRed, fontWeight: '600'},
+                        { color: themeRed, fontWeight: '600' },
                       ]}>
                       Busy
                     </Text>
@@ -342,7 +342,7 @@ class ProChatAcceptScreen extends Component {
                     <Text
                       style={[
                         styles.text,
-                        {color: colorGreen, fontWeight: '600'},
+                        { color: colorGreen, fontWeight: '600' },
                       ]}>
                       Accept Chat
                     </Text>
@@ -380,7 +380,7 @@ class ProChatAcceptScreen extends Component {
                         marginTop: 10,
                       }}>
                       <Image
-                        style={{width: 15, height: 15, tintColor: white}}
+                        style={{ width: 15, height: 15, tintColor: white }}
                         source={require('../../icons/mobile.png')}
                       />
                       <Text
@@ -401,7 +401,7 @@ class ProChatAcceptScreen extends Component {
                         marginTop: 10,
                       }}>
                       <Image
-                        style={{width: 15, height: 15, tintColor: white}}
+                        style={{ width: 15, height: 15, tintColor: white }}
                         source={require('../../icons/maps_location.png')}
                       />
                       <Text
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
     width: screenWidth,
     backgroundColor: 'white',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -454,7 +454,7 @@ const styles = StyleSheet.create({
     backgroundColor: white,
     shadowColor: black,
     borderColor: lightGray,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,

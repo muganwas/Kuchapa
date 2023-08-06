@@ -48,10 +48,10 @@ class ProRegisterFBScreen extends Component {
   constructor(props) {
     super();
     this.state = {
-      name: props.navigation.state.params.name,
+      name: props.route.params.name,
       surname: '',
-      email: props.navigation.state.params.email,
-      image: props.navigation.state.params.image,
+      email: props.route.params.email,
+      image: props.route.params.image,
       mobile: '',
       serviceName: 'Select services',
       serviceId: '',
@@ -62,7 +62,7 @@ class ProRegisterFBScreen extends Component {
       invoice: '1',
       error: '',
       currentPage: 0,
-      account_type: props.navigation.state.params.accountType,
+      account_type: props.route.params.accountType,
       isLoading: false,
       showDialog: false,
       dialogType: null,
@@ -392,7 +392,7 @@ class ProRegisterFBScreen extends Component {
                     textAlignVertical: 'center',
                     alignSelf: 'center',
                   }}>
-                  {this.props.navigation.state.params.name}
+                  {this.props.route.params.name}
                 </Text>
               </View>
 
@@ -408,7 +408,7 @@ class ProRegisterFBScreen extends Component {
                     textAlignVertical: 'center',
                     alignSelf: 'center',
                   }}>
-                  {this.props.navigation.state.params.email}
+                  {this.props.route.params.email}
                 </Text>
               </View>
 

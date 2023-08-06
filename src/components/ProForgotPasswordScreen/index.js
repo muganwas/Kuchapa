@@ -169,42 +169,6 @@ export default class ProForgotPasswordScreen extends Component {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <View
-              style={{
-                height: 200,
-                width: screenWidth,
-                backgroundColor: white,
-                overflow: 'hidden',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <TouchableOpacity
-                style={{
-                  width: 35,
-                  height: 35,
-                  alignSelf: 'flex-start',
-                  justifyContent: 'center',
-                  marginLeft: 5,
-                  marginTop: 15,
-                }}
-                onPress={() => this.props.navigation.goBack()}>
-                <Image
-                  style={{
-                    width: 20,
-                    tintColor: black,
-                    height: 20,
-                    alignSelf: 'center',
-                  }}
-                  source={require('../../icons/arrow_back.png')}
-                />
-              </TouchableOpacity>
-              <Image
-                style={{ width: 170, height: 170 }}
-                source={require('../../images/kuchapa_logo.png')}
-                resizeMode="contain"
-              />
-            </View>
-
             <View style={styles.logincontainer}>
               {this.state.error && <Text
                 style={{

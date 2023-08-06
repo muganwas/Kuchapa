@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   View,
   StyleSheet,
@@ -23,7 +23,7 @@ import {
   notificationsFetched,
   notificationError,
 } from '../../Redux/Actions/notificationActions';
-import {lightGray, colorBg, white} from '../../Constants/colors';
+import { lightGray, colorBg, white } from '../../Constants/colors';
 import {
   attachFile,
   sendMessageTask,
@@ -35,7 +35,7 @@ import {
   MessagesHeader,
   MessagesFooter,
 } from '../ProMessagesComponents';
-import {imageExists} from '../../misc/helpers';
+import { imageExists } from '../../misc/helpers';
 
 const screenWidth = Dimensions.get('window').width;
 const socket = Config.socket;
@@ -62,16 +62,16 @@ class ProChatAfterBookingDetailsScreen extends Component {
   constructor(props) {
     super();
     const {
-      messagesInfo: {dataChatSource, fetched},
+      messagesInfo: { dataChatSource, fetched },
       jobsInfo: {
-        selectedJobRequest: {user_id},
+        selectedJobRequest: { user_id },
       },
       navigation,
-      generalInfo: {OnlineUsers},
-      userInfo: {providerDetails},
+      generalInfo: { OnlineUsers },
+      userInfo: { providerDetails },
     } = props;
     let imageAvailable;
-    imageExists(navigation.state.params.receiverImage).then(res => {
+    imageExists(route.params.receiverImage).then(res => {
       imageAvailable = res;
     });
     this.state = {
@@ -84,14 +84,14 @@ class ProChatAfterBookingDetailsScreen extends Component {
       dataChatSource: dataChatSource[user_id] || [],
       isLoading: !fetched,
       isUploading: false,
-      receiverId: navigation.state.params.receiverId,
-      receiverName: navigation.state.params.receiverName,
-      receiverImage: navigation.state.params.receiverImage,
+      receiverId: route.params.receiverId,
+      receiverName: route.params.receiverName,
+      receiverImage: route.params.receiverImage,
       imageAvailable,
-      orderId: navigation.state.params.orderId,
-      serviceName: navigation.state.params.serviceName,
-      pageTitle: navigation.state.params.pageTitle,
-      client_FCM_id: navigation.state.params.fcm_id,
+      orderId: route.params.orderId,
+      serviceName: route.params.serviceName,
+      pageTitle: route.params.pageTitle,
+      client_FCM_id: route.params.fcm_id,
       selectedStatus: '0',
       liveChatStatus: OnlineUsers[user_id] ? OnlineUsers[user_id].status : '0',
       online: false,
@@ -105,10 +105,10 @@ class ProChatAfterBookingDetailsScreen extends Component {
     const {
       fetchedNotifications,
       navigation,
-      generalInfo: {OnlineUsers},
-      userInfo: {providerDetails},
+      generalInfo: { OnlineUsers },
+      userInfo: { providerDetails },
       jobsInfo: {
-        selectedJobRequest: {user_id},
+        selectedJobRequest: { user_id },
       },
       fetchEmployeeMessages,
     } = this.props;
@@ -117,7 +117,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
       socket.connect();
       fetchEmployeeMessages(providerDetails.providerId);
     }
-    fetchedNotifications({type: 'messages', value: 0});
+    fetchedNotifications({ type: 'messages', value: 0 });
     setOnlineStatusListener({
       OnlineUsers,
       userId: user_id,
@@ -147,13 +147,13 @@ class ProChatAfterBookingDetailsScreen extends Component {
 
   reInit = async () => {
     const {
-      messagesInfo: {dataChatSource, fetched},
+      messagesInfo: { dataChatSource, fetched },
       jobsInfo: {
-        selectedJobRequest: {user_id},
+        selectedJobRequest: { user_id },
       },
-      generalInfo: {OnlineUsers},
+      generalInfo: { OnlineUsers },
       navigation,
-      userInfo: {providerDetails},
+      userInfo: { providerDetails },
       fetchEmployeeMessages,
     } = this.props;
     if (!socket.connected) {
@@ -162,7 +162,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
       fetchEmployeeMessages(providerDetails.providerId);
     }
     let imageAvailable;
-    await imageExists(navigation.state.params.receiverImage).then(res => {
+    await imageExists(route.params.receiverImage).then(res => {
       imageAvailable = res;
     });
     this.setState({
@@ -176,13 +176,13 @@ class ProChatAfterBookingDetailsScreen extends Component {
       isLoading: !fetched,
       isUploading: false,
       imageAvailable,
-      receiverId: navigation.state.params.receiverId,
-      receiverName: navigation.state.params.receiverName,
-      receiverImage: navigation.state.params.receiverImage,
-      orderId: navigation.state.params.orderId,
-      serviceName: navigation.state.params.serviceName,
-      pageTitle: navigation.state.params.pageTitle,
-      client_FCM_id: navigation.state.params.fcm_id,
+      receiverId: route.params.receiverId,
+      receiverName: route.params.receiverName,
+      receiverImage: route.params.receiverImage,
+      orderId: route.params.orderId,
+      serviceName: route.params.serviceName,
+      pageTitle: route.params.pageTitle,
+      client_FCM_id: route.params.fcm_id,
     });
     setOnlineStatusListener({
       OnlineUsers,
@@ -197,20 +197,20 @@ class ProChatAfterBookingDetailsScreen extends Component {
 
   componentDidUpdate() {
     const {
-      messagesInfo: {dataChatSource},
+      messagesInfo: { dataChatSource },
       jobsInfo: {
-        selectedJobRequest: {user_id},
+        selectedJobRequest: { user_id },
       },
-      generalInfo: {OnlineUsers},
+      generalInfo: { OnlineUsers },
     } = this.props;
-    const {liveChatStatus, selectedStatus} = this.state;
+    const { liveChatStatus, selectedStatus } = this.state;
     const localDataChatSource = this.state.dataChatSource;
     //if (fetched && isLoading) this.setState({isLoading: false});
     if (
       JSON.stringify(dataChatSource[user_id]) !==
       JSON.stringify(localDataChatSource)
     )
-      this.setState({dataChatSource: dataChatSource[user_id]});
+      this.setState({ dataChatSource: dataChatSource[user_id] });
     if (
       OnlineUsers[user_id] &&
       liveChatStatus !== OnlineUsers[user_id].status
@@ -223,7 +223,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
   }
 
   handleBackButtonClick = () => {
-    const {pageTitle} = this.state;
+    const { pageTitle } = this.state;
     if (pageTitle === 'ProMapDirection')
       this.props.navigation.navigate('ProMapDirection');
     else if (pageTitle === 'ProDashboard')
@@ -309,7 +309,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
   };
 
   renderSeparator = () => {
-    return <View style={{height: 5, width: '100%'}} />;
+    return <View style={{ height: 5, width: '100%' }} />;
   };
 
   render() {
@@ -346,11 +346,11 @@ class ProChatAfterBookingDetailsScreen extends Component {
               alwaysBounceVertical: true,
             }}
             onContentSizeChange={(contentWidth, contentHeight) => {
-              this.scrollView.scrollToEnd({animated: true});
+              this.scrollView.scrollToEnd({ animated: true });
             }}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag">
-            <View style={{flexDirection: 'column', marginBottom: 45}}>
+            <View style={{ flexDirection: 'column', marginBottom: 45 }}>
               <MessagesView
                 senderId={senderId}
                 receiverId={receiverId}
@@ -362,7 +362,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
           {this.state.isLoading && (
             <View style={styles.loaderStyle}>
               <ActivityIndicator
-                style={{height: 80}}
+                style={{ height: 80 }}
                 color="red"
                 size="large"
               />
@@ -461,7 +461,7 @@ const mapDispatchToProps = dispatch => {
       dispatch(dbMessagesFetched(messages));
     },
     fetchEmployeeMessages: (receiverId, callBack) => {
-      dispatch(fetchEmployeeMessages({receiverId, callBack}));
+      dispatch(fetchEmployeeMessages({ receiverId, callBack }));
     },
   };
 };

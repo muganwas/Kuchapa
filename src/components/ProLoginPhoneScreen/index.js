@@ -14,6 +14,7 @@ import {
   BackHandler,
   ActivityIndicator,
 } from 'react-native';
+import { withNavigation } from '@react-navigation/compat';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 import 'react-native-gesture-handler';
 import {
@@ -484,7 +485,7 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(LoginPhoneScreen);
+)(withNavigation(LoginPhoneScreen));
 
 const styles = StyleSheet.create({
   container: {

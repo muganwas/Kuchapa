@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   View,
   StyleSheet,
@@ -25,7 +25,7 @@ import {
   notificationError,
 } from '../../Redux/Actions/notificationActions';
 import Config from '../Config';
-import {lightGray, colorBg, white} from '../../Constants/colors';
+import { lightGray, colorBg, white } from '../../Constants/colors';
 import {
   MessagesFooter,
   MessagesHeader,
@@ -63,11 +63,11 @@ class ChatAfterBookingDetailsScreen extends Component {
   constructor(props) {
     super();
     const {
-      userInfo: {userDetails},
+      userInfo: { userDetails },
       jobsInfo: {
-        selectedJobRequest: {employee_id},
+        selectedJobRequest: { employee_id },
       },
-      messagesInfo: {messages},
+      messagesInfo: { messages },
     } = props;
     this.state = {
       senderId: userDetails.userId,
@@ -79,18 +79,18 @@ class ChatAfterBookingDetailsScreen extends Component {
       messages,
       isLoading: !props.messagesInfo.fetched,
       isUpLoading: false,
-      receiverId: props.navigation.state.params.providerId,
+      receiverId: props.route.params.providerId,
       receiverName:
-        props.navigation.state.params.providerName +
+        props.route.params.providerName +
         ' ' +
-        props.navigation.state.params.providerSurname,
-      receiverImage: props.navigation.state.params.providerImage,
-      imageAvailable: props.navigation.state.params.imageAvailable || false,
-      serviceName: props.navigation.state.params.serviceName,
-      orderId: props.navigation.state.params.orderId,
-      titlePage: props.navigation.state.params.pageTitle,
-      isJobAccepted: props.navigation.state.params.isJobAccepted,
-      provider_FCM_id: props.navigation.state.params.fcmId,
+        props.route.params.providerSurname,
+      receiverImage: props.route.params.providerImage,
+      imageAvailable: props.route.params.imageAvailable || false,
+      serviceName: props.route.params.serviceName,
+      orderId: props.route.params.orderId,
+      titlePage: props.route.params.pageTitle,
+      isJobAccepted: props.route.params.isJobAccepted,
+      provider_FCM_id: props.route.params.fcmId,
       selectedStatus: '0',
       liveChatStatus: '0',
       uploadingImage: false,
@@ -104,10 +104,10 @@ class ChatAfterBookingDetailsScreen extends Component {
     const {
       fetchedNotifications,
       navigation,
-      userInfo: {userDetails},
-      generalInfo: {OnlineUsers},
+      userInfo: { userDetails },
+      generalInfo: { OnlineUsers },
       jobsInfo: {
-        selectedJobRequest: {employee_id},
+        selectedJobRequest: { employee_id },
       },
       fetchClientMessages,
     } = this.props;
@@ -116,7 +116,7 @@ class ChatAfterBookingDetailsScreen extends Component {
       socket.connect();
       fetchClientMessages(userDetails.userId);
     }
-    fetchedNotifications({type: 'messages', value: 0});
+    fetchedNotifications({ type: 'messages', value: 0 });
     setOnlineStatusListener({
       OnlineUsers,
       userId: employee_id,
@@ -145,11 +145,11 @@ class ChatAfterBookingDetailsScreen extends Component {
   reInit = () => {
     const props = this.props;
     const {
-      userInfo: {userDetails},
+      userInfo: { userDetails },
       jobsInfo: {
-        selectedJobRequest: {employee_id},
+        selectedJobRequest: { employee_id },
       },
-      generalInfo: {OnlineUsers},
+      generalInfo: { OnlineUsers },
       fetchClientMessages,
     } = props;
     if (!socket.connected) {
@@ -166,18 +166,18 @@ class ChatAfterBookingDetailsScreen extends Component {
       dataChatSource: props.messagesInfo.dataChatSource[employee_id],
       isLoading: !props.messagesInfo.fetched,
       isUpLoading: false,
-      receiverId: props.navigation.state.params.providerId,
+      receiverId: props.route.params.providerId,
       receiverName:
-        props.navigation.state.params.providerName +
+        props.route.params.providerName +
         ' ' +
-        props.navigation.state.params.providerSurname,
-      receiverImage: props.navigation.state.params.providerImage,
-      imageAvailable: props.navigation.state.params.imageAvailable,
-      serviceName: props.navigation.state.params.serviceName,
-      orderId: props.navigation.state.params.orderId,
-      titlePage: props.navigation.state.params.pageTitle,
-      isJobAccepted: props.navigation.state.params.isJobAccepted,
-      provider_FCM_id: props.navigation.state.params.fcmId,
+        props.route.params.providerSurname,
+      receiverImage: props.route.params.providerImage,
+      imageAvailable: props.route.params.imageAvailable,
+      serviceName: props.route.params.serviceName,
+      orderId: props.route.params.orderId,
+      titlePage: props.route.params.pageTitle,
+      isJobAccepted: props.route.params.isJobAccepted,
+      provider_FCM_id: props.route.params.fcmId,
     });
     setOnlineStatusListener({
       OnlineUsers,
@@ -192,13 +192,13 @@ class ChatAfterBookingDetailsScreen extends Component {
 
   componentDidUpdate() {
     const {
-      messagesInfo: {dataChatSource},
+      messagesInfo: { dataChatSource },
       jobsInfo: {
-        selectedJobRequest: {employee_id},
+        selectedJobRequest: { employee_id },
       },
-      generalInfo: {OnlineUsers},
+      generalInfo: { OnlineUsers },
     } = this.props;
-    const {liveChatStatus, selectedStatus} = this.state;
+    const { liveChatStatus, selectedStatus } = this.state;
     const providerId = employee_id;
     const localDataChatSource = this.state.dataChatSource;
     //if (fetched && isLoading) this.setState({isLoading: false});
@@ -206,7 +206,7 @@ class ChatAfterBookingDetailsScreen extends Component {
       JSON.stringify(dataChatSource[employee_id]) !==
       JSON.stringify(localDataChatSource)
     )
-      this.setState({dataChatSource: dataChatSource[employee_id]});
+      this.setState({ dataChatSource: dataChatSource[employee_id] });
     if (
       OnlineUsers[providerId] &&
       liveChatStatus !== OnlineUsers[providerId].status
@@ -220,8 +220,8 @@ class ChatAfterBookingDetailsScreen extends Component {
   }
 
   handleBackButtonClick = () => {
-    const {titlePage} = this.state;
-    const {navigation} = this.props;
+    const { titlePage } = this.state;
+    const { navigation } = this.props;
     if (titlePage === 'MapDirection')
       navigation.navigate('MapDirection', {
         titlePage: 'Chat',
@@ -308,7 +308,7 @@ class ChatAfterBookingDetailsScreen extends Component {
   };
 
   renderSeparator = () => {
-    return <View style={{height: 5, width: '100%'}} />;
+    return <View style={{ height: 5, width: '100%' }} />;
   };
 
   render() {
@@ -347,7 +347,7 @@ class ChatAfterBookingDetailsScreen extends Component {
               alwaysBounceVertical: true,
             }}
             onContentSizeChange={(contentWidth, contentHeight) => {
-              this.scrollView.scrollToEnd({animated: true});
+              this.scrollView.scrollToEnd({ animated: true });
             }}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag">
@@ -361,7 +361,7 @@ class ChatAfterBookingDetailsScreen extends Component {
           {isLoading && (
             <View style={styles.loaderStyle}>
               <ActivityIndicator
-                style={{height: 80}}
+                style={{ height: 80 }}
                 color="red"
                 size="large"
               />
@@ -399,7 +399,7 @@ class ChatAfterBookingDetailsScreen extends Component {
                     this.props.navigation.navigate('MapDirection')
                   }>
                   <Image
-                    style={{width: 20, height: 20, marginLeft: 20}}
+                    style={{ width: 20, height: 20, marginLeft: 20 }}
                     source={require('../../icons/mobile_gps.png')}
                   />
                   <Text
@@ -532,7 +532,7 @@ const mapDispatchToProps = dispatch => {
       dispatch(dbMessagesFetched(messages));
     },
     fetchClientMessages: (senderId, callBack) => {
-      dispatch(fetchClientMessages({senderId, callBack}));
+      dispatch(fetchClientMessages({ senderId, callBack }));
     },
   };
 };

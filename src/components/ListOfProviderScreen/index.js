@@ -82,8 +82,8 @@ class ListOfProviderScreen extends Component {
   initialize = async () => {
     const { navigation } = this.props;
     this.setState({
-      serviceName: navigation.state.params.serviceName,
-      serviceId: navigation.state.params.serviceId,
+      serviceName: route.params.serviceName,
+      serviceId: route.params.serviceId,
       dataSource: [],
       distInfo: {},
       distCalculated: false,

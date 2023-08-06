@@ -201,30 +201,30 @@ class ProviderDetailsScreen extends Component {
       route,
       generalInfo: { OnlineUsers },
     } = this.props;
-    const liveChatStatus = OnlineUsers[navigation.state.params.providerId]
-      ? OnlineUsers[navigation.state.params.providerId].status
+    const liveChatStatus = OnlineUsers[route.params.providerId]
+      ? OnlineUsers[route.params.providerId].status
       : '0';
     this.setState({
-      providerId: navigation.state.params.providerId,
-      name: navigation.state.params.name,
-      surname: navigation.state.params.surname,
-      image: navigation.state.params.image,
-      imageAvailable: navigation.state.params.imageAvailable,
-      mobile: navigation.state.params.mobile,
-      avgRating: navigation.state.params.avgRating,
-      distance: navigation.state.params.distance,
-      address: navigation.state.params.address,
-      description: navigation.state.params.description,
-      status: navigation.state.params && navigation.state.params.status,
+      providerId: route.params.providerId,
+      name: route.params.name,
+      surname: route.params.surname,
+      image: route.params.image,
+      imageAvailable: route.params.imageAvailable,
+      mobile: route.params.mobile,
+      avgRating: route.params.avgRating,
+      distance: route.params.distance,
+      address: route.params.address,
+      description: route.params.description,
+      status: route.params && route.params.status,
       online:
-        navigation.state.params &&
-        navigation.state.params.status === '1' &&
+        route.params &&
+        route.params.status === '1' &&
         liveChatStatus === '1',
       liveChatStatus,
-      fcmId: navigation.state.params.fcmId,
-      accountType: navigation.state.params.accountType,
-      serviceName: navigation.state.params.serviceName,
-      serviceId: navigation.state.params.serviceId,
+      fcmId: route.params.fcmId,
+      accountType: route.params.accountType,
+      serviceName: route.params.serviceName,
+      serviceId: route.params.serviceId,
       requestStatus: '',
       isJobAccepted: false,
       isErrorToast: false,

@@ -59,20 +59,20 @@ class ProBookingDetailsScreen extends Component {
     this.state = {
       isLoading: false,
       isErrorToast: false,
-      bookingDetails: props.navigation.state.params.bookingDetails,
+      bookingDetails: props.route.params.bookingDetails,
       isRatingDialogVisible: false,
       mainId: '',
-      fcm_id: props.navigation.state.params.bookingDetails.user_details.fcm_id,
+      fcm_id: props.route.params.bookingDetails.user_details.fcm_id,
       username:
-        props.navigation.state.params.bookingDetails.user_details.username,
+        props.route.params.bookingDetails.user_details.username,
       customer_rating:
-        props.navigation.state.params.bookingDetails.customer_rating,
+        props.route.params.bookingDetails.customer_rating,
       customer_review:
-        props.navigation.state.params.bookingDetails.customer_review,
+        props.route.params.bookingDetails.customer_review,
       employee_rating:
-        props.navigation.state.params.bookingDetails.employee_rating,
+        props.route.params.bookingDetails.employee_rating,
       employee_review:
-        props.navigation.state.params.bookingDetails.employee_review,
+        props.route.params.bookingDetails.employee_review,
     };
   }
 
@@ -96,20 +96,20 @@ class ProBookingDetailsScreen extends Component {
     this.setState({
       isLoading: false,
       isErrorToast: false,
-      bookingDetails: props.navigation.state.params.bookingDetails,
+      bookingDetails: props.route.params.bookingDetails,
       isRatingDialogVisible: false,
       mainId: '',
-      fcm_id: props.navigation.state.params.bookingDetails.user_details.fcm_id,
+      fcm_id: props.route.params.bookingDetails.user_details.fcm_id,
       username:
-        props.navigation.state.params.bookingDetails.user_details.username,
+        props.route.params.bookingDetails.user_details.username,
       customer_rating:
-        props.navigation.state.params.bookingDetails.customer_rating,
+        props.route.params.bookingDetails.customer_rating,
       customer_review:
-        props.navigation.state.params.bookingDetails.customer_review,
+        props.route.params.bookingDetails.customer_review,
       employee_rating:
-        props.navigation.state.params.bookingDetails.employee_rating,
+        props.route.params.bookingDetails.employee_rating,
       employee_review:
-        props.navigation.state.params.bookingDetails.employee_review,
+        props.route.params.bookingDetails.employee_review,
     });
   };
 

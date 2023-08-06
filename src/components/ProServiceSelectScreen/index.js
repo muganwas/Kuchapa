@@ -91,7 +91,7 @@ export default class ProServiceSelectScreen extends Component {
     const origin = route.params.from;
     const onGoBack = route.params.onGoBack;
     if (this.state.selectedServiceId.length > 0) {
-      navigation.state.params.onGoBack(
+      route.params.onGoBack(
         this.state.selectedServiceId + '/' + this.state.selectedServiceName,
       );
       if (origin === 'profile-screen') {
@@ -178,34 +178,6 @@ export default class ProServiceSelectScreen extends Component {
               flex: 1,
               flexDirection: 'row',
             }}>
-            <TouchableOpacity
-              style={{
-                width: 35,
-                height: 35,
-                alignSelf: 'center',
-                justifyContent: 'center',
-              }}
-              onPress={() => {
-                const origin = route.params.from;
-                const onGoBack = route.params.onGoBack;
-                if (origin === 'profile-screen') {
-                  this.props.navigation.navigate('ProMyProfile', {
-                    onGoBack,
-                    from: 'service-select',
-                  });
-                } else this.props.navigation.goBack();
-              }}>
-              <Image
-                style={{
-                  width: 20,
-                  height: 20,
-                  tintColor: black,
-                  alignSelf: 'center',
-                }}
-                source={require('../../icons/arrow_back.png')}
-              />
-            </TouchableOpacity>
-
             <Text
               style={{
                 color: black,

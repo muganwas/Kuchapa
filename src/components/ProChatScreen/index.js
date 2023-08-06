@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   View,
   StyleSheet,
@@ -34,7 +34,7 @@ import {
   setOnlineStatusListener,
   deregisterOnlineStatusListener,
 } from '../../controllers/chats';
-import {lightGray, colorBg, white} from '../../Constants/colors';
+import { lightGray, colorBg, white } from '../../Constants/colors';
 import {
   MessagesView,
   MessagesHeader,
@@ -65,19 +65,19 @@ class ProChatScreen extends Component {
   constructor(props) {
     super();
     const {
-      messagesInfo: {dataChatSource, fetched},
+      messagesInfo: { dataChatSource, fetched },
       navigation: {
         state: {
-          params: {currentPos},
+          params: { currentPos },
         },
       },
       jobsInfo: {
         allJobRequestsProviders,
-        selectedJobRequest: {user_id},
+        selectedJobRequest: { user_id },
       },
       navigation,
-      userInfo: {providerDetails},
-      generalInfo: {OnlineUsers},
+      userInfo: { providerDetails },
+      generalInfo: { OnlineUsers },
     } = props;
     this.state = {
       showButton: false,
@@ -89,7 +89,7 @@ class ProChatScreen extends Component {
       dataChatSource: dataChatSource[user_id] || [],
       isLoading: !fetched,
       //From ProDashboardScreen && ProMapDirection
-      pageTitle: navigation.state.params.pageTitle,
+      pageTitle: route.params.pageTitle,
       receiverId: allJobRequestsProviders[currentPos].user_id,
       receiverName: allJobRequestsProviders[currentPos].user_details.username,
       receiverImage: allJobRequestsProviders[currentPos].user_details.image,
@@ -109,10 +109,10 @@ class ProChatScreen extends Component {
     const {
       navigation,
       jobsInfo: {
-        selectedJobRequest: {user_id},
+        selectedJobRequest: { user_id },
       },
-      userInfo: {providerDetails},
-      generalInfo: {OnlineUsers},
+      userInfo: { providerDetails },
+      generalInfo: { OnlineUsers },
       fetchEmployeeMessages,
     } = this.props;
     if (!socket.connected) {
@@ -146,19 +146,19 @@ class ProChatScreen extends Component {
 
   reInit = () => {
     const {
-      messagesInfo: {dataChatSource, fetched},
+      messagesInfo: { dataChatSource, fetched },
       navigation: {
         state: {
-          params: {currentPos},
+          params: { currentPos },
         },
       },
       jobsInfo: {
         allJobRequestsProviders,
-        selectedJobRequest: {user_id},
+        selectedJobRequest: { user_id },
       },
       navigation,
-      userInfo: {providerDetails},
-      generalInfo: {OnlineUsers},
+      userInfo: { providerDetails },
+      generalInfo: { OnlineUsers },
       fetchEmployeeMessages,
     } = this.props;
     if (!socket.connected) {
@@ -176,7 +176,7 @@ class ProChatScreen extends Component {
       dataChatSource: dataChatSource[user_id] || [],
       isLoading: !fetched,
       //From ProDashboardScreen && ProMapDirection
-      pageTitle: navigation.state.params.pageTitle,
+      pageTitle: route.params.pageTitle,
       receiverId: allJobRequestsProviders[currentPos].user_id,
       receiverName: allJobRequestsProviders[currentPos].user_details.username,
       receiverImage: allJobRequestsProviders[currentPos].user_details.image,
@@ -199,20 +199,20 @@ class ProChatScreen extends Component {
 
   componentDidUpdate() {
     const {
-      messagesInfo: {dataChatSource},
+      messagesInfo: { dataChatSource },
       jobsInfo: {
-        selectedJobRequest: {user_id},
+        selectedJobRequest: { user_id },
       },
-      generalInfo: {OnlineUsers},
+      generalInfo: { OnlineUsers },
     } = this.props;
-    const {liveChatStatus, selectedStatus} = this.state;
+    const { liveChatStatus, selectedStatus } = this.state;
     const localDataChatSource = this.state.dataChatSource;
     //if (fetched && isLoading) this.setState({isLoading: false});
     if (
       JSON.stringify(dataChatSource[user_id]) !==
       JSON.stringify(localDataChatSource)
     )
-      this.setState({dataChatSource: dataChatSource[user_id]});
+      this.setState({ dataChatSource: dataChatSource[user_id] });
     if (
       OnlineUsers[user_id] &&
       liveChatStatus !== OnlineUsers[user_id].status
@@ -225,7 +225,7 @@ class ProChatScreen extends Component {
   }
 
   handleBackButtonClick = () => {
-    const {pageTitle} = this.state;
+    const { pageTitle } = this.state;
     if (pageTitle === 'ProMapDirection')
       this.props.navigation.navigate('ProMapDirection');
     else if (pageTitle === 'ProDashboard')
@@ -311,7 +311,7 @@ class ProChatScreen extends Component {
   };
 
   renderSeparator = () => {
-    return <View style={{height: 5, width: '100%'}} />;
+    return <View style={{ height: 5, width: '100%' }} />;
   };
 
   render() {
@@ -349,11 +349,11 @@ class ProChatScreen extends Component {
               alwaysBounceVertical: true,
             }}
             onContentSizeChange={(contentWidth, contentHeight) => {
-              this.scrollView.scrollToEnd({animated: true});
+              this.scrollView.scrollToEnd({ animated: true });
             }}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag">
-            <View style={{flexDirection: 'column', marginBottom: 45}}>
+            <View style={{ flexDirection: 'column', marginBottom: 45 }}>
               <MessagesView
                 senderId={senderId}
                 receiverId={receiverId}
@@ -365,7 +365,7 @@ class ProChatScreen extends Component {
           {isLoading && (
             <View style={styles.loaderStyle}>
               <ActivityIndicator
-                style={{height: 80}}
+                style={{ height: 80 }}
                 color="red"
                 size="large"
               />
@@ -479,7 +479,7 @@ const mapDispatchToProps = dispatch => {
       dispatch(dbMessagesFetched(messages));
     },
     fetchEmployeeMessages: (receiverId, callBack) => {
-      dispatch(fetchEmployeeMessages({receiverId, callBack}));
+      dispatch(fetchEmployeeMessages({ receiverId, callBack }));
     },
   };
 };

@@ -13,6 +13,7 @@ import {
   BackHandler,
   Modal,
 } from 'react-native';
+import { withNavigation } from '@react-navigation/compat';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 import { connect } from 'react-redux';
 import TextInputMask from 'react-native-text-input-mask';
@@ -71,7 +72,7 @@ class ProRegisterScreen extends Component {
       invoice: 1,
       error: '',
       currentPage: 0,
-      account_type: props.navigation.state.params.accountType,
+      account_type: props.route.params.accountType,
       isLoading: false,
       showDialog: false,
       dialogType: null,
@@ -687,7 +688,7 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(ProRegisterScreen);
+)(withNavigation(ProRegisterScreen));
 
 const styles = StyleSheet.create({
   container: {
