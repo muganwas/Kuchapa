@@ -407,7 +407,7 @@ class RegisterScreen extends Component {
                   }}
                   placeholder="Username"
                   onChangeText={userNameInput =>
-                    this.setState({ error: '', username: userNameInput })
+                    this.setState({ error: '', username: userNameInput.trim() })
                   }
                 />
               </View>
@@ -427,7 +427,7 @@ class RegisterScreen extends Component {
                   placeholder="Email"
                   onChangeText={email =>
                     emailCheck(
-                      email,
+                      email.trim(),
                       email => this.setState({ email, error: '' }),
                       error => this.setState({ error }),
                     )
@@ -451,7 +451,7 @@ class RegisterScreen extends Component {
                   secureTextEntry={true}
                   onChangeText={password =>
                     passwordCheck(
-                      password,
+                      password.trim(),
                       password => this.setState({ password, error: '' }),
                       error => this.setState({ error }),
                     )

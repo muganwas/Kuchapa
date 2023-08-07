@@ -348,7 +348,7 @@ class LoginPhoneScreen extends Component {
                       color: black,
                     }}
                     value={validationCode}
-                    onChangeText={text => updateValidationCode(text)}
+                    onChangeText={text => updateValidationCode(text.trim())}
                   />
                 ) : (
                   <TextInputMask

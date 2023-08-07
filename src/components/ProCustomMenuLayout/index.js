@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Dimensions
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { DrawerActions } from '@react-navigation/native';
@@ -174,6 +175,10 @@ function CustomMenuLayout(props) {
               />
               <Text style={styles.textMenu}>Log out</Text>
             </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            underlayColor={'rgba(0,0,0,0.2)'}
+            style={{ flex: 1, display: 'flex', height: 100 }}>
           </TouchableOpacity>
           <ProDialogLogout
             isDialogLogoutVisible={isDialogLogoutVisible}

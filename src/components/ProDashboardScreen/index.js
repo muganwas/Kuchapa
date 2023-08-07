@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   Text,
   StyleSheet,
@@ -15,7 +15,7 @@ import {
   Platform,
   Switch,
 } from 'react-native';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import RNExitApp from 'react-native-exit-app';
 import SimpleToast from 'react-native-simple-toast';
 import database from '@react-native-firebase/database';
@@ -39,7 +39,7 @@ import {
   getPendingJobRequestProvider,
   fetchedDataWorkSource,
 } from '../../Redux/Actions/jobsActions';
-import {updateProviderDetails} from '../../Redux/Actions/userActions';
+import { updateProviderDetails } from '../../Redux/Actions/userActions';
 import {
   updateLatestChats,
   setLatestChatsError,
@@ -50,8 +50,8 @@ import {
   updateAvailabilityInMongoDB,
   getAllRecentChats,
 } from '../../controllers/chats';
-import {requestClientForReview} from '../../controllers/jobs';
-import {reviewTask} from '../../controllers/bookings';
+import { requestClientForReview } from '../../controllers/jobs';
+import { reviewTask } from '../../controllers/bookings';
 import {
   colorBg,
   colorYellow,
@@ -87,8 +87,8 @@ class ProDashboardScreen extends Component {
   constructor(props) {
     super();
     const {
-      generalInfo: {online, connectivityAvailable},
-      userInfo: {providerDetails},
+      generalInfo: { online, connectivityAvailable },
+      userInfo: { providerDetails },
     } = props;
     this.state = {
       isLoading: true,
@@ -123,7 +123,7 @@ class ProDashboardScreen extends Component {
   componentDidMount = () => {
     this.initiateProps();
     this.onRefresh();
-    const {navigation} = this.props;
+    const { navigation } = this.props;
     navigation.addListener('willFocus', () => {
       this.initiateProps();
       //this.onRefresh();
@@ -141,15 +141,15 @@ class ProDashboardScreen extends Component {
   };
 
   initiateProps = () => {
-    this.setState({isLoading: false, isWorkRequest: true});
+    this.setState({ isLoading: false, isWorkRequest: true });
   };
 
   componentDidUpdate() {
     const {
-      generalInfo: {connectivityAvailable},
-      userInfo: {providerDetails},
+      generalInfo: { connectivityAvailable },
+      userInfo: { providerDetails },
     } = this.props;
-    const {status} = this.state;
+    const { status } = this.state;
     if (!connectivityAvailable && status === 'ONLINE')
       this.setState({
         status: 'OFFLINE',
@@ -174,7 +174,7 @@ class ProDashboardScreen extends Component {
       dataSource: this.props?.messagesInfo?.latestChats,
       onSuccess: data => {
         this.props.updateLatestChats(data);
-        this.setState({isLoading: false});
+        this.setState({ isLoading: false });
       },
     });
 
@@ -182,7 +182,7 @@ class ProDashboardScreen extends Component {
     if (item) {
       const {
         dispatchSelectedJobRequest,
-        jobsInfo: {allJobRequestsProviders},
+        jobsInfo: { allJobRequestsProviders },
         fetchedNotifications,
         navigation,
       } = this.props;
@@ -195,9 +195,9 @@ class ProDashboardScreen extends Component {
           key={index}
           style={styles.itemMainContainer}
           onPress={() => {
-            dispatchSelectedJobRequest({user_id: item.id});
+            dispatchSelectedJobRequest({ user_id: item.id });
             setTimeout(() => {
-              fetchedNotifications({type: 'messages', value: 0});
+              fetchedNotifications({ type: 'messages', value: 0 });
               navigation.navigate('ProChat', {
                 currentPos,
                 userId: item.id,
@@ -212,11 +212,11 @@ class ProDashboardScreen extends Component {
           }}>
           <View style={styles.itemImageView}>
             <Image
-              style={{width: 40, height: 40, borderRadius: 100}}
-              source={{uri: item.image}}
+              style={{ width: 40, height: 40, borderRadius: 100 }}
+              source={{ uri: item.image }}
             />
           </View>
-          <View style={{flexDirection: 'column', justifyContent: 'center'}}>
+          <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
             <Text
               style={{
                 fontSize: 14,
@@ -240,8 +240,8 @@ class ProDashboardScreen extends Component {
           </View>
 
           <View
-            style={{flex: 1, justifyContent: 'center', alignContent: 'center'}}>
-            <Text style={{alignSelf: 'flex-end', marginRight: 20, fontSize: 8}}>
+            style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
+            <Text style={{ alignSelf: 'flex-end', marginRight: 20, fontSize: 8 }}>
               {item.date}
             </Text>
           </View>
@@ -252,7 +252,7 @@ class ProDashboardScreen extends Component {
 
   renderWorkItem = (item, index) => {
     const {
-      userInfo: {providerDetails},
+      userInfo: { providerDetails },
       navigation,
     } = this.props;
     if (
@@ -285,7 +285,7 @@ class ProDashboardScreen extends Component {
               paddingLeft: 5,
               paddingRight: 5,
             }}>
-            <Text style={{fontSize: 12, fontWeight: 'bold'}}>
+            <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
               {item.service_details.service_name}
             </Text>
           </View>
@@ -305,10 +305,10 @@ class ProDashboardScreen extends Component {
                 ...(item.status === 'Pending'
                   ? styles.colorYellow
                   : item.status === 'Accepted'
-                  ? styles.colorGreen
-                  : item.status === 'Completed'
-                  ? styles.colorBlack
-                  : styles.colorRed),
+                    ? styles.colorGreen
+                    : item.status === 'Completed'
+                      ? styles.colorBlack
+                      : styles.colorRed),
               }}>
               {item.status}
             </Text>
@@ -323,12 +323,12 @@ class ProDashboardScreen extends Component {
               paddingRight: 5,
             }}
             onPress={() => this.askForReview(item)}>
-            <Text style={{fontSize: 12}}>
+            <Text style={{ fontSize: 12 }}>
               {item.customer_review == 'Requested'
                 ? 'Waiting'
                 : item.customer_rating == ''
-                ? 'Ask for review'
-                : item.customer_rating + '/5'}
+                  ? 'Ask for review'
+                  : item.customer_rating + '/5'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -341,7 +341,7 @@ class ProDashboardScreen extends Component {
               paddingRight: 5,
             }}
             onPress={() => this.changeDialogVisibility(true, '', item, '', '')}>
-            <Text style={{fontSize: 12}}>
+            <Text style={{ fontSize: 12 }}>
               {item.employee_rating == ''
                 ? 'Give review'
                 : item.employee_rating + '/5'}
@@ -377,8 +377,8 @@ class ProDashboardScreen extends Component {
 
   changeAvailabilityStaus = () => {
     const {
-      generalInfo: {online},
-      userInfo: {providerDetails},
+      generalInfo: { online },
+      userInfo: { providerDetails },
     } = this.props;
     const providerId = providerDetails.providerId;
     const usersRef = database().ref('users/' + providerId);
@@ -391,7 +391,7 @@ class ProDashboardScreen extends Component {
     if (liveOffline) {
       Config.socket.close();
       Config.socket.open();
-      this.setState({isLoading: false});
+      this.setState({ isLoading: false });
     } else if (manualOffline) {
       let userData = {
         status: '1',
@@ -462,7 +462,7 @@ class ProDashboardScreen extends Component {
           usersRef
             .update(userData)
             .then(() => {
-              this.updateAvailabilityInDB({online: newStatus});
+              this.updateAvailabilityInDB({ online: newStatus });
             })
             .catch(e => {
               console.log(e.message);
@@ -484,7 +484,7 @@ class ProDashboardScreen extends Component {
   };
 
   _spring = () =>
-    this.setState({backClickCount: 1}, () => {
+    this.setState({ backClickCount: 1 }, () => {
       Animated.sequence([
         Animated.spring(this.springValue, {
           toValue: -0.15 * 1,
@@ -498,7 +498,7 @@ class ProDashboardScreen extends Component {
           useNativeDriver: true,
         }),
       ]).start(() => {
-        this.setState({backClickCount: 0});
+        this.setState({ backClickCount: 0 });
       });
     });
 
@@ -512,7 +512,7 @@ class ProDashboardScreen extends Component {
 
   renderSeparator = () => {
     return (
-      <View style={{height: 1, width: '100%', backgroundColor: colorBg}} />
+      <View style={{ height: 1, width: '100%', backgroundColor: colorBg }} />
     );
   };
 
@@ -547,7 +547,7 @@ class ProDashboardScreen extends Component {
 
   goToProMapDirection = (chat_status, status, jobInfo) => {
     const {
-      navigation: {navigate},
+      navigation: { navigate },
     } = this.props;
     if (chat_status.toString() === '0') {
       this.setState({
@@ -555,7 +555,7 @@ class ProDashboardScreen extends Component {
       });
       this.showToast('Accept Chat Request First');
     } else {
-      const {dispatchSelectedJobRequest} = this.props;
+      const { dispatchSelectedJobRequest } = this.props;
       dispatchSelectedJobRequest(jobInfo);
       if (status === 'Pending') {
         navigate('ProAcceptRejectJob', {
@@ -581,7 +581,7 @@ class ProDashboardScreen extends Component {
         toggleLoading: error => this.changeWaitingDialogVisibility(null, error),
         onError: error => {
           SimpleToast.show(error, SimpleToast.SHORT);
-          this.setState({isErrorToast: true, error});
+          this.setState({ isErrorToast: true, error });
         },
         navigate: () => this.props.navigation.navigate('ProAcceptRejectJob'),
       },
@@ -599,7 +599,7 @@ class ProDashboardScreen extends Component {
         toggleLoading: error => this.changeWaitingDialogVisibility(null, error),
         onError: error => {
           SimpleToast.show(error, SimpleToast.SHORT);
-          this.setState({isErrorToast: true, error});
+          this.setState({ isErrorToast: true, error });
         },
         navigate: () => this.props.navigation.navigate('ProAcceptRejectJob'),
       },
@@ -629,7 +629,7 @@ class ProDashboardScreen extends Component {
               borderWidth: 0.5,
               borderColor: lightGray,
               backgroundColor: themeRed,
-              shadowOffset: {width: 0, height: 3},
+              shadowOffset: { width: 0, height: 3 },
               shadowOpacity: 0.75,
               shadowRadius: 5,
               elevation: 5,
@@ -656,7 +656,7 @@ class ProDashboardScreen extends Component {
               }}
               source={
                 image && imageAvailable
-                  ? {uri: image}
+                  ? { uri: image }
                   : require('../../images/generic_avatar.png')
               }
             />
@@ -695,8 +695,8 @@ class ProDashboardScreen extends Component {
                 {chat_status === '0'
                   ? 'New Job Request'
                   : status === 'Pending'
-                  ? 'Chat Request Accepted'
-                  : 'Job Accepted'}
+                    ? 'Chat Request Accepted'
+                    : 'Job Accepted'}
               </Text>
             </View>
             {chat_status === '1' && (
@@ -791,10 +791,10 @@ class ProDashboardScreen extends Component {
   };
 
   onRefresh = async () => {
-    this.setState({refreshing: true});
+    this.setState({ refreshing: true });
     const {
-      generalInfo: {online, connectivityAvailable},
-      userInfo: {providerDetails},
+      generalInfo: { online, connectivityAvailable },
+      userInfo: { providerDetails },
       fetchJobRequestHistory,
       //getPendingJobRequestProvider,
     } = this.props;
@@ -810,7 +810,7 @@ class ProDashboardScreen extends Component {
     //await getPendingJobRequestProvider(this.props, providerDetails.providerId);
     await fetchJobRequestHistory(providerDetails.providerId);
     this.springValue = new Animated.Value(100);
-    this.setState({refreshing: false});
+    this.setState({ refreshing: false });
   };
 
   changeWaitingDialogVisibility = (bool, error) => {
@@ -828,9 +828,9 @@ class ProDashboardScreen extends Component {
         jobRequestsProviders,
         dataWorkSource,
       },
-      generalInfo: {online, connectivityAvailable},
-      userInfo: {providerDetails},
-      messagesInfo: {latestChats},
+      generalInfo: { online, connectivityAvailable },
+      userInfo: { providerDetails },
+      messagesInfo: { latestChats },
       navigation,
     } = this.props;
     return (
@@ -839,12 +839,12 @@ class ProDashboardScreen extends Component {
         <View
           style={[
             styles.header,
-            {borderBottomWidth: 1, borderBottomColor: themeRed},
+            { borderBottomWidth: 1, borderBottomColor: themeRed },
           ]}>
           <ProHamburger navigation={navigation} text="kuchapa" />
           <TouchableOpacity
             style={{
-              width: '100%',
+              width: '85%',
               justifyContent: 'center',
               alignContent: 'center',
             }}
@@ -1023,7 +1023,7 @@ class ProDashboardScreen extends Component {
                   {dataWorkSource && dataWorkSource.length > 0 ? (
                     dataWorkSource.map(this.renderWorkItem)
                   ) : (
-                    <View style={{padding: 15}}>
+                    <View style={{ padding: 15 }}>
                       {providerDetails.address === '' ? (
                         <View
                           style={{
@@ -1051,16 +1051,16 @@ class ProDashboardScreen extends Component {
                               borderRadius: 5,
                               margin: 5,
                               shadowColor: '#000',
-                              shadowOffset: {width: 0, height: 0},
+                              shadowOffset: { width: 0, height: 0 },
                               shadowOpacity: 0.75,
                               shadowRadius: 5,
                               elevation: 5,
                             }}>
-                            <Text style={{color: white}}>Profile</Text>
+                            <Text style={{ color: white }}>Profile</Text>
                           </TouchableOpacity>
                         </View>
                       ) : (
-                        <Text style={{fontStyle: 'italic', color: darkGray}}>
+                        <Text style={{ fontStyle: 'italic', color: darkGray }}>
                           You haven't completed any jobs yet.
                         </Text>
                       )}
@@ -1079,7 +1079,7 @@ class ProDashboardScreen extends Component {
               <ReviewDialog
                 style={{
                   shadowColor: '#000',
-                  shadowOffset: {width: 0, height: 0},
+                  shadowOffset: { width: 0, height: 0 },
                   shadowOpacity: 0.75,
                   shadowRadius: 5,
                   elevation: 5,
@@ -1139,7 +1139,7 @@ class ProDashboardScreen extends Component {
         <Animated.View
           style={[
             styles.animatedView,
-            {transform: [{translateY: this.springValue}]},
+            { transform: [{ translateY: this.springValue }] },
           ]}>
           <Text style={styles.exitTitleText}>
             Press back again to exit the app
@@ -1231,7 +1231,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: white,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -1242,7 +1242,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: colorBg,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -1274,7 +1274,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: colorBg,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -1325,7 +1325,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     backgroundColor: white,
     shadowColor: darkGray,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -1366,7 +1366,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: 'white',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -1432,7 +1432,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -1445,7 +1445,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -1505,7 +1505,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -1527,7 +1527,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginRight: 5,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,

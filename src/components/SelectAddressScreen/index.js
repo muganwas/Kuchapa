@@ -51,7 +51,7 @@ const StatusBarPlaceHolder = () => {
 };
 
 export default class SelectAddressScreen extends Component {
-  constructor(props) {
+  constructor() {
     super();
     this.state = {
       dataSource: [],
@@ -98,14 +98,12 @@ export default class SelectAddressScreen extends Component {
       fetch(GOOGLE_ADDRESS_SERVICE + value)
         .then(response => response.json())
         .then(responseJson => {
-          console.log('Response : ' + JSON.stringify(responseJson));
           this.setState({
             dataSource: responseJson.predictions,
             isLoading: false,
           });
         })
         .catch(error => {
-          console.log(error);
           this.setState({
             isLoading: false,
           });
@@ -133,26 +131,21 @@ export default class SelectAddressScreen extends Component {
         .then(responseJson => {
           const { navigation, route } = this.props;
           const from = route.params.from;
-          const onGoBack = route.params.onGoBack;
+          const callback = route.params.onGoBack;
           this.setState({
-            isLoading: false,
-            address: description,
-            lat: responseJson.result.geometry.location.lat,
-            lng: responseJson.result.geometry.location.lng,
+            isLoading: false
           });
-          onGoBack(
-            this.state.address + '/' + this.state.lat + '/' + this.state.lng,
+          callback(
+            description + '/' + responseJson.result.geometry.location.lat + '/' + responseJson.result.geometry.location.lng,
           );
-
           if (from === 'profile-screen') {
             this.props.navigation.navigate('ProMyProfile', {
-              onGoBack,
+              onGoBack: callback,
               from: 'address-screen',
             });
           } else navigation.goBack();
         })
         .catch(error => {
-          console.log(error);
           this.setState({
             isLoading: false,
           });
@@ -162,7 +155,6 @@ export default class SelectAddressScreen extends Component {
           );
         });
     } catch (e) {
-      console.log(e);
       this.setState({
         isLoading: false,
       });
@@ -176,8 +168,7 @@ export default class SelectAddressScreen extends Component {
       <TouchableOpacity
         key={index}
         style={styles.itemHeader}
-        onPress={() =>
-          this.moveToPreviousScreen(item.place_id, item.description)
+        onPress={() => this.moveToPreviousScreen(item.place_id, item.description)
         }>
         <View style={styles.touchaleHighlight}>
           <Image
@@ -196,34 +187,6 @@ export default class SelectAddressScreen extends Component {
         <StatusBarPlaceHolder />
         <View style={styles.header}>
           <View style={{ flex: 1, flexDirection: 'row' }}>
-            <TouchableOpacity
-              style={{
-                width: 35,
-                height: 35,
-                alignSelf: 'center',
-                justifyContent: 'center',
-              }}
-              onPress={() => {
-                const { navigation, route } = this.props;
-                const from = route.params.from;
-                const onGoBack = route.params.onGoBack;
-                if (from === 'profile-screen') {
-                  this.props.navigation.navigate('ProMyProfile', {
-                    onGoBack,
-                    from: 'address-screen',
-                  });
-                } else navigation.goBack();
-              }}>
-              <Image
-                style={{
-                  width: 20,
-                  tintColor: black,
-                  height: 20,
-                  alignSelf: 'center',
-                }}
-                source={require('../../icons/arrow_back.png')}
-              />
-            </TouchableOpacity>
             <Text
               style={{
                 color: black,

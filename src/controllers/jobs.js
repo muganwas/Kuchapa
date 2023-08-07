@@ -1,4 +1,4 @@
-import {cloneDeep} from 'lodash';
+import { cloneDeep } from 'lodash';
 import database from '@react-native-firebase/database';
 import Geolocation from 'react-native-geolocation-service';
 import SimpleToast from 'react-native-simple-toast';
@@ -59,12 +59,9 @@ export const requestClientForReview = async ({
           }
         })
         .catch(error => {
-          console.log('Error :' + error);
           onError('Something went wrong');
-        })
-        .done();
+        });
     } catch (e) {
-      console.log('Error :' + e);
       onError('Something went wrong, try again');
     }
   } else if (item.customer_review == 'Requested') {
@@ -90,53 +87,53 @@ export const jobCancelTask = async ({
     const data =
       userType === 'Provider'
         ? {
-            main_id: jobRequests[currRequestPos]?.id,
-            chat_status: '1',
-            status: 'Cancelled',
-            notification: {
-              fcm_id: jobRequests[currRequestPos]?.customer_details?.fcm_id,
-              title: 'Job Cancelled',
-              type: 'JobCancellation',
-              body:
-                'Your job request has been cancelled by the service provder,' +
-                ' Request Id : ' +
-                jobRequests[currRequestPos]?.order_id,
-              save_notification: true,
-              user_id: jobRequests[currRequestPos]?.customer_details?._id,
-              employee_id: userDetails.providerId,
-              order_id: jobRequests[currRequestPos]?.order_id,
-              notification_by: 'Employee',
-              data: {
-                ProviderId: userDetails.providerId,
-                orderId: jobRequests[currRequestPos]?.order_id,
-                mainId: jobRequests[currRequestPos]?.id,
-              },
+          main_id: jobRequests[currRequestPos]?.id,
+          chat_status: '1',
+          status: 'Cancelled',
+          notification: {
+            fcm_id: jobRequests[currRequestPos]?.customer_details?.fcm_id,
+            title: 'Job Cancelled',
+            type: 'JobCancellation',
+            body:
+              'Your job request has been cancelled by the service provder,' +
+              ' Request Id : ' +
+              jobRequests[currRequestPos]?.order_id,
+            save_notification: true,
+            user_id: jobRequests[currRequestPos]?.customer_details?._id,
+            employee_id: userDetails.providerId,
+            order_id: jobRequests[currRequestPos]?.order_id,
+            notification_by: 'Employee',
+            data: {
+              ProviderId: userDetails.providerId,
+              orderId: jobRequests[currRequestPos]?.order_id,
+              mainId: jobRequests[currRequestPos]?.id,
             },
-          }
+          },
+        }
         : {
-            main_id: jobRequests[currRequestPos].id,
-            chat_status: '1',
-            status: 'Cancelled',
-            notification: {
-              fcm_id: jobRequests[currRequestPos].fcm_id,
-              title: 'Job Cancelled',
-              type: 'JobCancellation',
-              user_id: userDetails.userId,
-              employee_id: jobRequests[currRequestPos].employee_id,
-              order_id: jobRequests[currRequestPos].order_id,
-              notification_by: 'Customer',
-              save_notification: true,
-              body:
-                'Job request has been cancelled by client' +
-                ' Request Id : ' +
-                jobRequests[currRequestPos].order_id,
-              data: {
-                ProviderId: jobRequests[currRequestPos].employee_id,
-                orderId: jobRequests[currRequestPos].order_id,
-                mainId: jobRequests[currRequestPos].id,
-              },
+          main_id: jobRequests[currRequestPos].id,
+          chat_status: '1',
+          status: 'Cancelled',
+          notification: {
+            fcm_id: jobRequests[currRequestPos].fcm_id,
+            title: 'Job Cancelled',
+            type: 'JobCancellation',
+            user_id: userDetails.userId,
+            employee_id: jobRequests[currRequestPos].employee_id,
+            order_id: jobRequests[currRequestPos].order_id,
+            notification_by: 'Customer',
+            save_notification: true,
+            body:
+              'Job request has been cancelled by client' +
+              ' Request Id : ' +
+              jobRequests[currRequestPos].order_id,
+            data: {
+              ProviderId: jobRequests[currRequestPos].employee_id,
+              orderId: jobRequests[currRequestPos].order_id,
+              mainId: jobRequests[currRequestPos].id,
             },
-          };
+          },
+        };
     await fetch(REJECT_ACCEPT_REQUEST, {
       method: 'POST',
       headers: {
@@ -376,53 +373,53 @@ export const jobCompleteTask = async ({
       const data =
         userType === 'Provider'
           ? {
-              main_id: jobRequests[currRequestPos]?.id,
-              chat_status: '1',
-              status: 'Completed',
-              notification: {
-                fcm_id: jobRequests[currRequestPos]?.customer_details?.fcm_id,
-                title: 'Job Completed',
-                type: 'jobCompletion',
-                body:
-                  'Your job request has been completed by the service provder,' +
-                  ' Request id: ' +
-                  jobRequests[currRequestPos]?.order_id,
-                save_notification: true,
-                user_id: jobRequests[currRequestPos]?.customer_details?._id,
-                employee_id: userDetails.providerId,
-                order_id: jobRequests[currRequestPos]?.order_id,
-                notification_by: 'Employee',
-                data: {
-                  ProviderId: userDetails.providerId,
-                  orderId: jobRequests[currRequestPos]?.order_id,
-                  mainId: jobRequests[currRequestPos]?.id,
-                },
+            main_id: jobRequests[currRequestPos]?.id,
+            chat_status: '1',
+            status: 'Completed',
+            notification: {
+              fcm_id: jobRequests[currRequestPos]?.customer_details?.fcm_id,
+              title: 'Job Completed',
+              type: 'jobCompletion',
+              body:
+                'Your job request has been completed by the service provder,' +
+                ' Request id: ' +
+                jobRequests[currRequestPos]?.order_id,
+              save_notification: true,
+              user_id: jobRequests[currRequestPos]?.customer_details?._id,
+              employee_id: userDetails.providerId,
+              order_id: jobRequests[currRequestPos]?.order_id,
+              notification_by: 'Employee',
+              data: {
+                ProviderId: userDetails.providerId,
+                orderId: jobRequests[currRequestPos]?.order_id,
+                mainId: jobRequests[currRequestPos]?.id,
               },
-            }
+            },
+          }
           : {
-              main_id: jobRequests[currRequestPos]?.id,
-              chat_status: '1',
-              status: 'Completed',
-              notification: {
-                fcm_id: jobRequests[currRequestPos]?.fcm_id,
-                title: 'Job Completed',
-                body:
-                  'Job Id : ' +
-                  jobRequests[currRequestPos]?.order_id +
-                  ' has been reported complete by the client.',
-                type: 'Job Completed',
-                user_id: userDetails.userId,
-                employee_id: jobRequests[currRequestPos]?.employee_id,
-                order_id: jobRequests[currRequestPos]?.order_id,
-                notification_by: 'Customer',
-                save_notification: true,
-                data: {
-                  ProviderId: jobRequests[currRequestPos]?.employee_id,
-                  orderId: jobRequests[currRequestPos]?.order_id,
-                  mainId: jobRequests[currRequestPos]?.id,
-                },
+            main_id: jobRequests[currRequestPos]?.id,
+            chat_status: '1',
+            status: 'Completed',
+            notification: {
+              fcm_id: jobRequests[currRequestPos]?.fcm_id,
+              title: 'Job Completed',
+              body:
+                'Job Id : ' +
+                jobRequests[currRequestPos]?.order_id +
+                ' has been reported complete by the client.',
+              type: 'Job Completed',
+              user_id: userDetails.userId,
+              employee_id: jobRequests[currRequestPos]?.employee_id,
+              order_id: jobRequests[currRequestPos]?.order_id,
+              notification_by: 'Customer',
+              save_notification: true,
+              data: {
+                ProviderId: jobRequests[currRequestPos]?.employee_id,
+                orderId: jobRequests[currRequestPos]?.order_id,
+                mainId: jobRequests[currRequestPos]?.id,
               },
-            };
+            },
+          };
       await fetch(rejectAcceptURL, {
         method: 'POST',
         headers: {
@@ -455,7 +452,7 @@ export const jobCompleteTask = async ({
   }
 };
 
-export const fetchServices = async ({onSuccess, onError}) => {
+export const fetchServices = async ({ onSuccess, onError }) => {
   await fetch(SERVICES_URL)
     .then(response => response.json())
     .then(responseJson => {

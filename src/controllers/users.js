@@ -110,7 +110,6 @@ export const googleLoginTask = async (
     setStateVars(id, 'google');
     callback(name, email, photo, 'google');
   } catch (error) {
-    console.log('Google signin error', e.message);
     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
       SimpleToast.show('You cancelled sign in.');
     } else if (error.code === statusCodes.IN_PROGRESS) {
@@ -167,7 +166,6 @@ export const autoLogin = async (
               SimpleToast.show(
                 'Something went wrong, try closing and reopening app',
               );
-              console.log('firebase auth error', error);
             });
         } else inhouseLogin(userId, userType, fcmToken);
       })
@@ -175,7 +173,6 @@ export const autoLogin = async (
         console.log('storage error', e);
       });
   } else {
-    console.log('No Logged User');
     goTo('AfterSplash');
   }
 };
@@ -278,7 +275,6 @@ export const inhouseLogin = ({
             ? 'Check your internet connection and try again'
             : 'Something went wrong, try again later';
         onLoginFailure(message);
-        console.log('login error - 1', error.message);
       });
   } catch (e) {
     const message =
@@ -286,7 +282,6 @@ export const inhouseLogin = ({
         ? 'Check your internet connection and try again'
         : 'Something went wrong, try again later';
     onLoginFailure(message);
-    console.log('login error - 2', e);
   }
 };
 
@@ -309,13 +304,11 @@ export const facebookLoginTask = async (updateAuthToken, responseCallback) => {
           })
           .catch(e => {
             SimpleToast.show('Something went wrong, try again later');
-            console.log('token access error', e);
           });
       }
     },
     error => {
       SimpleToast.show('Something went wrong, try again later');
-      console.log('Login fail with error: ' + error);
     },
   );
 };
@@ -469,11 +462,9 @@ export const fbGmailLoginTask = async ({
                   }
                 })
                 .catch(error => {
-                  console.log('profile fetch error --', error);
                   onError(error.message);
                 });
             } catch (e) {
-              console.log('reg error --', e);
               onError(e.message);
             }
           } else {
@@ -489,13 +480,11 @@ export const fbGmailLoginTask = async ({
           }
         })
         .catch(error => {
-          console.log('fbgmail login err --', error);
           onError(
             error.message || 'Something went wrong, please try again later.',
           );
         });
     } catch (e) {
-      console.log('fbgmail login err --', e);
       onError('Something went wrong, please try again later.');
     }
   } else {
@@ -608,12 +597,9 @@ export const authenticateTask = async ({
                 }
               })
               .catch(error => {
-                console.log('Error :' + error);
                 onError('Something went wrong, please try again later.');
-              })
-              .done();
+              });
           } catch (e) {
-            console.log('Error :' + e);
             onError('Something went wrong, please try again.');
           }
         } else {
@@ -681,9 +667,7 @@ export const forgotPasswordTask = async ({
           msg = basicMsg;
         }
         onError(msg);
-        console.log('reset 1 err', errorMsg);
-      })
-      .done();
+      });
   } catch (e) {
     const errorMsg = e.message;
     const basicMsg = 'Something went wrong, Try again later';
@@ -695,7 +679,6 @@ export const forgotPasswordTask = async ({
       msg = basicMsg;
     }
     onError(msg);
-    console.log('reset 2 err', errorMsg);
   }
 };
 
@@ -733,7 +716,6 @@ export const updateProfileImageTask = async ({
               }
             })
             .catch(error => {
-              console.log('Error :' + error);
               toggleIsLoading(false);
               SimpleToast.show('Something went wrong, try again later');
             });
@@ -743,7 +725,6 @@ export const updateProfileImageTask = async ({
       }
     })
     .catch(error => {
-      console.log('image upload error', error.messge);
       SimpleToast.show('Something went wrong, try again later.');
     });
 };
@@ -778,13 +759,10 @@ export const updateProfileInfo = async ({
         }
       })
       .catch(error => {
-        console.log('profile update error :' + error);
         toggleIsLoading(false);
         SimpleToast.show('Something went wrong, try again later.');
-      })
-      .done();
+      });
   } catch (e) {
-    console.log('profile update erroror :' + e);
     toggleIsLoading(false);
     SimpleToast.show('Something went wrong, try again later.');
   }
@@ -937,12 +915,10 @@ export const phoneLoginTask = async ({
                   }
                 })
                 .catch(error => {
-                  console.log('Phone auth err - 1 ', error);
                   toggleIsLoading(false);
                   SimpleToast.show('Something went wrong', SimpleToast.SHORT);
                 });
             } catch (e) {
-              console.log('Phone auth err - 2 ', e);
               toggleIsLoading(false);
               SimpleToast.show(
                 'Something went wrong, try again',
@@ -954,11 +930,9 @@ export const phoneLoginTask = async ({
           }
         })
         .catch(error => {
-          console.log('Phone auth err - 3 ', error);
           onError('Something went wrong');
         });
     } catch (e) {
-      console.log('Phone auth err - 4 ', e);
       onError('Something went wrong, try again.');
     }
   } else {
@@ -1026,7 +1000,7 @@ export const registerTask = async ({
   firebaseAuth()
     .createUserWithEmailAndPassword(email, password)
     .then(result => {
-      const { fileName, path } = imageObject;
+      const { fileName, uri } = imageObject;
       const {
         user: { uid },
       } = result;
@@ -1034,7 +1008,7 @@ export const registerTask = async ({
       const userDataRef = storageRef.child(`/${uid}/${fileName}`);
       updateNewUserInfo(newUser);
       userDataRef
-        .putFile(path)
+        .putFile(uri)
         .then(uploadRes => {
           const { state } = uploadRes;
           if (state === 'success') {
@@ -1051,7 +1025,6 @@ export const registerTask = async ({
                       'Please check your email inbox for an account verificatoin link.',
                     );
                   } else {
-                    console.log({ responseJson });
                     onError(
                       responseJson.data.message ||
                       'Something went wrong, try again later',
@@ -1059,7 +1032,6 @@ export const registerTask = async ({
                   }
                 })
                 .catch(error => {
-                  console.log('registration err ', error);
                   onError('Something went wrong, please try again.');
                 });
             });
@@ -1067,7 +1039,6 @@ export const registerTask = async ({
         })
         .catch(error => {
           onError('Image upload failed');
-          console.log('image upload error', error.messge);
         });
     })
     .catch(error => {
@@ -1122,14 +1093,12 @@ export const getAllProviders = async ({
         }
       })
       .catch(error => {
-        console.log('getting provider error 1', error);
         toggleIsLoading(false);
         SimpleToast.show(
           'Something went wrong, Check your internet connection',
         );
       });
   } catch (e) {
-    console.log('getting provider error 2', e);
     toggleIsLoading(false);
     SimpleToast.show('Something went wrong, try again');
   }
@@ -1233,7 +1202,6 @@ export const fetchProfile = async ({
               setDistance(distance);
             })
             .catch(e => {
-              console.log('user profile fetch error 3', e.message);
               onError("Someting went wrong, couldn't fetch user information");
             });
         } else {
@@ -1241,11 +1209,9 @@ export const fetchProfile = async ({
         }
       })
       .catch(error => {
-        console.log('user profile fetch error 2' + error);
         onError("Someting went wrong, couldn't fetch user information");
       });
   } catch (e) {
-    console.log('user profile fetch error 1' + error);
     onError("Someting went wrong, couldn't fetch user information");
   }
 };

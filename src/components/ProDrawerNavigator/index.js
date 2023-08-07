@@ -49,10 +49,10 @@ export default class ProDrawerNavigator extends Component {
         <Drawer.Screen name="FacebookGoogle" component={FacebookGoogleScreen} />
         <Drawer.Screen name="AfterSplash" component={AfterSplashScreen} />
         <Drawer.Screen name="ProChatAccept" component={ProChatAcceptScreen} />
-        <Drawer.Screen name="Home" component={() => <DrawerNavigator />} />
-        <Drawer.Screen name="Dashboard" component={() => <DrawerNavigator />} />
-        <Drawer.Screen name="ProDashboard" component={ProDashboardScreen} />
-        <Drawer.Screen name="ProHome" component={ProDashboardScreen} />
+        <Drawer.Screen name="Home" component={() => <DrawerNavigator />} options={{ headerLeft: () => <></>, header: () => <></> }} />
+        <Drawer.Screen name="Dashboard" component={() => <DrawerNavigator />} options={{ headerLeft: () => <></>, header: () => <></> }} />
+        <Drawer.Screen name="ProDashboard" component={ProDashboardScreen} options={{ headerLeft: () => <></>, header: () => <></> }} />
+        <Drawer.Screen name="ProHome" component={ProDashboardScreen} options={{ headerLeft: () => <></>, header: () => <></> }} />
         <Drawer.Screen name="ProAddAddress" component={ProAddAddressScreen} />
         <Drawer.Screen name="ProMyProfile" component={ProMyProfileScreen} />
         <Drawer.Screen name="ProChatAfterBookingDetails" component={ProChatAfterBookingDetailsScreen} />

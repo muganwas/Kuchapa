@@ -180,14 +180,11 @@ class ProAddAddressScreen extends Component {
                       }
                     })
                     .catch(error => {
-                      console.log('Error :' + error);
                       this.setState({
                         isLoading: false,
                       });
-                    })
-                    .done();
+                    });
                 } catch (e) {
-                  console.log('Error :' + e);
                   this.setState({
                     isLoading: false,
                   });
@@ -284,14 +281,11 @@ class ProAddAddressScreen extends Component {
                         }
                       })
                       .catch(error => {
-                        console.log('Error :' + error);
                         this.setState({
                           isLoading: false,
                         });
-                      })
-                      .done();
+                      });
                   } catch (e) {
-                    console.log('Error :' + e);
                     this.setState({
                       isLoading: false,
                     });
@@ -437,14 +431,11 @@ class ProAddAddressScreen extends Component {
           }
         })
         .catch(error => {
-          console.log('Error :' + error);
           this.setState({
             isLoading: false,
           });
-        })
-        .done();
+        });
     } catch (e) {
-      console.log('Error :' + e);
       this.setState({
         isLoading: false,
       });

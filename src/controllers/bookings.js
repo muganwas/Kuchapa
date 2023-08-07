@@ -1,5 +1,5 @@
-import {imageExists} from '../misc/helpers';
-import {cloneDeep} from 'lodash';
+import { imageExists } from '../misc/helpers';
+import { cloneDeep } from 'lodash';
 import SimpleToast from 'react-native-simple-toast';
 import Config from '../components/Config';
 
@@ -115,13 +115,10 @@ export const reviewTask = async ({
         }
       })
       .catch(error => {
-        console.log('Error :' + error);
         toggleIsLoading();
         SimpleToast.show('Something went wrong, please try again.');
-      })
-      .done();
+      });
   } catch (e) {
-    console.log('Error :' + e);
     toggleIsLoading();
     SimpleToast.show('Something went wrong, please try again.');
   }

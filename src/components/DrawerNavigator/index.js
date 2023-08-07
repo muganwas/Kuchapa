@@ -45,7 +45,7 @@ export default class DrawerNavigator extends Component {
           header: () => <></>
         }}
       >
-        <Drawer.Screen name="Dashboard" component={DashboardScreen} />
+        <Drawer.Screen name="Dashboard" component={DashboardScreen} options={{ headerLeft: () => <></> }} />
         <Drawer.Screen name="ProDashboard" component={() => <ProDrawerNavigator />} />
         <Drawer.Screen name="FacebookGoogle" component={FacebookGoogleScreen} />
         <Drawer.Screen name="Register" component={RegisterScreen} />
@@ -57,8 +57,8 @@ export default class DrawerNavigator extends Component {
         <Drawer.Screen name="AfterSplash" component={AfterSplashScreen} />
         <Drawer.Screen name="AccountType" component={AccountTypeScreen} />
         <Drawer.Screen name="Chat" component={ChatScreen} />
-        <Drawer.Screen name="Home" component={DashboardScreen} options={{}} />
-        <Drawer.Screen name="ProHome" component={() => <ProDrawerNavigator />} />
+        <Drawer.Screen name="Home" component={DashboardScreen} options={{ headerLeft: () => <></> }} />
+        <Drawer.Screen name="ProHome" component={() => <ProDrawerNavigator />} options={{ headerLeft: () => <></> }} />
         <Drawer.Screen name="ProAccountType" component={ProAccountTypeScreen} />
         <Drawer.Screen name="ProviderDetails" component={ProviderDetailsScreen} />
         <Drawer.Screen name="ProFacebookGoogle" component={ProFacebookGoogleScreen} />

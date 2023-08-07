@@ -90,6 +90,7 @@ export default class ProServiceSelectScreen extends Component {
     const { navigation, route } = this.props;
     const origin = route.params.from;
     const onGoBack = route.params.onGoBack;
+    console.log("selected services ", this.state.selectedServiceId)
     if (this.state.selectedServiceId.length > 0) {
       route.params.onGoBack(
         this.state.selectedServiceId + '/' + this.state.selectedServiceName,
@@ -158,7 +159,7 @@ export default class ProServiceSelectScreen extends Component {
   };
 
   render() {
-    const { navigation, route } = this.props;
+    // const { navigation, route } = this.props;
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
@@ -190,15 +191,15 @@ export default class ProServiceSelectScreen extends Component {
             </Text>
           </View>
         </View>
-
         <ScrollView style={styles.gridView}>
           {this.state.dataSource.map(this.renderItem)}
         </ScrollView>
-
         <View
           style={{
+            display: 'flex',
             width: '100%',
-            justifyContent: 'center',
+            height: 120,
+            justifyContent: 'start',
             alignItems: 'center',
           }}>
           <TouchableOpacity
@@ -207,7 +208,6 @@ export default class ProServiceSelectScreen extends Component {
             <Text style={styles.text}>Submit</Text>
           </TouchableOpacity>
         </View>
-
         {this.state.isLoading && (
           <View style={styles.loaderStyle}>
             <ActivityIndicator style={{ height: 80 }} color="#C00" size="large" />

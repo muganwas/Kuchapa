@@ -9,7 +9,7 @@ import ImagePicker, { launchImageLibrary } from 'react-native-image-picker';
 import { cloneDeep } from 'lodash';
 import SimpleToast from 'react-native-simple-toast';
 import moment from 'moment';
-import { Config } from '../components/Config';
+import Config from '../components/Config';
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 const emailRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;

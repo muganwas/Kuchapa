@@ -108,7 +108,7 @@ class ProRegisterScreen extends Component {
     return true;
   };
 
-  checkValidation = async () => {
+  validate = async () => {
     const {
       name,
       mobile,
@@ -254,10 +254,9 @@ class ProRegisterScreen extends Component {
     await selectPhoto(obj =>
       this.setState({
         imageURI: obj.imageURI,
-        imageDataObject: obj.imageDataObject,
+        imageDataObject: obj.imageDataObject.assets[0],
         error: obj.error,
-      }),
-    );
+      }));
 
   getDataFromServiceScreen = data => {
     var data = data.split('/');
@@ -331,40 +330,17 @@ class ProRegisterScreen extends Component {
             <View
               style={{
                 width: screenWidth,
-                height: screenWidth,
                 backgroundColor: '#D8D7D3',
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
               <ImageBackground
-                style={{ width: screenWidth, height: screenWidth }}
                 source={
                   this.state.imageURI != null
                     ? this.state.imageURI
                     : require('../../icons/user.png')
                 }>
                 <View style={{ width: screenWidth, height: screenWidth }}>
-                  <TouchableOpacity
-                    style={{
-                      width: 35,
-                      height: 35,
-                      position: 'absolute',
-                      justifyContent: 'center',
-                      start: 0,
-                      margin: 5,
-                    }}
-                    onPress={() => this.props.navigation.goBack()}>
-                    <Image
-                      style={{
-                        width: 20,
-                        height: 20,
-                        tintColor: black,
-                        alignSelf: 'center',
-                      }}
-                      source={require('../../icons/arrow_back.png')}
-                    />
-                  </TouchableOpacity>
-
                   <TouchableOpacity
                     style={{
                       width: 40,
@@ -450,7 +426,7 @@ class ProRegisterScreen extends Component {
                     this.state.currentPage === 0 ? 'Username' : 'Company name'
                   }
                   onChangeText={nameInput =>
-                    this.setState({ error: '', name: nameInput })
+                    this.setState({ error: '', name: nameInput.trim() })
                   }
                 />
               </View>
@@ -470,7 +446,7 @@ class ProRegisterScreen extends Component {
                   placeholder="Email"
                   onChangeText={email =>
                     emailCheck(
-                      email,
+                      email.trim(),
                       email => this.setState({ email, error: '' }),
                       error => this.setState({ error }),
                     )
@@ -494,7 +470,7 @@ class ProRegisterScreen extends Component {
                   secureTextEntry={true}
                   onChangeText={password =>
                     passwordCheck(
-                      password,
+                      password.trim(),
                       password => this.setState({ password, error: '' }),
                       error => this.setState({ error }),
                     )
@@ -566,7 +542,7 @@ class ProRegisterScreen extends Component {
                   onChangeText={descriptionInput =>
                     this.setState({
                       error: '',
-                      description: descriptionInput,
+                      description: descriptionInput.trim(),
                     })
                   }
                 />
@@ -648,10 +624,9 @@ class ProRegisterScreen extends Component {
                   </TouchableOpacity>
                 </View>
               </View>
-
               <TouchableOpacity
-                style={styles.buttonContainer}
-                onPress={this.checkValidation}>
+                style={[styles.button, { marginBottom: 100 }]}
+                onPress={this.validate}>
                 <Text style={styles.text}>Continue</Text>
               </TouchableOpacity>
             </View>
@@ -705,7 +680,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   logincontainer: {
-    flex: 0.65,
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 20,
@@ -834,7 +809,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 5,
   },
-  buttonContainer: {
+  button: {
     width: 175,
     height: 40,
     backgroundColor: themeRed,
@@ -881,7 +856,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     paddingTop: 2,
     paddingBottom: 2,
-    backgroundColor: white,
+    backgroundColor: themeRed,
     borderColor: themeRed,
     shadowColor: themeRed,
     shadowOffset: { width: 0, height: 3 },

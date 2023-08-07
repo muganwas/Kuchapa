@@ -229,7 +229,7 @@ export default class ProForgotPasswordScreen extends Component {
                   placeholder="Email"
                   onChangeText={emailInput =>
                     this.setState({
-                      email: emailInput,
+                      email: emailInput.trim(),
                     })
                   }
                 />
