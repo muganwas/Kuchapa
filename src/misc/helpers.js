@@ -242,17 +242,11 @@ export const sortByTime = (array, ascending = true) => {
 
 export const imageExists = async image_url => {
   let result;
-  if (image_url)
-    await axios
-      .get(image_url)
-      .then(res => {
-        result = true;
-      })
-      .catch(e => {
-        //console.log(e.message);
-        result = false;
-      });
-  else result = false;
+  if (image_url) {
+    const img = await fetch(image_url);
+    console.log({ img })
+    return img;
+  }
   return result;
 };
 

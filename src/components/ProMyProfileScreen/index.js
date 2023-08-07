@@ -188,7 +188,6 @@ class ProMyProfileScreen extends Component {
 
   getDataFromServiceScreen = data => {
     var data = data.split('/');
-    console.log('data --', data);
     this.setState({
       serviceIds: data[0],
       services: data[1],

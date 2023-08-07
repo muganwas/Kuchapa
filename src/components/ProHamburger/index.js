@@ -197,8 +197,13 @@ class ProHamburger extends React.Component {
       updateConnectivityStatus(state.isConnected);
     });
 
+    /**
+     * TODO: Re-do sockets to io
+     */
+
     socket.on('connect', () => {
       const userId = providerDetails.providerId;
+      console.log('connecting...', { userId })
       if (userId) {
         socket.emit('authentication', {
           id: userId,
@@ -226,17 +231,19 @@ class ProHamburger extends React.Component {
       updateLiveChatUsers(users);
     });
     socket.on('disconnect', info => {
-      // const {
-      //   generalInfo: { connectivityAvailable },
-      // } = this.props;
-      // console.log('you disconnected');
-      // updateLiveChatUsers({});
-      // updateOnlineStatus(false);
-      // if (connectivityAvailable) {
-      //   console.log('reconnecting...');
-      //   socket.close();
-      //   socket.open();
-      // }
+      const {
+        generalInfo: { connectivityAvailable },
+      } = this.props;
+      console.log('you disconnected');
+      updateLiveChatUsers({});
+      updateOnlineStatus(false);
+      if (connectivityAvailable) {
+        setTimeout(() => {
+          console.log('re-opening...');
+          socket.close();
+          socket.open();
+        }, 1000);
+      }
     });
     socket.on('chat-message', data => {
       const { sender } = cloneDeep(data);

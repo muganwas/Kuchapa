@@ -26,13 +26,15 @@ function CustomMenuLayout(props) {
   const [imageSource] = useState(providerDetails.imageSource);
 
   useEffect(() => {
-    imgExists(providerDetails.image).then(result => {
-      updateImageExists(result);
-    });
-  });
+    getImageExists(providerDetails);
+  }, [providerDetails]);
+
+  const getImageExists = async (providerDetails) => {
+    const result = await imgExists(providerDetails.imageSource);
+    updateImageExists(result);
+  }
 
   const changeDialogVisibility = bool => {
-    console.log({ props, bool })
     props.navigation.dispatch(DrawerActions.closeDrawer());
     updateIsDialogLogoutVisible(bool);
   };
