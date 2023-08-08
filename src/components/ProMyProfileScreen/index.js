@@ -73,6 +73,7 @@ class ProMyProfileScreen extends Component {
     const {
       userInfo: { providerDetails },
     } = props;
+    console.log('provider details ..', providerDetails)
     this.state = {
       providerId: providerDetails.providerId,
       fcmId: providerDetails.fcmId,
@@ -313,9 +314,6 @@ class ProMyProfileScreen extends Component {
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
-        <View style={styles.header}>
-          <Hamburger navigation={this.props.navigation} text="My Profile" />
-        </View>
 
         <KeyboardAwareScrollView
           contentContainerStyle={{
@@ -582,7 +580,7 @@ class ProMyProfileScreen extends Component {
                   }}>
                   <TouchableOpacity
                     style={
-                      this.state.invoice === '1'
+                      this.state.invoice === 1
                         ? styles.invoiceBorder
                         : styles.invoice
                     }
@@ -598,7 +596,7 @@ class ProMyProfileScreen extends Component {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[
-                      this.state.invoice === '0'
+                      this.state.invoice === 0
                         ? styles.invoiceBorder
                         : styles.invoice,
                       { marginLeft: 20 },
@@ -844,7 +842,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
     paddingTop: 2,
     paddingBottom: 2,
-    backgroundColor: white,
+    backgroundColor: themeRed,
     borderColor: themeRed,
     shadowColor: themeRed,
     shadowOffset: { width: 0, height: 3 },

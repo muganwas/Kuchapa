@@ -16,11 +16,22 @@ import rNES from 'react-native-encrypted-storage';
 import RNExitApp from 'react-native-exit-app';
 import HomeScreen from '../HomeScreen';
 import DashboardScreen from '../DashboardScreen';
+import ProAllMessageScreen from '../ProAllMessageScreen';
+import ProBookingScreen from '../ProBookingScreen';
+import ProAcceptRejectJobScreen from '../ProAcceptRejectJobScreen';
+import ProBookingDetailsScreen from '../ProBookingDetailsScreen';
+import ProChatAcceptScreen from '../ProChatAcceptScreen';
+import ProChatAfterBookingDetailsScreen from '../ProChatAfterBookingDetailsScreen';
+import ProMapDirectionScreen from '../ProMapDirectionScreen';
+import ProMyProfileScreen from '../ProMyProfileScreen';
 import ProDashboardScreen from '../ProDashboardScreen';
+import ProNotificationsScreen from '../ProNotificationsScreen';
 import AfterSplashScreen from '../AfterSplashScreen';
 import AccountTypeScreen from '../AccountTypeScreen';
 import FacebookGoogleScreen from '../FacebookGoogleScreen';
 import RegisterScreen from '../RegisterScreen';
+import ProAddAddressScreen from '../ProAddAddressScreen';
+import ContactUsScreen from '../ContactUsScreen';
 import ForgotPasswordScreen from '../ForgotPasswordScreen';
 import ProFacebookGoogleScreen from '../ProFacebookGoogleScreen';
 import ProForgotPasswordScreen from '../ProForgotPasswordScreen';
@@ -160,8 +171,10 @@ class SplashScreen extends Component {
                         },
                         null,
                         () => {
-                          if (Android) BackHandler.exitApp();
-                          else RNExitApp.exitApp();
+                          if (Android) {
+                            console.log("closing app")
+                            BackHandler.exitApp();
+                          } else RNExitApp.exitApp();
                         },
                       ),
                     props: this.props,
@@ -319,19 +332,32 @@ export default class App extends Component {
           <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ title: "Forgot Password" }} />
           <Stack.Screen name="Register" component={RegisterScreen} options={{ title: "Register" }} />
           <Stack.Screen name="LoginPhoneScreen" component={LoginPhoneScreen} options={{ title: "Phone Login" }} />
-          <Stack.Screen name="ProLoginPhoneScreen" component={ProLoginPhoneScreen} options={{ title: "Phone Login" }} />
+          <Stack.Screen name="SelectAddress" component={SelectAddressScreen} options={{ title: "Select Address" }} />
           <Stack.Screen name="Dashboard" component={DashboardScreen} options={{ title: "Dashboard" }} />
-          <Stack.Screen name="ProDashboard" component={ProDashboardScreen} options={{ title: "Dashboard" }} />
-          <Stack.Screen name="Home" component={HomeScreen} options={{ title: "Home" }} />
+          <Stack.Screen name="Home" component={HomeScreen} options={{ header: () => <></>, title: "Home" }} />
+
           <Stack.Screen name="AccountType" component={AccountTypeScreen} options={{ title: "Account Type" }} />
+          <Stack.Screen name="ContactUs" component={ContactUsScreen} options={{ title: "Contact Us" }} />
+
+          <Stack.Screen name="ProAllMessage" component={ProAllMessageScreen} options={{ title: "Messages" }} />
+          <Stack.Screen name="ProAcceptRejectJob" component={ProAcceptRejectJobScreen} options={{ title: "Respond to Job" }} />
+          <Stack.Screen name="ProBooking" component={ProBookingScreen} options={{ title: "Bookings" }} />
+          <Stack.Screen name="ProBookingDetails" component={ProBookingDetailsScreen} options={{ title: "Booking Details" }} />
+          <Stack.Screen name="ProLoginPhoneScreen" component={ProLoginPhoneScreen} options={{ title: "Phone Login" }} />
+          <Stack.Screen name="ProDashboard" component={ProDashboardScreen} options={{ title: "Dashboard" }} />
           <Stack.Screen name="ProFacebookGoogle" component={ProFacebookGoogleScreen} options={{ title: "Login" }} />
           <Stack.Screen name="ProForgotPassword" component={ProForgotPasswordScreen} options={{ title: "Forgot Password" }} />
           <Stack.Screen name="ProAccountType" component={ProAccountTypeScreen} options={{ title: "Account Type" }} />
+          <Stack.Screen name="ProAddAddress" component={ProAddAddressScreen} options={{ title: "My Address" }} />
+          <Stack.Screen name="ProHome" component={ProHomeScreen} options={{ header: () => <></>, title: "Home" }} />
+          <Stack.Screen name="ProMapDirection" component={ProMapDirectionScreen} options={{ title: "Directions" }} />
+          <Stack.Screen name="ProChatAccept" component={ProChatAcceptScreen} options={{ title: "Respond to Chat" }} />
+          <Stack.Screen name="ProChatAfterBookingDetails" component={ProChatAfterBookingDetailsScreen} options={{ title: "Chat" }} />
+          <Stack.Screen name="ProMyProfile" component={ProMyProfileScreen} options={{ title: "Profile" }} />
+          <Stack.Screen name="ProNotifications" component={ProNotificationsScreen} options={{ title: "Notifications" }} />
           <Stack.Screen name="ProRegisterFB" component={ProRegisterFBScreen} options={{ title: "Register" }} />
           <Stack.Screen name="ProRegister" component={ProRegisterScreen} options={{ title: "Register" }} />
           <Stack.Screen name="ProServiceSelect" component={ProServiceSelectScreen} options={{ title: "Select Services" }} />
-          <Stack.Screen name="SelectAddress" component={SelectAddressScreen} options={{ title: "Select Address" }} />
-          <Stack.Screen name="ProHome" component={ProHomeScreen} options={{ title: "Home" }} />
         </Stack.Navigator>
       </NavigationContainer>
     )

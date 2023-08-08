@@ -61,7 +61,6 @@ class AddAddressScreen extends Component {
       isLoading: true,
       isErrorToast: false,
     };
-    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
   watchID = null;
@@ -103,7 +102,7 @@ class AddAddressScreen extends Component {
     this.watchID != null && Geolocation.clearWatch(this.watchID);
   }
 
-  handleBackButtonClick() {
+  handleBackButtonClick = () => {
     this.props.navigation.goBack();
     return true;
   }
@@ -334,7 +333,6 @@ class AddAddressScreen extends Component {
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
         Geolocation.getCurrentPosition(position => {
-          console.log('Position : ' + JSON.stringify(position));
           this.setState({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
@@ -377,8 +375,6 @@ class AddAddressScreen extends Component {
     this.setState({
       isLoading: true,
     });
-    console.log('Data : ' + data);
-
     var data = data.split('/');
     this.setState({
       address: data[0],
@@ -465,6 +461,7 @@ class AddAddressScreen extends Component {
   };
 
   render() {
+    const { navigation, route } = this.props;
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
@@ -478,7 +475,7 @@ class AddAddressScreen extends Component {
                 alignSelf: 'center',
                 justifyContent: 'center',
               }}
-              onPress={() => this.props.navigation.goBack()}>
+              onPress={() => navigation.goBack()}>
               <Image
                 style={{
                   width: 20,
@@ -536,7 +533,8 @@ class AddAddressScreen extends Component {
           <TouchableOpacity
             style={[styles.buttonContainer, { marginTop: 40 }]}
             onPress={() =>
-              this.props.navigation.navigate('SelectAddress', {
+              navigation.navigate('SelectAddress', {
+                accountType: route.params.accountType,
                 onGoBack: this.getDataFromAddAddressScreen,
               })
             }>

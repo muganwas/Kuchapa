@@ -51,7 +51,7 @@ const StatusBarPlaceHolder = () => {
 };
 
 export default class SelectAddressScreen extends Component {
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
       dataSource: [],
@@ -83,6 +83,7 @@ export default class SelectAddressScreen extends Component {
     const onGoBack = route.params.onGoBack;
     if (from === 'profile-screen') {
       this.props.navigation.navigate('ProMyProfile', {
+        accountType: route.params.accountType,
         onGoBack,
         from: 'address-screen',
       });
@@ -140,6 +141,7 @@ export default class SelectAddressScreen extends Component {
           );
           if (from === 'profile-screen') {
             this.props.navigation.navigate('ProMyProfile', {
+              accountType: route.params.accountType,
               onGoBack: callback,
               from: 'address-screen',
             });
@@ -195,7 +197,7 @@ export default class SelectAddressScreen extends Component {
                 alignSelf: 'center',
                 marginLeft: 15,
               }}>
-              Update location
+              New location
             </Text>
           </View>
         </View>

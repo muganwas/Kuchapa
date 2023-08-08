@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   StyleSheet,
@@ -13,21 +13,19 @@ import {
   Animated,
   ScrollView,
 } from 'react-native';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import _ from 'lodash';
 import RNExitApp from 'react-native-exit-app';
 import Toast from 'react-native-simple-toast';
 import ViewPager from '@react-native-community/viewpager';
 import Config from '../Config';
 import WaitingDialog from '../WaitingDialog';
-import Hamburger from '../ProHamburger';
-import {font_size} from '../../Constants/metrics';
+import { font_size } from '../../Constants/metrics';
 import {
   updateCompletedBookingData,
   updateFailedBookingData,
 } from '../../Redux/Actions/jobsActions';
 import {
-  colorPrimary,
   white,
   themeRed,
   black,
@@ -35,7 +33,7 @@ import {
   lightGray,
   colorBg,
 } from '../../Constants/colors';
-import {getAllBookings} from '../../controllers/bookings';
+import { getAllBookings } from '../../controllers/bookings';
 
 const screenWidth = Dimensions.get('window').width;
 const BOOKING_HISTORY = Config.baseURL + 'jobrequest/employee_request/';
@@ -69,7 +67,7 @@ class ProBookingScreen extends Component {
   }
 
   componentDidMount() {
-    const {navigation} = this.props;
+    const { navigation } = this.props;
     this.getAllBookingsProvider();
     navigation.addListener('willFocus', async () => {
       BackHandler.addEventListener(
@@ -93,7 +91,7 @@ class ProBookingScreen extends Component {
   };
 
   _spring = () => {
-    this.setState({backClickCount: 1}, () => {
+    this.setState({ backClickCount: 1 }, () => {
       Animated.sequence([
         Animated.spring(this.springValue, {
           toValue: -0.15 * 1,
@@ -107,7 +105,7 @@ class ProBookingScreen extends Component {
           useNativeDriver: true,
         }),
       ]).start(() => {
-        this.setState({backClickCount: 0});
+        this.setState({ backClickCount: 0 });
       });
     });
   };
@@ -129,17 +127,15 @@ class ProBookingScreen extends Component {
 
   onPageSelected = event => {
     const currentPage = event.nativeEvent.position;
-    this.setState({currentPage});
+    this.setState({ currentPage });
   };
 
   selectPage = title => {
     if (title === 'Completed') {
-      this.viewPager.setPage(0);
       this.setState({
         currentPage: 0,
       });
     } else if (title === 'Rejected') {
-      this.viewPager.setPage(1);
       this.setState({
         currentPage: 1,
       });
@@ -155,7 +151,7 @@ class ProBookingScreen extends Component {
             flexDirection: 'column',
             backgroundColor: white,
             shadowColor: black,
-            shadowOffset: {width: 0, height: 3},
+            shadowOffset: { width: 0, height: 3 },
             shadowOpacity: 0.75,
             shadowRadius: 5,
             elevation: 5,
@@ -178,11 +174,11 @@ class ProBookingScreen extends Component {
               }}
               source={
                 item?.user_details?.imageAvailable
-                  ? {uri: item.user_details.image}
+                  ? { uri: item.user_details.image }
                   : require('../../images/generic_avatar.png')
               }
             />
-            <View style={{flexDirection: 'column'}}>
+            <View style={{ flexDirection: 'column' }}>
               <Text
                 style={{
                   color: 'black',
@@ -194,7 +190,7 @@ class ProBookingScreen extends Component {
                 {item.user_details.username}
               </Text>
               <View
-                style={{flexDirection: 'row', marginLeft: 10, marginTop: 5}}>
+                style={{ flexDirection: 'row', marginLeft: 10, marginTop: 5 }}>
                 <Image
                   style={{
                     height: 15,
@@ -291,25 +287,11 @@ class ProBookingScreen extends Component {
 
   render() {
     const {
-      jobsInfo: {bookingCompleteData, bookingRejectData},
+      jobsInfo: { bookingCompleteData, bookingRejectData },
     } = this.props;
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
-        <View
-          style={{
-            flexDirection: 'row',
-            width: '100%',
-            height: 50,
-            backgroundColor: colorPrimary,
-            paddingLeft: 10,
-            paddingRight: 20,
-            paddingTop: 5,
-            paddingBottom: 5,
-          }}>
-          <Hamburger navigation={this.props.navigation} text="Bookings" />
-        </View>
-
         <View
           style={{
             width: screenWidth,
@@ -336,7 +318,7 @@ class ProBookingScreen extends Component {
               <Text
                 style={[
                   styles.text,
-                  {color: this.state.currentPage === 0 ? black : white},
+                  { color: this.state.currentPage === 0 ? black : white },
                 ]}>
                 Completed
               </Text>
@@ -362,19 +344,10 @@ class ProBookingScreen extends Component {
           </View>
         </View>
 
-        <ViewPager
-          style={styles.viewPager}
-          initialPage={0}
-          ref={viewPager => {
-            this.viewPager = viewPager;
-          }}
-          onPageSelected={event => this.onPageSelected(event)}>
-          <View key="1">
-            <ScrollView>
-              <View style={styles.listView}>
-                {bookingCompleteData.map(this.renderBookingHistoryItem)}
-              </View>
-              {bookingCompleteData.length === 0 && !this.state.isLoading && (
+        <View style={{ flex: 1, display: 'flex', flexDirection: 'row' }}>
+          {this.state.currentPage === 0 ?
+            <ScrollView contentContainerStyle={{ display: 'flex', flex: 1, backgroundColor: white }}>
+              {bookingCompleteData.length === 0 && !this.state.isLoading ? (
                 <View style={styles.loaderStyle}>
                   <Text
                     style={{
@@ -382,37 +355,36 @@ class ProBookingScreen extends Component {
                       fontSize: 16,
                       fontStyle: 'italic',
                     }}>
-                    No completed bookings found!
+                    No complete bookings found!
                   </Text>
                 </View>
-              )}
-            </ScrollView>
-          </View>
-          <View key="2">
-            <ScrollView>
-              <View style={styles.listView}>
-                {bookingRejectData.map(this.renderBookingHistoryItem)}
-              </View>
-              {bookingRejectData.length === 0 && !this.state.isLoading && (
-                <View style={styles.loaderStyle}>
-                  <Text
-                    style={{
-                      color: darkGray,
-                      fontSize: 16,
-                      fontStyle: 'italic',
-                    }}>
-                    No rejected bookings found!
-                  </Text>
-                </View>
-              )}
-            </ScrollView>
-          </View>
-        </ViewPager>
-
+              ) :
+                <View style={styles.listView}>
+                  {bookingCompleteData.map(this.renderBookingHistoryItem)}
+                </View>}
+            </ScrollView> : this.state.currentPage === 1 ?
+              <ScrollView contentContainerStyle={{ display: 'flex', flex: 1, backgroundColor: white }}>
+                {bookingRejectData.length === 0 && !this.state.isLoading ? (
+                  <View style={styles.loaderStyle}>
+                    <Text
+                      style={{
+                        color: darkGray,
+                        fontSize: 16,
+                        fontStyle: 'italic',
+                      }}>
+                      No rejected bookings found!
+                    </Text>
+                  </View>
+                ) :
+                  <View style={styles.listView}>
+                    {bookingRejectData.map(this.renderBookingHistoryItem)}
+                  </View>}
+              </ScrollView> : <></>}
+        </View>
         <Animated.View
           style={[
             styles.animatedView,
-            {transform: [{translateY: this.springValue}]},
+            { transform: [{ translateY: this.springValue }] },
           ]}>
           <Text style={styles.exitTitleText}>
             Press back again to exit the app

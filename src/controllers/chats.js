@@ -1,11 +1,11 @@
-import {cloneDeep} from 'lodash';
+import { cloneDeep } from 'lodash';
 import moment from 'moment';
 import SimpleToast from 'react-native-simple-toast';
 import database from '@react-native-firebase/database';
 import FilePickerManager from 'react-native-file-picker';
 import Config from '../components/Config';
-import {imageExists} from '../misc/helpers';
-import {uploadAttachment} from './storage';
+import { imageExists } from '../misc/helpers';
+import { uploadAttachment } from './storage';
 
 const REJECT_ACCEPT_REQUEST = Config.baseURL + 'jobrequest/updatejobrequest';
 const socket = Config.socket;
@@ -148,7 +148,7 @@ export const rejectChatRequest = async (
 ) => {
   toggleLoading(true);
   let newjobRequestsProviders = cloneDeep(jobRequestsProviders);
-  const {id, user_id, fcm_id, service_name, order_id} = jobRequestsProviders[
+  const { id, user_id, fcm_id, service_name, order_id } = jobRequestsProviders[
     pos
   ];
   const data = rejectionData || {
@@ -230,7 +230,7 @@ export const updateAvailabilityInMongoDB = async ({
         return response.json();
       })
       .then(response => {
-        const {result, data} = response;
+        const { result, data } = response;
         if (result && data) {
           newProDits.online = data.online;
           updateProviderDetails(newProDits);
@@ -249,7 +249,7 @@ export const updateAvailabilityInMongoDB = async ({
   }
 };
 //Recent Chat Message
-export const getAllRecentChats = async ({id, dataSource, onSuccess}) => {
+export const getAllRecentChats = async ({ id, dataSource, onSuccess }) => {
   const dbRef = database()
     .ref('recentMessage')
     .child(id);
@@ -470,11 +470,11 @@ export const sendMessageTask = async ({
   }
 };
 
-export const setOnlineStatusListener = ({OnlineUsers, userId, setStatus}) => {
+export const setOnlineStatusListener = ({ OnlineUsers, userId, setStatus }) => {
   const userRef = database().ref(`users/${userId}`);
   userRef.once('value', data => {
     if (data) {
-      const {status} = data.val();
+      const { status } = data.val();
       if (userId) {
         if (OnlineUsers[userId]) {
           if (OnlineUsers[userId] && status === '1') {

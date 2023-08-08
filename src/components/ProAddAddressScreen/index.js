@@ -456,50 +456,7 @@ class ProAddAddressScreen extends Component {
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
-        <View style={styles.header}>
-          <View style={{ flex: 1, flexDirection: 'row' }}>
-            <TouchableOpacity
-              style={{
-                width: 35,
-                height: 35,
-                alignSelf: 'center',
-                justifyContent: 'center',
-              }}
-              onPress={() => this.props.navigation.goBack()}>
-              <Image
-                style={{
-                  width: 20,
-                  height: 20,
-                  alignSelf: 'center',
-                  tintColor: black,
-                }}
-                source={require('../../icons/arrow_back.png')}
-              />
-            </TouchableOpacity>
-            <Text
-              style={{
-                color: black,
-                fontSize: 20,
-                fontWeight: 'bold',
-                alignSelf: 'center',
-                marginLeft: 15,
-              }}>
-              My position
-            </Text>
-          </View>
-        </View>
-
         <View style={styles.mainContainer}>
-          <Text
-            style={{
-              color: black,
-              fontSize: 20,
-              fontWeight: 'bold',
-              alignSelf: 'flex-start',
-            }}>
-            Current position
-          </Text>
-
           <View
             style={{
               width: screenWidth - 40,

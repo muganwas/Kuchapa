@@ -182,7 +182,7 @@ export const synchroniseOnlineStatus = async (id, savedStatus) => {
   const usersRef = database().ref(`users/${id}`);
   await usersRef.once('value', snapshot => {
     const value = snapshot.val();
-    if (value) status = value.status;
+    if (value != undefined) status = value.status;
     else {
       usersRef
         .set({ status })

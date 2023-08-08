@@ -244,7 +244,6 @@ export const imageExists = async image_url => {
   let result;
   if (image_url) {
     const img = await fetch(image_url);
-    console.log({ img })
     return img;
   }
   return result;

@@ -37,6 +37,7 @@ import {
   checkValidation,
   authenticateTask,
 } from '../../controllers/users';
+import { withNavigation } from '@react-navigation/compat';
 
 const screenWidth = Dimensions.get('window').width;
 const REGISTER_URL = Config.baseURL + 'employee/register/create';
@@ -468,7 +469,7 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(FacebookGoogleScreen);
+)(withNavigation(FacebookGoogleScreen));
 
 const styles = StyleSheet.create({
   container: {

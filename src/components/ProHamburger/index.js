@@ -197,13 +197,8 @@ class ProHamburger extends React.Component {
       updateConnectivityStatus(state.isConnected);
     });
 
-    /**
-     * TODO: Re-do sockets to io
-     */
-
     socket.on('connect', () => {
       const userId = providerDetails.providerId;
-      console.log('connecting...', { userId })
       if (userId) {
         socket.emit('authentication', {
           id: userId,
@@ -213,33 +208,27 @@ class ProHamburger extends React.Component {
     });
 
     socket.on('authorized', response => {
-      console.log(response.message);
       updateOnlineStatus(true);
     });
 
     socket.on('unauthorized', reason => {
-      console.log('unauthorized --', reason);
       updateOnlineStatus(false);
     });
 
     socket.on('user-disconnected', users => {
-      console.log('someone disconnected');
       updateLiveChatUsers(users);
     });
     socket.on('user-joined', users => {
-      console.log('someone connected');
       updateLiveChatUsers(users);
     });
     socket.on('disconnect', info => {
       const {
         generalInfo: { connectivityAvailable },
       } = this.props;
-      console.log('you disconnected');
       updateLiveChatUsers({});
       updateOnlineStatus(false);
       if (connectivityAvailable) {
         setTimeout(() => {
-          console.log('re-opening...');
           socket.close();
           socket.open();
         }, 1000);
@@ -266,6 +255,7 @@ class ProHamburger extends React.Component {
       }
     });
     socket.open();
+
     const userRef = database().ref(`liveLocation/${receiverId}`);
     locationPermissionRequest(() => {
       /** get pros current position and upload it to db */

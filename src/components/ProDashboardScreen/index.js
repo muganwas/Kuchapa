@@ -68,20 +68,20 @@ const REVIEW_RATING = Config.baseURL + 'jobrequest/ratingreview';
 
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
 
-const StatusBarPlaceHolder = () => {
-  return Platform.OS === 'ios' ? (
-    <View
-      style={{
-        width: '100%',
-        height: STATUS_BAR_HEIGHT,
-        backgroundColor: white,
-      }}>
-      <StatusBar barStyle="dark-content" />
-    </View>
-  ) : (
-    <StatusBar barStyle="dark-content" backgroundColor={white} />
-  );
-};
+// const StatusBarPlaceHolder = () => {
+//   return Platform.OS === 'ios' ? (
+//     <View
+//       style={{
+//         width: '100%',
+//         height: STATUS_BAR_HEIGHT,
+//         backgroundColor: white,
+//       }}>
+//       <StatusBar barStyle="dark-content" />
+//     </View>
+//   ) : (
+//     <StatusBar barStyle="dark-content" backgroundColor={white} />
+//   );
+// };
 
 class ProDashboardScreen extends Component {
   constructor(props) {
@@ -90,6 +90,7 @@ class ProDashboardScreen extends Component {
       generalInfo: { online, connectivityAvailable },
       userInfo: { providerDetails },
     } = props;
+    console.log('provider ...', { providerDetails })
     this.state = {
       isLoading: true,
       isErrorToast: false,
@@ -835,7 +836,7 @@ class ProDashboardScreen extends Component {
     } = this.props;
     return (
       <View style={styles.container}>
-        <StatusBarPlaceHolder />
+        {/* <StatusBarPlaceHolder /> */}
         <View
           style={[
             styles.header,
@@ -848,7 +849,7 @@ class ProDashboardScreen extends Component {
               justifyContent: 'center',
               alignContent: 'center',
             }}
-            onPress={() => navigation.navigate('ProAddAddress')}>
+            onPress={() => navigation.navigate('ProAddAddress', { accountType: providerDetails.accountType })}>
             <Image
               style={{
                 width: 22,
