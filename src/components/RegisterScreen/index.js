@@ -126,7 +126,7 @@ class RegisterScreen extends Component {
     await selectPhoto(obj => {
       this.setState({
         imageURI: obj.imageURI,
-        imageDataObject: obj.imageDataObject,
+        imageDataObject: obj.imageDataObject.assets[0],
         error: obj.error,
       });
     },
@@ -209,6 +209,7 @@ class RegisterScreen extends Component {
           });
         },
         onError: (error, simple) => {
+          console.log("reg error ..", error)
           if (simple) {
             this.setState({
               error,
