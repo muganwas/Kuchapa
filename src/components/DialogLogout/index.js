@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
-import {Dimensions} from 'react-native';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { Dimensions } from 'react-native';
+import { connect } from 'react-redux';
 import RNExitApp from 'react-native-exit-app';
 import firebaseAuth from '@react-native-firebase/auth';
 import rNES from 'react-native-encrypted-storage';
 import DialogComponent from '../DialogComponent';
-import {resetUserDetails} from '../../Redux/Actions/userActions';
+import { resetUserDetails } from '../../Redux/Actions/userActions';
 import Config from '../Config';
 
 class DialogLogout extends Component {
@@ -20,7 +20,7 @@ class DialogLogout extends Component {
   }
 
   closeDialogLogout = async action => {
-    const {resetUserDetails, changeDialogVisibility} = this.props;
+    const { resetUserDetails, changeDialogVisibility } = this.props;
     if (action == 'Ok') {
       if (firebaseAuth().currentUser) firebaseAuth().signOut();
       await rNES.removeItem('userId');
@@ -33,9 +33,8 @@ class DialogLogout extends Component {
       changeDialogVisibility(false);
       RNExitApp.exitApp();
     } else if (action == 'Cancel') {
-      console.log('Logout Cancel');
+      changeDialogVisibility(false);
     }
-    changeDialogVisibility(false);
   };
 
   render() {

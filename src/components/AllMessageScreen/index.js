@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   View,
   StyleSheet,
@@ -21,14 +21,14 @@ import {
   notificationsFetched,
   notificationError,
 } from '../../Redux/Actions/notificationActions';
-import {setSelectedJobRequest} from '../../Redux/Actions/jobsActions';
+import { setSelectedJobRequest } from '../../Redux/Actions/jobsActions';
 import Hamburger from '../Hamburger';
 import {
   lightGray,
   colorPrimaryDark,
-  colorPrimary,
   white,
   themeRed,
+  black
 } from '../../Constants/colors';
 
 const screenWidth = Dimensions.get('window').width;
@@ -69,9 +69,9 @@ class AllMessageScreen extends Component {
   componentDidMount() {
     const {
       navigation,
-      messagesInfo: {latestChats},
+      messagesInfo: { latestChats },
     } = this.props;
-    this.setState({dataSource: latestChats});
+    this.setState({ dataSource: latestChats });
     navigation.addListener('willFocus', async () => {
       BackHandler.addEventListener(
         'hardwareBackPress',
@@ -88,10 +88,10 @@ class AllMessageScreen extends Component {
 
   componentDidUpdate(prevProps) {
     const {
-      messagesInfo: {latestChats},
+      messagesInfo: { latestChats },
     } = this.props;
     if (!_.isEqual(prevProps.messagesInfo.latestChats, latestChats)) {
-      this.setState({dataSource: latestChats});
+      this.setState({ dataSource: latestChats });
     }
   }
 
@@ -102,7 +102,7 @@ class AllMessageScreen extends Component {
   renderRecentMessageItem = (item, index) => {
     const {
       dispatchSelectedJobRequest,
-      jobsInfo: {allJobRequestsClient},
+      jobsInfo: { allJobRequestsClient },
     } = this.props;
     const selectedJobReq = allJobRequestsClient.find(
       jobInfo => jobInfo.employee_id === item.id,
@@ -128,19 +128,19 @@ class AllMessageScreen extends Component {
           }}>
           <View style={styles.itemImageView}>
             <Image
-              style={{width: 40, height: 40, borderRadius: 100}}
+              style={{ width: 40, height: 40, borderRadius: 100 }}
               source={
                 item.image && item.exists
-                  ? {uri: item.image}
+                  ? { uri: item.image }
                   : require('../../images/generic_avatar.png')
               }
             />
           </View>
-          <View style={{flexDirection: 'column', justifyContent: 'center'}}>
+          <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
             <Text
               style={{
                 fontSize: 14,
-                color: 'black',
+                color: black,
                 textAlignVertical: 'center',
               }}>
               {item.name}
@@ -149,7 +149,7 @@ class AllMessageScreen extends Component {
               style={{
                 width: screenWidth - 150,
                 fontSize: 10,
-                color: 'black',
+                color: black,
                 textAlignVertical: 'center',
                 color: 'gray',
                 marginTop: 3,
@@ -160,8 +160,8 @@ class AllMessageScreen extends Component {
           </View>
 
           <View
-            style={{flex: 1, justifyContent: 'center', alignContent: 'center'}}>
-            <Text style={{alignSelf: 'flex-end', marginRight: 20, fontSize: 8}}>
+            style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
+            <Text style={{ alignSelf: 'flex-end', marginRight: 20, fontSize: 8 }}>
               {item.date}
             </Text>
           </View>
@@ -180,15 +180,19 @@ class AllMessageScreen extends Component {
         return item;
       }
     });
-    this.setState({dataSource: filterTracks});
+    this.setState({ dataSource: filterTracks });
   };
 
   render() {
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
-        <View style={styles.header}>
-          <Hamburger navigation={this.props.navigation} text="Your Messages" />
+        <View
+          style={[
+            styles.header,
+            { borderBottomWidth: 1, borderBottomColor: themeRed },
+          ]}>
+          <Hamburger text="Your Messages" />
         </View>
         <View
           style={{
@@ -211,13 +215,13 @@ class AllMessageScreen extends Component {
               borderRadius: 5,
               backgroundColor: 'white',
               shadowColor: '#000',
-              shadowOffset: {width: 0, height: 0},
+              shadowOffset: { width: 0, height: 0 },
               shadowOpacity: 0.75,
               shadowRadius: 5,
               elevation: 5,
             }}>
             <Image
-              style={{width: 15, height: 15, marginLeft: 20}}
+              style={{ width: 15, height: 15, marginLeft: 20 }}
               source={require('../../icons/search.png')}
             />
             <TextInput
@@ -243,7 +247,7 @@ class AllMessageScreen extends Component {
 
         {this.state.dataSource.length === 0 && !this.state.isLoading && (
           <View style={styles.noDataStyle}>
-            <Text style={{color: 'black', fontSize: 20}}>
+            <Text style={{ color: black, fontSize: 20 }}>
               You have no messages!
             </Text>
           </View>
@@ -251,7 +255,7 @@ class AllMessageScreen extends Component {
 
         {this.state.isLoading && (
           <View style={styles.loaderStyle}>
-            <ActivityIndicator style={{height: 80}} color="#C00" size="large" />
+            <ActivityIndicator style={{ height: 80 }} color="#C00" size="large" />
           </View>
         )}
       </View>
@@ -305,7 +309,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: 'white',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     marginVertical: 2,
     shadowRadius: 5,
@@ -361,12 +365,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   header: {
-    flexDirection: 'row',
     width: '100%',
     height: 50,
-    backgroundColor: colorPrimary,
-    paddingLeft: 10,
-    paddingRight: 20,
-    paddingBottom: 5,
+    flexDirection: 'row',
+    backgroundColor: white,
+    shadowColor: black,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.75,
+    shadowRadius: 5,
+    elevation: 5,
   },
 });

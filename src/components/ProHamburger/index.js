@@ -11,7 +11,7 @@ import {
 import NetInfo from '@react-native-community/netinfo';
 import { cloneDeep } from 'lodash';
 import { DrawerActions } from '@react-navigation/native';
-import { NavigationEvents } from '@react-navigation/compat';
+import { NavigationEvents, withNavigation } from '@react-navigation/compat';
 import database from '@react-native-firebase/database';
 import geolocation from '@react-native-community/geolocation';
 import messaging from '@react-native-firebase/messaging';
@@ -540,7 +540,7 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(ProHamburger);
+)(withNavigation(ProHamburger));
 
 const styles = StyleSheet.create({
   touchableHighlight: {

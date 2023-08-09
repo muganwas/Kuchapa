@@ -9,6 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { DrawerActions } from '@react-navigation/native';
+import { withNavigation } from '@react-navigation/compat';
 import database from '@react-native-firebase/database';
 import SimpleToast from 'react-native-simple-toast';
 import NetInfo from '@react-native-community/netinfo';
@@ -666,7 +667,7 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(Hamburger);
+)(withNavigation(Hamburger));
 
 const styles = StyleSheet.create({
   touchableHighlight: {

@@ -19,6 +19,7 @@ import RNExitApp from 'react-native-exit-app';
 import Toast from 'react-native-simple-toast';
 import Config from '../Config';
 import WaitingDialog from '../WaitingDialog';
+import ProHamburger from '../ProHamburger';
 import { font_size } from '../../Constants/metrics';
 import {
   updateCompletedBookingData,
@@ -291,6 +292,11 @@ class ProBookingScreen extends Component {
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
+        <View
+          style={[
+            styles.header,
+            { borderBottomWidth: 1, borderBottomColor: themeRed },
+          ]}><ProHamburger text="Bookings" /></View>
         <View
           style={{
             width: screenWidth,

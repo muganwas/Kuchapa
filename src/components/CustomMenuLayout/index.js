@@ -26,7 +26,6 @@ function CustomMenuLayout(props) {
   const [imageSource] = useState(userDetails.imageSource);
 
   useEffect(() => {
-    console.log(' user details', { userDetails })
     getImageExists(userDetails);
   }, [userDetails]);
 
@@ -157,7 +156,9 @@ function CustomMenuLayout(props) {
           <TouchableOpacity
             underlayColor={'rgba(0,0,0,0.2)'}
             style={styles.menuButton}
-            onPress={() => props.navigation.navigate('ContactUs')}>
+            onPress={() => props.navigation.navigate('ContactUs', {
+              userType: 'customer'
+            })}>
             <View style={styles.row}>
               <Image
                 source={require('../../icons/ic_contact_us_64dp.png')}
@@ -178,16 +179,15 @@ function CustomMenuLayout(props) {
               <Text style={styles.textMenu}>Log out</Text>
             </View>
           </TouchableOpacity>
-          <Modal
-            transparent={true}
-            visible={isDialogLogoutVisible}
-            animationType="fade"
-            onRequestClose={() => changeDialogVisibility(false)}>
-            <DialogLogout
-              navigation={props.navigation}
-              changeDialogVisibility={changeDialogVisibility}
-            />
-          </Modal>
+          <TouchableOpacity
+            underlayColor={'rgba(0,0,0,0.2)'}
+            style={{ flex: 1, display: 'flex', height: 100 }}>
+          </TouchableOpacity>
+          <DialogLogout
+            isDialogLogoutVisible={isDialogLogoutVisible}
+            navigation={props.navigation}
+            changeDialogVisibility={changeDialogVisibility}
+          />
         </ScrollView>
       </TouchableOpacity>
     </TouchableOpacity>

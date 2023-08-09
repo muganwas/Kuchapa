@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, Text, TouchableOpacity, Platform, StatusBar, BackHandler } from 'react-native';
-import { black, colorPrimary, white, themeRed, lightGray } from '../../Constants/colors';
+import { View, StyleSheet, Image, Text, Platform, StatusBar, BackHandler } from 'react-native';
+import Hamburger from '../Hamburger';
+import ProHamburger from '../ProHamburger';
+import { white, lightGray, themeRed, black } from '../../Constants/colors';
 
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
 
@@ -37,9 +39,20 @@ export default class ContactUsScreen extends Component {
     }
 
     render() {
+        const { route } = this.props;
         return (
             <View style={styles.container}>
                 <StatusBarPlaceHolder />
+                <View
+                    style={[
+                        styles.header,
+                        { borderBottomWidth: 1, borderBottomColor: themeRed },
+                    ]}>
+                    {route.params.userType === 'customer' ?
+                        <Hamburger text="Contact Us" /> :
+                        <ProHamburger text="Contact Us" />
+                    }
+                </View>
                 <View style={styles.mainContainer}>
                     <View style={{ flexDirection: 'row', padding: 10, }}>
                         <Image style={{ width: 20, height: 20 }}
@@ -70,6 +83,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: lightGray,
+    },
+    header: {
+        width: '100%',
+        height: 50,
+        flexDirection: 'row',
+        backgroundColor: white,
+        shadowColor: black,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.75,
+        shadowRadius: 5,
+        elevation: 5,
     },
     mainContainer: {
         backgroundColor: white,

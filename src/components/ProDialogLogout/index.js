@@ -34,7 +34,6 @@ class ProDialogLogout extends Component {
       changeDialogVisibility(false);
       RNExitApp.exitApp();
     } else if (action === 'Cancel') {
-      console.log('Logout Cancel');
       changeDialogVisibility(false);
     }
   };

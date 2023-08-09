@@ -340,7 +340,7 @@ export default class App extends Component {
           <Stack.Screen name="AddAddress" component={AddAddressScreen} />
           <Stack.Screen name="AccountType" component={AccountTypeScreen} options={{ title: "Account Type" }} />
           <Stack.Screen name="AllMessage" component={AllMessageScreen} />
-          <Stack.Screen name="Booking" component={BookingScreen} />
+          <Stack.Screen name="Booking" component={BookingScreen} options={{ header: () => <></> }} />
           <Stack.Screen name="BookingDetails" component={BookingDetailsScreen} />
           <Stack.Screen name="Chat" component={ChatScreen} />
           <Stack.Screen name="ChatAfterBookingDetails" component={ChatAfterBookingDetailsScreen} />
@@ -353,8 +353,8 @@ export default class App extends Component {
           <Stack.Screen name="Home" component={HomeScreen} options={{ header: () => <></>, title: "Home" }} />
           <Stack.Screen name="ListOfProviders" component={ListOfProviderScreen} />
           <Stack.Screen name="MapDirection" component={MapDirectionScreen} />
-          <Stack.Screen name="MyProfile" component={MyProfileScreen} />
-          <Stack.Screen name="Notifications" component={NotificationsScreen} />
+          <Stack.Screen name="MyProfile" component={MyProfileScreen} options={{ header: () => <></> }} />
+          <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ header: () => <></> }} />
           <Stack.Screen name="ProviderDetails" component={ProviderDetailsScreen} />
 
           <Stack.Screen name="Splash" component={SplashScreenComponent} options={{ header: () => <></> }} />

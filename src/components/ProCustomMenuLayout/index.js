@@ -157,7 +157,10 @@ function CustomMenuLayout(props) {
           <TouchableOpacity
             underlayColor={'rgba(0,0,0,0.2)'}
             style={styles.menuButton}
-            onPress={() => props.navigation.navigate('ContactUs')}>
+            onPress={() => props.navigation.navigate('ContactUs',
+              {
+                userType: 'service_provider'
+              })}>
             <View style={styles.row}>
               <Image
                 source={require('../../icons/ic_contact_us_64dp.png')}

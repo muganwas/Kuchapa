@@ -28,7 +28,6 @@ import { getAllBookings } from '../../controllers/bookings';
 import { font_size } from '../../Constants/metrics';
 import {
   colorPrimaryDark,
-  colorPrimary,
   white,
   themeRed,
   black,
@@ -294,18 +293,12 @@ class BookingScreen extends Component {
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
-
         <View
-          style={{
-            flexDirection: 'row',
-            width: '100%',
-            height: 50,
-            backgroundColor: colorPrimary,
-            paddingLeft: 10,
-            paddingRight: 20,
-            paddingBottom: 5,
-          }}>
-          <Hamburger navigation={this.props.navigation} text="Bookings" />
+          style={[
+            styles.header,
+            { borderBottomWidth: 1, borderBottomColor: themeRed },
+          ]}>
+          <Hamburger text="Bookings" />
         </View>
 
         <View
@@ -508,6 +501,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 5,
     marginRight: 5,
+  },
+  header: {
+    width: '100%',
+    height: 50,
+    flexDirection: 'row',
+    backgroundColor: white,
+    shadowColor: black,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.75,
+    shadowRadius: 5,
+    elevation: 5,
   },
   text: {
     fontSize: font_size.sub_header,

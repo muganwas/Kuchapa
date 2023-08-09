@@ -15,6 +15,7 @@ import {
   Animated,
 } from 'react-native';
 import _ from 'lodash';
+import ProHamburger from '../ProHamburger';
 import {
   startFetchingNotification,
   notificationsFetched,
@@ -175,6 +176,11 @@ class ProAllMessageScreen extends Component {
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
+        <View
+          style={[
+            styles.header,
+            { borderBottomWidth: 1, borderBottomColor: themeRed },
+          ]}><ProHamburger text="Messages" /></View>
         <View
           style={{
             flexDirection: 'row',

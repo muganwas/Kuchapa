@@ -298,21 +298,11 @@ class MyProfileScreen extends Component {
       <View style={styles.container}>
         <StatusBarPlaceHolder />
         <View
-          style={{
-            flexDirection: 'row',
-            width: '100%',
-            height: 50,
-            backgroundColor: white,
-            paddingLeft: 10,
-            paddingRight: 20,
-            paddingBottom: 5,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0.75,
-            shadowRadius: 5,
-            elevation: 5,
-          }}>
-          <Hamburger navigation={this.props.navigation} text="My Profile" />
+          style={[
+            styles.header,
+            { borderBottomWidth: 1, borderBottomColor: themeRed },
+          ]}>
+          <Hamburger text="My Profile" />
         </View>
 
         <KeyboardAwareScrollView
@@ -686,6 +676,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 5,
     marginRight: 5,
+  },
+  header: {
+    width: '100%',
+    height: 50,
+    flexDirection: 'row',
+    backgroundColor: white,
+    shadowColor: black,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.75,
+    shadowRadius: 5,
+    elevation: 5,
   },
   buttonRed: {
     flex: 1,

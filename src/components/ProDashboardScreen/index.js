@@ -68,20 +68,20 @@ const REVIEW_RATING = Config.baseURL + 'jobrequest/ratingreview';
 
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
 
-// const StatusBarPlaceHolder = () => {
-//   return Platform.OS === 'ios' ? (
-//     <View
-//       style={{
-//         width: '100%',
-//         height: STATUS_BAR_HEIGHT,
-//         backgroundColor: white,
-//       }}>
-//       <StatusBar barStyle="dark-content" />
-//     </View>
-//   ) : (
-//     <StatusBar barStyle="dark-content" backgroundColor={white} />
-//   );
-// };
+const StatusBarPlaceHolder = () => {
+  return Platform.OS === 'ios' ? (
+    <View
+      style={{
+        width: '100%',
+        height: STATUS_BAR_HEIGHT,
+        backgroundColor: white,
+      }}>
+      <StatusBar barStyle="dark-content" />
+    </View>
+  ) : (
+    <StatusBar barStyle="dark-content" backgroundColor={white} />
+  );
+};
 
 class ProDashboardScreen extends Component {
   constructor(props) {
@@ -836,13 +836,13 @@ class ProDashboardScreen extends Component {
     } = this.props;
     return (
       <View style={styles.container}>
-        {/* <StatusBarPlaceHolder /> */}
+        <StatusBarPlaceHolder />
         <View
           style={[
             styles.header,
             { borderBottomWidth: 1, borderBottomColor: themeRed },
           ]}>
-          <ProHamburger navigation={navigation} text="kuchapa" />
+          <ProHamburger text="kuchapa" />
           <TouchableOpacity
             style={{
               width: '85%',

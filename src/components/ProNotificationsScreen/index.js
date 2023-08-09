@@ -17,6 +17,7 @@ import {
 import SimpleToast from 'react-native-simple-toast';
 import Config from '../Config';
 import SwipeableButton from '../SwipeableBtn';
+import ProHamburger from '../ProHamburger';
 import {
   startFetchingNotification,
   notificationsFetched,
@@ -233,6 +234,11 @@ class ProNotificationsScreen extends Component {
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
+        <View
+          style={[
+            styles.header,
+            { borderBottomWidth: 1, borderBottomColor: themeRed },
+          ]}><ProHamburger text="Notifications" /></View>
         {this.state.isLoading && (
           <View
             style={{

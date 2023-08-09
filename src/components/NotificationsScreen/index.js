@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   StyleSheet,
@@ -13,7 +13,7 @@ import {
   Animated,
   ScrollView,
 } from 'react-native';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import SimpleToast from 'react-native-simple-toast';
 import RNExitApp from 'react-native-exit-app';
 import Config from '../Config';
@@ -74,8 +74,8 @@ class NotificationsScreen extends Component {
   }
 
   componentDidMount() {
-    const {fetchedNotifications, navigation} = this.props;
-    fetchedNotifications({type: 'generic', value: 0});
+    const { fetchedNotifications, navigation } = this.props;
+    fetchedNotifications({ type: 'generic', value: 0 });
     this.getAllNotificationsCustomer();
     navigation.addListener('willFocus', async () => {
       BackHandler.addEventListener('hardwareBackPress', () =>
@@ -98,7 +98,7 @@ class NotificationsScreen extends Component {
   };
 
   _spring = () => {
-    this.setState({backClickCount: 1}, () => {
+    this.setState({ backClickCount: 1 }, () => {
       Animated.sequence([
         Animated.spring(this.springValue, {
           toValue: -0.15 * 1,
@@ -112,7 +112,7 @@ class NotificationsScreen extends Component {
           useNativeDriver: true,
         }),
       ]).start(() => {
-        this.setState({backClickCount: 0});
+        this.setState({ backClickCount: 0 });
       });
     });
   };
@@ -163,7 +163,7 @@ class NotificationsScreen extends Component {
   //GridView Items
   renderItem = (item, index) => {
     if (item) {
-      const {status, _id} = item;
+      const { status, _id } = item;
       return (
         <SwipeableButton
           key={index}
@@ -179,7 +179,7 @@ class NotificationsScreen extends Component {
               margin: 5,
               padding: 10,
               shadowColor: '#000',
-              shadowOffset: {width: 0, height: 3},
+              shadowOffset: { width: 0, height: 3 },
               shadowOpacity: 0.75,
               shadowRadius: 5,
               elevation: 5,
@@ -188,7 +188,7 @@ class NotificationsScreen extends Component {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <View style={{justifyContent: 'center', alignContent: 'center'}}>
+            <View style={{ justifyContent: 'center', alignContent: 'center' }}>
               <Image
                 style={{
                   width: 45,
@@ -198,7 +198,7 @@ class NotificationsScreen extends Component {
                 }}
                 source={
                   item.employee_details && item.employee_details.imageAvailable
-                    ? {uri: item.employee_details.image}
+                    ? { uri: item.employee_details.image }
                     : require('../../images/generic_avatar.png')
                 }
               />
@@ -221,7 +221,7 @@ class NotificationsScreen extends Component {
                 }}>
                 {item.title}
               </Text>
-              <Text style={{color: 'grey', fontSize: 13, marginTop: 2}}>
+              <Text style={{ color: 'grey', fontSize: 13, marginTop: 2 }}>
                 {item.message}
               </Text>
               <Text
@@ -248,13 +248,17 @@ class NotificationsScreen extends Component {
 
   render() {
     const {
-      notificationsInfo: {dataSource},
+      notificationsInfo: { dataSource },
     } = this.props;
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
-        <View style={styles.header}>
-          <Hamburger navigation={this.props.navigation} text="Notifications" />
+        <View
+          style={[
+            styles.header,
+            { borderBottomWidth: 1, borderBottomColor: themeRed },
+          ]}>
+          <Hamburger text="Notifications" />
         </View>
         {this.state.isLoading && (
           <View
@@ -293,11 +297,11 @@ class NotificationsScreen extends Component {
                 alignItems: 'center',
               }}>
               <Image
-                style={{width: 50, height: 50, tintColor: white}}
+                style={{ width: 50, height: 50, tintColor: white }}
                 source={require('../../icons/ic_notification.png')}
               />
             </View>
-            <Text style={{fontSize: 18, marginTop: 10}}>
+            <Text style={{ fontSize: 18, marginTop: 10 }}>
               You have no notifications
             </Text>
           </View>
@@ -305,7 +309,7 @@ class NotificationsScreen extends Component {
         <Animated.View
           style={[
             styles.animatedView,
-            {transform: [{translateY: this.springValue}]},
+            { transform: [{ translateY: this.springValue }] },
           ]}>
           <Text style={styles.exitTitleText}>
             Press back again to exit the app
@@ -332,7 +336,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: white,
     shadowColor: black,
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,

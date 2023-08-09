@@ -43,7 +43,7 @@ import {
   white,
   lightGray,
   darkGray,
-  black,
+  black
 } from '../../Constants/colors';
 import images from '../../Constants/images';
 import { jobCancelTask, fetchServices } from '../../controllers/jobs';
@@ -502,8 +502,12 @@ class DashboardScreen extends Component {
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
-        <View style={styles.header}>
-          <Hamburger navigation={navigation} text="kuchapa" />
+        <View
+          style={[
+            styles.header,
+            { borderBottomWidth: 1, borderBottomColor: themeRed },
+          ]}>
+          <Hamburger text="kuchapa" />
           <TouchableOpacity
             style={{
               width: '80%',
@@ -671,8 +675,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 50,
     flexDirection: 'row',
-    backgroundColor: colorPrimary,
-    shadowColor: '#000',
+    backgroundColor: white,
+    shadowColor: black,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,

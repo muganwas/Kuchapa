@@ -314,7 +314,11 @@ class ProMyProfileScreen extends Component {
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
-
+        <View
+          style={[
+            styles.header,
+            { borderBottomWidth: 1, borderBottomColor: themeRed },
+          ]}><Hamburger text="My Profile" /></View>
         <KeyboardAwareScrollView
           contentContainerStyle={{
             flexGrow: 1,
