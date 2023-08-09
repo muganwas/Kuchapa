@@ -228,7 +228,7 @@ class DashboardScreen extends Component {
                 textAlign: 'center',
                 fontWeight: 'bold',
                 color: white,
-                fontSize: 12,
+                fontSize: 11,
                 marginTop: 5,
                 alignSelf: 'center',
               }}>

@@ -335,13 +335,13 @@ export default class App extends Component {
     return (
       <NavigationContainer>
         <Stack.Navigator initialRouteName='Splash'>
-          <Stack.Screen name="AddAddress" component={AddAddressScreen} />
+          <Stack.Screen name="AddAddress" component={AddAddressScreen} options={{ header: () => <></> }} />
           <Stack.Screen name="AccountType" component={AccountTypeScreen} options={{ title: "Account Type" }} />
-          <Stack.Screen name="AllMessage" component={AllMessageScreen} />
+          <Stack.Screen name="AllMessage" component={AllMessageScreen} options={{ header: () => <></> }} />
           <Stack.Screen name="Booking" component={BookingScreen} options={{ header: () => <></> }} />
-          <Stack.Screen name="BookingDetails" component={BookingDetailsScreen} />
-          <Stack.Screen name="Chat" component={ChatScreen} />
-          <Stack.Screen name="ChatAfterBookingDetails" component={ChatAfterBookingDetailsScreen} />
+          <Stack.Screen name="BookingDetails" component={BookingDetailsScreen} options={{ header: () => <></> }} />
+          <Stack.Screen name="Chat" component={ChatScreen} options={{ header: () => <></> }} />
+          <Stack.Screen name="ChatAfterBookingDetails" component={ChatAfterBookingDetailsScreen} options={{ header: () => <></> }} />
           <Stack.Screen name="FacebookGoogle" component={FacebookGoogleScreen} options={{ title: "Login" }} />
           <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ title: "Forgot Password" }} />
           <Stack.Screen name="Register" component={RegisterScreen} options={{ title: "Register" }} />
@@ -350,10 +350,10 @@ export default class App extends Component {
           <Stack.Screen name="Dashboard" component={DashboardScreen} options={{ header: () => <></>, title: "Dashboard" }} />
           <Stack.Screen name="Home" component={HomeScreen} options={{ header: () => <></>, title: "Home" }} />
           <Stack.Screen name="ListOfProviders" component={ListOfProviderScreen} options={{ header: () => <></> }} />
-          <Stack.Screen name="MapDirection" component={MapDirectionScreen} />
+          <Stack.Screen name="MapDirection" component={MapDirectionScreen} options={{ header: () => <></> }} />
           <Stack.Screen name="MyProfile" component={MyProfileScreen} options={{ header: () => <></> }} />
           <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ header: () => <></> }} />
-          <Stack.Screen name="ProviderDetails" component={ProviderDetailsScreen} />
+          <Stack.Screen name="ProviderDetails" component={ProviderDetailsScreen} options={{ header: () => <></> }} />
 
           <Stack.Screen name="Splash" component={SplashScreenComponent} options={{ header: () => <></> }} />
           <Stack.Screen name="AfterSplash" component={AfterSplashScreen} options={{ header: () => <></> }} />
