@@ -8,7 +8,6 @@ import {
   Platform,
   BackHandler,
   Dimensions,
-  Text,
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -44,6 +43,18 @@ import ProHomeScreen from '../ProHomeScreen';
 import ProAccountTypeScreen from '../ProAccountTypeScreen';
 import SelectAddressScreen from '../SelectAddressScreen';
 import DialogComponent from '../DialogComponent';
+import MapDirectionScreen from '../MapDirectionScreen';
+import ProviderDetailsScreen from '../ProviderDetailsScreen';
+import ChatScreen from '../ChatScreen';
+import ListOfProviderScreen from '../ListOfProviderScreen';
+import AddAddressScreen from '../AddAddressScreen';
+import MyProfileScreen from '../MyProfileScreen';
+import BookingScreen from '../BookingScreen';
+import BookingDetailsScreen from '../BookingDetailsScreen';
+import ChatAfterBookingDetailsScreen from '../ChatAfterBookingDetailsScreen';
+import AllMessageScreen from '../AllMessageScreen';
+import NotificationsScreen from '../NotificationsScreen';
+
 import {
   updateUserDetails,
   updateProviderDetails,
@@ -326,8 +337,13 @@ export default class App extends Component {
     return (
       <NavigationContainer>
         <Stack.Navigator initialRouteName='Splash'>
-          <Stack.Screen name="Splash" component={SplashScreenComponent} options={{ header: () => <></> }} />
-          <Stack.Screen name="AfterSplash" component={AfterSplashScreen} options={{ header: () => <></> }} />
+          <Stack.Screen name="AddAddress" component={AddAddressScreen} />
+          <Stack.Screen name="AccountType" component={AccountTypeScreen} options={{ title: "Account Type" }} />
+          <Stack.Screen name="AllMessage" component={AllMessageScreen} />
+          <Stack.Screen name="Booking" component={BookingScreen} />
+          <Stack.Screen name="BookingDetails" component={BookingDetailsScreen} />
+          <Stack.Screen name="Chat" component={ChatScreen} />
+          <Stack.Screen name="ChatAfterBookingDetails" component={ChatAfterBookingDetailsScreen} />
           <Stack.Screen name="FacebookGoogle" component={FacebookGoogleScreen} options={{ title: "Login" }} />
           <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ title: "Forgot Password" }} />
           <Stack.Screen name="Register" component={RegisterScreen} options={{ title: "Register" }} />
@@ -335,8 +351,14 @@ export default class App extends Component {
           <Stack.Screen name="SelectAddress" component={SelectAddressScreen} options={{ title: "Select Address" }} />
           <Stack.Screen name="Dashboard" component={DashboardScreen} options={{ title: "Dashboard" }} />
           <Stack.Screen name="Home" component={HomeScreen} options={{ header: () => <></>, title: "Home" }} />
+          <Stack.Screen name="ListOfProviders" component={ListOfProviderScreen} />
+          <Stack.Screen name="MapDirection" component={MapDirectionScreen} />
+          <Stack.Screen name="MyProfile" component={MyProfileScreen} />
+          <Stack.Screen name="Notifications" component={NotificationsScreen} />
+          <Stack.Screen name="ProviderDetails" component={ProviderDetailsScreen} />
 
-          <Stack.Screen name="AccountType" component={AccountTypeScreen} options={{ title: "Account Type" }} />
+          <Stack.Screen name="Splash" component={SplashScreenComponent} options={{ header: () => <></> }} />
+          <Stack.Screen name="AfterSplash" component={AfterSplashScreen} options={{ header: () => <></> }} />
           <Stack.Screen name="ContactUs" component={ContactUsScreen} options={{ title: "Contact Us" }} />
 
           <Stack.Screen name="ProAllMessage" component={ProAllMessageScreen} options={{ title: "Messages" }} />
