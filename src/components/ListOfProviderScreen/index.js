@@ -62,14 +62,14 @@ class ListOfProviderScreen extends Component {
   componentDidMount() {
     const { navigation } = this.props;
     this.initialize();
-    navigation.addListener('willFocus', async () => {
+    BackHandler.addEventListener('hardwareBackPress', () =>
+      this.handleBackButtonClick(),
+    );
+    navigation.addListener('focus', async () => {
       /**
        * app has tocheck for new providers everytime this view is opened
        */
       this.initialize();
-      BackHandler.addEventListener('hardwareBackPress', () =>
-        this.handleBackButtonClick(),
-      );
     });
     navigation.addListener('willBlur', () => {
       BackHandler.removeEventListener(
@@ -79,8 +79,15 @@ class ListOfProviderScreen extends Component {
     });
   }
 
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+
   initialize = async () => {
-    const { navigation } = this.props;
+    const { route } = this.props;
     this.setState({
       serviceName: route.params.serviceName,
       serviceId: route.params.serviceId,
@@ -358,7 +365,7 @@ class ListOfProviderScreen extends Component {
       <View style={styles.container}>
         <StatusBarPlaceHolder />
         <View style={styles.header}>
-          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ flex: 1, flexDirection: 'row', overflow: 'visible', alignItems: 'center', zIndex: 100, elevation: Platform.OS === 'android' ? 100 : 0 }}>
             <TouchableOpacity
               style={{
                 width: 35,
@@ -372,7 +379,6 @@ class ListOfProviderScreen extends Component {
                 source={require('../../icons/arrow_back.png')}
               />
             </TouchableOpacity>
-
             <Text
               style={{
                 color: 'white',
@@ -386,7 +392,7 @@ class ListOfProviderScreen extends Component {
             <TouchableOpacity
               onPress={this.toggleShowClasses}
               style={styles.classedByContainer}>
-              <Text style={styles.classedByText}>Classed By</Text>
+              <Text style={styles.classedByText}>Sort By</Text>
             </TouchableOpacity>
             <View style={showClasses ? styles.classList : styles.hidden}>
               <TouchableOpacity
@@ -426,6 +432,8 @@ class ListOfProviderScreen extends Component {
               backgroundColor: colorBg,
               justifyContent: 'center',
               alignItems: 'center',
+              zIndex: 1,
+              elevation: Platform.OS === 'android' ? 3 : 0,
             }}>
             <View
               style={{
@@ -469,6 +477,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colorBg,
+    zIndex: 0,
+    elevation: Platform.OS === 'android' ? 1 : 0,
   },
   header: {
     position: 'relative',
@@ -480,7 +490,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
-    elevation: 5,
+    overflow: 'visible',
+    elevation: Platform.OS === 'android' ? 10 : 0,
     zIndex: 8,
   },
   listView: {
@@ -488,7 +499,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     backgroundColor: colorBg,
     padding: 5,
-    elevation: Platform.OS === 'android' ? 3 : 0,
+    elevation: Platform.OS === 'android' ? 1 : 0,
     zIndex: 2,
   },
   smActivityIndicator: {
@@ -528,7 +539,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   hidden: {
-    display: 'none',
+    display: 'none'
   },
   classList: {
     position: 'absolute',
@@ -544,8 +555,8 @@ const styles = StyleSheet.create({
     width: 100,
     right: 2,
     top: 3,
-    elevation: Platform.OS === 'android' ? 10 : 0,
-    zIndex: 10,
+    elevation: Platform.OS === 'android' ? 100 : 0,
+    zIndex: 100,
   },
   classTextContainer: {
     flex: 1,

@@ -183,7 +183,6 @@ class SplashScreen extends Component {
                         null,
                         () => {
                           if (Android) {
-                            console.log("closing app")
                             BackHandler.exitApp();
                           } else RNExitApp.exitApp();
                         },
@@ -239,7 +238,6 @@ class SplashScreen extends Component {
           else RNExitApp.exitApp();
         },
       );
-      console.log('login err', e.message);
     }
   };
 
@@ -349,9 +347,9 @@ export default class App extends Component {
           <Stack.Screen name="Register" component={RegisterScreen} options={{ title: "Register" }} />
           <Stack.Screen name="LoginPhoneScreen" component={LoginPhoneScreen} options={{ title: "Phone Login" }} />
           <Stack.Screen name="SelectAddress" component={SelectAddressScreen} options={{ title: "Select Address" }} />
-          <Stack.Screen name="Dashboard" component={DashboardScreen} options={{ title: "Dashboard" }} />
+          <Stack.Screen name="Dashboard" component={DashboardScreen} options={{ header: () => <></>, title: "Dashboard" }} />
           <Stack.Screen name="Home" component={HomeScreen} options={{ header: () => <></>, title: "Home" }} />
-          <Stack.Screen name="ListOfProviders" component={ListOfProviderScreen} />
+          <Stack.Screen name="ListOfProviders" component={ListOfProviderScreen} options={{ header: () => <></> }} />
           <Stack.Screen name="MapDirection" component={MapDirectionScreen} />
           <Stack.Screen name="MyProfile" component={MyProfileScreen} options={{ header: () => <></> }} />
           <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ header: () => <></> }} />
