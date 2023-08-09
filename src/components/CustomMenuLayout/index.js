@@ -24,14 +24,18 @@ function CustomMenuLayout(props) {
   const [name] = useState(userDetails.username);
   const [isDialogLogoutVisible, updateIsDialogLogoutVisible] = useState(false);
   const [imageSource] = useState(userDetails.imageSource);
+
   useEffect(() => {
-    imgExists(userDetails.image).then(result => {
-      updateImageExists(result);
-    });
-  });
+    console.log(' user details', { userDetails })
+    getImageExists(userDetails);
+  }, [userDetails]);
+
+  const getImageExists = async (userDetails) => {
+    const result = await imgExists(userDetails.imageSource);
+    updateImageExists(result);
+  }
 
   const changeDialogVisibility = bool => {
-    console.log({ props, bool })
     props.navigation.dispatch(DrawerActions.closeDrawer());
     updateIsDialogLogoutVisible(bool);
   };

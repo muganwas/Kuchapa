@@ -254,7 +254,7 @@ export const inhouseLogin = ({
               email: responseJson.data.email,
               password: responseJson.data.password,
               username: responseJson.data.username,
-              image: responseJson.data.image,
+              imageSource: responseJson.data.image,
               mobile: responseJson.data.mobile,
               dob: responseJson.data.dob,
               address: responseJson.data.address,

@@ -84,7 +84,7 @@ class MyProfileScreen extends Component {
     this.state = {
       userId: userDetails.userId,
       fcmId: userDetails.fcmId,
-      image: userDetails.image,
+      image: userDetails.imageSource,
       email: userDetails.email,
       emailDisabled: !!userDetails.email,
       mobileDisabled: !!userDetails.mobile,
