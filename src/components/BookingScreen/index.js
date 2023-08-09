@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   View,
   StyleSheet,
@@ -15,7 +15,6 @@ import {
   ScrollView,
 } from 'react-native';
 import RNExitApp from 'react-native-exit-app';
-import ViewPager from '@react-native-community/viewpager';
 import Toast from 'react-native-simple-toast';
 import Config from '../Config';
 import WaitingDialog from '../WaitingDialog';
@@ -25,8 +24,8 @@ import {
   updateCompletedBookingData,
   updateFailedBookingData,
 } from '../../Redux/Actions/jobsActions';
-import {getAllBookings} from '../../controllers/bookings';
-import {font_size} from '../../Constants/metrics';
+import { getAllBookings } from '../../controllers/bookings';
+import { font_size } from '../../Constants/metrics';
 import {
   colorPrimaryDark,
   colorPrimary,
@@ -70,7 +69,7 @@ class BookingScreen extends Component {
   }
 
   componentDidMount() {
-    const {navigation} = this.props;
+    const { navigation } = this.props;
     this.getAllBookingsCustomer();
     navigation.addListener('willFocus', async () => {
       BackHandler.addEventListener(
@@ -94,7 +93,7 @@ class BookingScreen extends Component {
   };
 
   _spring = () => {
-    this.setState({backClickCount: 1}, () => {
+    this.setState({ backClickCount: 1 }, () => {
       Animated.sequence([
         Animated.spring(this.springValue, {
           toValue: -0.15 * 1,
@@ -108,7 +107,7 @@ class BookingScreen extends Component {
           useNativeDriver: true,
         }),
       ]).start(() => {
-        this.setState({backClickCount: 0});
+        this.setState({ backClickCount: 0 });
       });
     });
   };
@@ -122,23 +121,21 @@ class BookingScreen extends Component {
       onSuccess: (bookingCompleteData, bookingRejectData) => {
         this.props.updateCompletedBookingData(bookingCompleteData);
         this.props.updateFailedBookingData(bookingRejectData);
-        this.setState({isLoading: false});
+        this.setState({ isLoading: false });
       },
     });
 
   onPageSelected = event => {
     let currentPage = event.nativeEvent.position;
-    this.setState({currentPage});
+    this.setState({ currentPage });
   };
 
   selectPage = title => {
     if (title === 'Completed') {
-      this.viewPager.setPage(0);
       this.setState({
         currentPage: 0,
       });
     } else if (title === 'Rejected') {
-      this.viewPager.setPage(1);
       this.setState({
         currentPage: 1,
       });
@@ -154,7 +151,7 @@ class BookingScreen extends Component {
             flexDirection: 'column',
             backgroundColor: white,
             shadowColor: white,
-            shadowOffset: {width: 0, height: 0},
+            shadowOffset: { width: 0, height: 0 },
             shadowOpacity: 0.75,
             shadowRadius: 5,
             elevation: 5,
@@ -177,11 +174,11 @@ class BookingScreen extends Component {
               }}
               source={
                 item?.employee_details?.imageAvailable
-                  ? {uri: item?.employee_details?.image}
+                  ? { uri: item?.employee_details?.image }
                   : require('../../images/generic_avatar.png')
               }
             />
-            <View style={{flexDirection: 'column'}}>
+            <View style={{ flexDirection: 'column' }}>
               <Text
                 style={{
                   color: black,
@@ -195,7 +192,7 @@ class BookingScreen extends Component {
                   item?.employee_details?.surname}
               </Text>
               <View
-                style={{flexDirection: 'row', marginLeft: 10, marginTop: 5}}>
+                style={{ flexDirection: 'row', marginLeft: 10, marginTop: 5 }}>
                 <Image
                   style={{
                     height: 15,
@@ -292,7 +289,7 @@ class BookingScreen extends Component {
 
   render() {
     const {
-      jobsInfo: {bookingCompleteData, bookingRejectData},
+      jobsInfo: { bookingCompleteData, bookingRejectData },
     } = this.props;
     return (
       <View style={styles.container}>
@@ -365,16 +362,9 @@ class BookingScreen extends Component {
             </TouchableOpacity>
           </View>
         </View>
-
-        <ViewPager
-          style={styles.viewPager}
-          initialPage={0}
-          ref={viewPager => {
-            this.viewPager = viewPager;
-          }}
-          onPageSelected={event => this.onPageSelected(event)}>
-          <View key="1">
-            <ScrollView>
+        <View style={{ flex: 1, display: 'flex', flexDirection: 'row' }}>
+          {this.state.currentPage === 0 ?
+            <ScrollView contentContainerStyle={{ display: 'flex', flex: 1, backgroundColor: white }}>
               <View style={styles.listView}>
                 {bookingCompleteData.map(this.renderBookingHistoryItem)}
               </View>
@@ -390,10 +380,8 @@ class BookingScreen extends Component {
                   </Text>
                 </View>
               )}
-            </ScrollView>
-          </View>
-          <View key="2">
-            <ScrollView>
+            </ScrollView> :
+            this.state.currentPage === 1 ? <ScrollView contentContainerStyle={{ display: 'flex', flex: 1, backgroundColor: white }}>
               <View style={styles.listView}>
                 {bookingRejectData.map(this.renderBookingHistoryItem)}
               </View>
@@ -409,13 +397,12 @@ class BookingScreen extends Component {
                   </Text>
                 </View>
               )}
-            </ScrollView>
-          </View>
-        </ViewPager>
+            </ScrollView> : <></>}
+        </View>
         <Animated.View
           style={[
             styles.animatedView,
-            {transform: [{translateY: this.springValue}]},
+            { transform: [{ translateY: this.springValue }] },
           ]}>
           <Text style={styles.exitTitleText}>
             Press back again to exit the app
@@ -435,7 +422,7 @@ class BookingScreen extends Component {
             changeWaitingDialogVisibility={this.changeWaitingDialogVisibility}
           />
         </Modal>
-      </View>
+      </View >
     );
   }
 }
@@ -466,10 +453,6 @@ export default connect(
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: lightGray,
-  },
-  viewPager: {
     flex: 1,
     backgroundColor: lightGray,
   },

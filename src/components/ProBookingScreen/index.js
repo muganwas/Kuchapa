@@ -17,7 +17,6 @@ import { connect } from 'react-redux';
 import _ from 'lodash';
 import RNExitApp from 'react-native-exit-app';
 import Toast from 'react-native-simple-toast';
-import ViewPager from '@react-native-community/viewpager';
 import Config from '../Config';
 import WaitingDialog from '../WaitingDialog';
 import { font_size } from '../../Constants/metrics';
@@ -433,9 +432,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: lightGray,
-  },
-  viewPager: {
-    flex: 1,
   },
   pageStyle: {
     alignItems: 'center',
