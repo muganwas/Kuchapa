@@ -66,14 +66,11 @@ class ProChatAfterBookingDetailsScreen extends Component {
       jobsInfo: {
         selectedJobRequest: { user_id },
       },
-      navigation,
       generalInfo: { OnlineUsers },
       userInfo: { providerDetails },
     } = props;
     let imageAvailable;
-    imageExists(route.params.receiverImage).then(res => {
-      imageAvailable = res;
-    });
+    imageAvailable = imageExists(route.params.receiverImage);
     this.state = {
       showButton: false,
       senderId: providerDetails.providerId,

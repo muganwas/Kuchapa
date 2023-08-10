@@ -64,7 +64,7 @@ const StatusBarPlaceHolder = () => {
 class ProChatAcceptScreen extends Component {
   constructor(props) {
     super();
-    const { navigation } = props;
+    const { route } = props;
     this.state = {
       userId: '',
       userName: '',

@@ -24,15 +24,11 @@ export const getAllBookings = async ({
           let newData = cloneDeep(responseJson.data);
           for (let i = 0; i < newData.length; i++) {
             if (userType === 'Provider')
-              imageExists(newData[i]?.user_details?.image).then(res => {
-                if (newData[i]?.user_details)
-                  newData[i].user_details.imageAvailable = res;
-              });
-            else
-              imageExists(newData[i]?.employee_details?.image).then(res => {
+              if (newData[i]?.user_details)
+                newData[i].user_details.imageAvailable = await imageExists(newData[i]?.user_details?.image);
+              else
                 if (newData[i]?.employee_details)
-                  newData[i].employee_details.imageAvailable = res;
-              });
+                  newData[i].employee_details.imageAvailable = await imageExists(newData[i]?.employee_details?.image);
             if (newData[i].chat_status === '1') {
               if (newData[i].status === 'Completed') {
                 bookingCompleteData.push(newData[i]);

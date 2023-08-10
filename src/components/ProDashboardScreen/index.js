@@ -629,7 +629,7 @@ class ProDashboardScreen extends Component {
               shadowColor: black,
               borderWidth: 0.5,
               borderColor: lightGray,
-              backgroundColor: themeRed,
+              backgroundColor: darkGray,
               shadowOffset: { width: 0, height: 3 },
               shadowOpacity: 0.75,
               shadowRadius: 5,
@@ -663,6 +663,8 @@ class ProDashboardScreen extends Component {
             />
             <View
               style={{
+                display: 'flex',
+                flex: 1,
                 flexDirection: 'column',
                 justifyContent: 'center',
                 textAlignVertical: 'middle',
@@ -711,18 +713,14 @@ class ProDashboardScreen extends Component {
             {chat_status === '0' && (
               <View style={styles.buttonContainer}>
                 <TouchableOpacity
-                  style={styles.arrowView}
+                  style={styles.viewReject}
                   onPress={() => this.rejectJob(index, false)}>
-                  <View style={styles.viewAccept}>
-                    <Text style={styles.textAccept}>Reject Chat</Text>
-                  </View>
+                  <Text style={styles.textReject}>Reject Chat</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={styles.arrowView}
+                  style={styles.viewAccept}
                   onPress={() => this.acceptChat(index, false)}>
-                  <View style={styles.viewAccept}>
-                    <Text style={styles.textAccept}>Accept Chat</Text>
-                  </View>
+                  <Text style={styles.textAccept}>Accept Chat</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -1319,9 +1317,8 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   viewAccept: {
-    alignSelf: 'flex-end',
-    paddingLeft: 10,
-    paddingRight: 10,
+    paddingLeft: 5,
+    paddingRight: 5,
     paddingTop: 5,
     paddingBottom: 5,
     backgroundColor: white,
@@ -1331,13 +1328,36 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
     borderRadius: 5,
-    marginRight: 20,
+    marginRight: 5,
+  },
+  viewReject: {
+    paddingLeft: 5,
+    paddingRight: 5,
+    paddingTop: 5,
+    paddingBottom: 5,
+    backgroundColor: themeRed,
+    shadowColor: black,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.75,
+    shadowRadius: 5,
+    elevation: 5,
+    borderRadius: 5,
+    marginRight: 5,
+  },
+  textReject: {
+    textAlignVertical: 'center',
+    textAlign: 'center',
+    alignSelf: 'flex-end',
+    fontWeight: 'bold',
+    fontSize: 10,
+    color: white,
   },
   textAccept: {
     textAlignVertical: 'center',
     textAlign: 'center',
     alignSelf: 'flex-end',
     fontWeight: 'bold',
+    fontSize: 10,
     color: '#4c4c4c',
   },
   touchaleHighlight: {
@@ -1456,6 +1476,7 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     flexDirection: 'row',
+    alignItems: 'center',
     height: 55,
   },
   linearGradient: {
@@ -1541,7 +1562,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   buttonView: {
     flex: 1,
