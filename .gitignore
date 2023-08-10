@@ -188,3 +188,4 @@ ios/kuchapa/GoogleService-Info.plist
 # Custom
 config.json
 google-services.json
+.cxx/
