@@ -241,10 +241,10 @@ export const sortByTime = (array, ascending = true) => {
 };
 
 export const imageExists = async image_url => {
-  let result;
+  let result = false;
   if (image_url) {
     const img = await fetch(image_url);
-    return img;
+    return !!img.url;
   }
   return result;
 };

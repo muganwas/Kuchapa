@@ -172,7 +172,7 @@ class ProviderDetailsScreen extends Component {
   componentDidMount() {
     this.initialRender();
     const { navigation } = this.props;
-    navigation.addListener('willFocus', async () => {
+    navigation.addListener('focus', async () => {
       //this.initialRender();
       BackHandler.addEventListener('hardwareBackPress', () =>
         this.handleBackButtonClick(),

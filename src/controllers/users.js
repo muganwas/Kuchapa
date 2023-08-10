@@ -1119,9 +1119,7 @@ export const calculateDistance = async ({
       const { _id, image } = obj;
       let imageAvaliable = image && image !== 'no-image.jpg' ? true : false;
       if (image && imageAvaliable) {
-        await imageExists(image).then(res => {
-          imageAvaliable = res;
-        });
+        imageAvaliable = await imageExists(image);
       }
       tempDatasource[key].imageAvailable = imageAvaliable;
       await database()
@@ -1170,9 +1168,7 @@ export const fetchProfile = async ({
             ? true
             : false;
         if (imageAvailable)
-          await imageExists(responseJson.data.image).then(res => {
-            imageAvailable = res;
-          });
+          imageAvailable = await imageExists(responseJson.data.image);
         if (responseJson.result) {
           const id = responseJson.data.id;
           onSuccess({

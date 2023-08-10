@@ -108,26 +108,18 @@ export const acceptChatRequest = async (
             delivery_lat,
             delivery_lang,
           };
-          await imageExists(image).then(res => {
-            jobData.imageAvailable = res;
-          });
+          jobData.imageAvailable = await imageExists(image);
           newjobRequests[pos] = jobData;
           fetchedPendingJobInfo(newjobRequests);
           if (redirect) navigate();
         } else {
-          console.log(
-            'something went wrong with accepting chat --',
-            responseJson,
-          );
           onError('Something went wrong');
         }
       })
       .catch(error => {
-        console.log('Error >>> ' + error);
         onError(error.message);
       });
   } catch (e) {
-    console.log('Error >>> ' + e);
     onError(e.message);
   }
 };
@@ -259,9 +251,7 @@ export const getAllRecentChats = async ({ id, dataSource, onSuccess }) => {
     let newMsgs = [];
     let msgsArr = Object.values(messages);
     msgsArr.map(async message => {
-      await imageExists(message.image).then(res => {
-        message.exists = res;
-      });
+      message.exists = await imageExists(message.image);
       let present = false;
       await newDataSource.map(obj => {
         if (JSON.stringify(obj) === JSON.stringify(message)) present = true;
@@ -274,9 +264,7 @@ export const getAllRecentChats = async ({ id, dataSource, onSuccess }) => {
   });
   dbRef.on('child_changed', async resp => {
     let message = resp.val();
-    await imageExists(message.image).then(res => {
-      message.exists = res;
-    });
+    message.exists = await imageExists(message.image);
     let present = false;
     await newDataSource.map((obj, i) => {
       if (obj.name === message.name) {
@@ -289,9 +277,7 @@ export const getAllRecentChats = async ({ id, dataSource, onSuccess }) => {
   });
   dbRef.on('child_added', async resp => {
     let message = resp.val();
-    await imageExists(message.image).then(res => {
-      message.exists = res;
-    });
+    message.exists = await imageExists(message.image);
     let present = false;
     await newDataSource.map(obj => {
       if (JSON.stringify(obj) === JSON.stringify(message)) present = true;

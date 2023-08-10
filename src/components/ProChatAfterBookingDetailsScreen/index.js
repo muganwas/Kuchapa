@@ -161,10 +161,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
       socket.connect();
       fetchEmployeeMessages(providerDetails.providerId);
     }
-    let imageAvailable;
-    await imageExists(route.params.receiverImage).then(res => {
-      imageAvailable = res;
-    });
+    let imageAvailable = await imageExists(route.params.receiverImage);
     this.setState({
       showButton: false,
       senderId: providerDetails.providerId,

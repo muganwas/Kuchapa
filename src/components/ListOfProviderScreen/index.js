@@ -65,12 +65,6 @@ class ListOfProviderScreen extends Component {
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
-    navigation.addListener('focus', async () => {
-      /**
-       * app has tocheck for new providers everytime this view is opened
-       */
-      this.initialize();
-    });
     navigation.addListener('willBlur', () => {
       BackHandler.removeEventListener(
         'hardwareBackPress',
