@@ -147,7 +147,7 @@ class ListOfProviderScreen extends Component {
     });
 
   handleBackButtonClick = () => {
-    this.props.navigation.navigate('Dashboard');
+    this.props.navigation.navigate('Home');
     return true;
   };
 

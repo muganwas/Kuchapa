@@ -4,7 +4,7 @@
 3211	4315	1691413694099097084	RNImagePickerSpec_autolinked_build/CMakeFiles/react_codegen_RNImagePickerSpec.dir/react/renderer/components/RNImagePickerSpec/Props.cpp.o	47ebd39a408fd2a5
 8	979	1691440452270616935	RNExitAppSpec_autolinked_build/CMakeFiles/react_codegen_RNExitAppSpec.dir/react/renderer/components/RNExitAppSpec/ShadowNodes.cpp.o	5c034e1b19968481
 6	1583	1691413691366044665	RNDateTimePickerCGen_autolinked_build/CMakeFiles/react_codegen_RNDateTimePickerCGen.dir/RNDateTimePickerCGen-generated.cpp.o	473dc302f2b4c6f
-8	1893	1691607012400515578	CMakeFiles/appmodules.dir/OnLoad.cpp.o	8031e8dca08d86d5
+6	1982	1691666502045755831	CMakeFiles/appmodules.dir/OnLoad.cpp.o	8031e8dca08d86d5
 8	798	1691413690579286392	RNDateTimePickerCGen_autolinked_build/CMakeFiles/react_codegen_RNDateTimePickerCGen.dir/react/renderer/components/RNDateTimePickerCGen/RNDateTimePickerCGenJSI-generated.cpp.o	a82724fb4f77f367
 1065	1595	1691413691376469300	RNCGeolocation_autolinked_build/CMakeFiles/react_codegen_RNCGeolocation.dir/react/renderer/components/RNCGeolocation/RNCGeolocationJSI-generated.cpp.o	68d3604aa21f0018
 4032	4086	1691413693866223137	/Volumes/Misc/GitHub/Kuchapa/android/app/build/intermediates/cxx/Debug/202l2of1/obj/x86_64/libreact_codegen_rngesturehandler_codegen.so	ffa7d939fe800bdc
@@ -19,7 +19,7 @@
 2688	3170	1691413692954434042	rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/rngesturehandler_codegenJSI-generated.cpp.o	b7543bbe14f42830
 3346	4029	1691413693811878472	RNImagePickerSpec_autolinked_build/CMakeFiles/react_codegen_RNImagePickerSpec.dir/react/renderer/components/RNImagePickerSpec/RNImagePickerSpecJSI-generated.cpp.o	d25d7531ac7bb395
 16	1225	1691413691008995103	RNCGeolocation_autolinked_build/CMakeFiles/react_codegen_RNCGeolocation.dir/react/renderer/components/RNCGeolocation/EventEmitters.cpp.o	a688ba6f917beba7
-1	26	0	/Volumes/Misc/GitHub/Kuchapa/android/app/.cxx/Debug/202l2of1/x86_64/CMakeFiles/cmake.verify_globs	eda353029cca3ded
+0	29	0	/Volumes/Misc/GitHub/Kuchapa/android/app/.cxx/Debug/202l2of1/x86_64/CMakeFiles/cmake.verify_globs	eda353029cca3ded
 2303	3998	1691413693778414617	rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/Props.cpp.o	2ff0ec21129f7382
 1741	1839	1691413691616055184	/Volumes/Misc/GitHub/Kuchapa/android/app/build/intermediates/cxx/Debug/202l2of1/obj/x86_64/libreact_codegen_RNDateTimePickerCGen.so	36b262e01791acb3
 9	809	1691440452103334734	RNExitAppSpec_autolinked_build/CMakeFiles/react_codegen_RNExitAppSpec.dir/react/renderer/components/RNExitAppSpec/States.cpp.o	44614b09bb478df6
@@ -43,8 +43,8 @@
 3381	4700	1691413694483103187	RNImagePickerSpec_autolinked_build/CMakeFiles/react_codegen_RNImagePickerSpec.dir/react/renderer/components/RNImagePickerSpec/ShadowNodes.cpp.o	8cbddfb7ac35d85b
 7	813	1691440452107995196	RNExitAppSpec_autolinked_build/CMakeFiles/react_codegen_RNExitAppSpec.dir/react/renderer/components/RNExitAppSpec/EventEmitters.cpp.o	f71930685dc09e7d
 5546	5624	1691413695395831655	/Volumes/Misc/GitHub/Kuchapa/android/app/build/intermediates/cxx/Debug/202l2of1/obj/x86_64/libreact_codegen_safeareacontext.so	fbc610ae36b65a33
-9473	9821	1691607020278098815	/Volumes/Misc/GitHub/Kuchapa/android/app/build/intermediates/cxx/Debug/202l2of1/obj/x86_64/libappmodules.so	e5ac372cae180d17
-8	9473	1691607019923296833	CMakeFiles/appmodules.dir/Volumes/Misc/GitHub/Kuchapa/android/app/build/generated/rncli/src/main/jni/rncli.cpp.o	fe38fb34c4e542ca
+9395	9703	1691666509721405310	/Volumes/Misc/GitHub/Kuchapa/android/app/build/intermediates/cxx/Debug/202l2of1/obj/x86_64/libappmodules.so	e5ac372cae180d17
+6	9395	1691666509413792753	CMakeFiles/appmodules.dir/Volumes/Misc/GitHub/Kuchapa/android/app/build/generated/rncli/src/main/jni/rncli.cpp.o	fe38fb34c4e542ca
 4218	5188	1691155559287866963	rnscreens_autolinked_build/CMakeFiles/react_codegen_rnscreens.dir/Volumes/Misc/GitHub/Kuchapa/node_modules/react-native-screens/common/cpp/react/renderer/components/rnscreens/RNSScreenState.cpp.o	bc72f177e4e89ea5
 2554	3438	1691413693222498379	rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir/react/renderer/components/rngesturehandler_codegen/States.cpp.o	f7a3fe4f6a2521a5
 4315	4804	1691413694586720825	safeareacontext_autolinked_build/CMakeFiles/react_codegen_safeareacontext.dir/Volumes/Misc/GitHub/Kuchapa/node_modules/react-native-safe-area-context/android/build/generated/source/codegen/jni/react/renderer/components/safeareacontext/safeareacontextJSI-generated.cpp.o	d18a757302f22063
@@ -57,7 +57,7 @@
 5065	6341	1691413696120119955	rnscreens_autolinked_build/CMakeFiles/react_codegen_rnscreens.dir/Volumes/Misc/GitHub/Kuchapa/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/EventEmitters.cpp.o	5280e5fee206ba3a
 4985	6107	1691413695888099298	rnscreens_autolinked_build/CMakeFiles/react_codegen_rnscreens.dir/Volumes/Misc/GitHub/Kuchapa/node_modules/react-native-screens/android/build/generated/source/codegen/jni/react/renderer/components/rnscreens/Props.cpp.o	96c15dca908018b3
 6341	6399	1691413696173552665	/Volumes/Misc/GitHub/Kuchapa/android/app/build/intermediates/cxx/Debug/202l2of1/obj/x86_64/libreact_codegen_rnscreens.so	c9690ca6e5535ab8
-0	28	0	/Volumes/Misc/GitHub/Kuchapa/android/app/.cxx/Debug/202l2of1/x86_64/CMakeFiles/cmake.verify_globs	eda353029cca3ded
-7	1856	1691610645756510342	CMakeFiles/appmodules.dir/OnLoad.cpp.o	8031e8dca08d86d5
-6	9311	1691610653160613693	CMakeFiles/appmodules.dir/Volumes/Misc/GitHub/Kuchapa/android/app/build/generated/rncli/src/main/jni/rncli.cpp.o	fe38fb34c4e542ca
-9312	9630	1691610653476665036	/Volumes/Misc/GitHub/Kuchapa/android/app/build/intermediates/cxx/Debug/202l2of1/obj/x86_64/libappmodules.so	e5ac372cae180d17
+1	26	0	/Volumes/Misc/GitHub/Kuchapa/android/app/.cxx/Debug/202l2of1/x86_64/CMakeFiles/cmake.verify_globs	eda353029cca3ded
+6	1840	1691668494498610854	CMakeFiles/appmodules.dir/OnLoad.cpp.o	8031e8dca08d86d5
+5	9007	1691668501618524209	CMakeFiles/appmodules.dir/Volumes/Misc/GitHub/Kuchapa/android/app/build/generated/rncli/src/main/jni/rncli.cpp.o	fe38fb34c4e542ca
+9008	9306	1691668501915729677	/Volumes/Misc/GitHub/Kuchapa/android/app/build/intermediates/cxx/Debug/202l2of1/obj/x86_64/libappmodules.so	e5ac372cae180d17

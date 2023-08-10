@@ -370,7 +370,6 @@ class DashboardScreen extends Component {
   };
 
   renderPendingJobRequests = (item, index) => {
-    const cutButtonText = screenWidth <= 360;
     if (item && typeof item === 'object') {
       const {
         image,

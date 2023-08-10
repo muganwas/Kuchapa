@@ -61,27 +61,19 @@ class AddAddressScreen extends Component {
       isLoading: true,
       isErrorToast: false,
     };
+    console.log('user address', userDetails.address)
   }
 
   watchID = null;
 
   componentDidMount() {
-    const { navigation } = this.props;
-    navigation.addListener('willFocus', async () => {
-      BackHandler.addEventListener('hardwareBackPress', () =>
-        this.handleBackButtonClick(),
-      );
-    });
-    navigation.addListener('willBlur', () => {
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
-    });
+    BackHandler.addEventListener('hardwareBackPress', () =>
+      this.handleBackButtonClick(),
+    );
     const {
       userInfo: { userDetails },
     } = this.props;
-    if (this.state.address != '') {
+    if (this.state.address) {
       this.setState({
         address: userDetails.address,
         latitude: userDetails.lat,
@@ -100,6 +92,10 @@ class AddAddressScreen extends Component {
 
   componentWillUnmount() {
     this.watchID != null && Geolocation.clearWatch(this.watchID);
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
   }
 
   handleBackButtonClick = () => {
@@ -107,7 +103,7 @@ class AddAddressScreen extends Component {
     return true;
   }
 
-  async getCurrentLocation() {
+  getCurrentLocation = async () => {
     const {
       updateUserDetails,
       userInfo: { userDetails },
@@ -131,7 +127,7 @@ class AddAddressScreen extends Component {
               ',' +
               position.coords.longitude +
               '&key=' +
-              Config.mapsApiKey,
+              Config.mapsApiKey
             )
               .then(response => response.json())
               .then(responseJson => {
@@ -206,7 +202,6 @@ class AddAddressScreen extends Component {
         },
         error => {
           console.log('Error: ' + error.code, error);
-          console.log('Error: ' + error.code, error.message);
           this.setState({
             isLoading: false,
             isErrorToast: true,
@@ -239,6 +234,7 @@ class AddAddressScreen extends Component {
               )
                 .then(response => response.json())
                 .then(responseJson => {
+                  console.log('maps address ..', responseJson)
                   const {
                     userInfo: { userDetails },
                     updateUserDetails,
@@ -302,6 +298,7 @@ class AddAddressScreen extends Component {
                   }
                 });
             } catch (e) {
+              console.log('get address error', { e });
               this.setState({
                 isLoading: false,
               });
