@@ -64,6 +64,7 @@ import { checkForUserType } from '../../controllers/users';
 import { deregisterOnlineStatusListener } from '../../controllers/chats';
 import { getAllNotifications } from '../../controllers/notifications';
 import { getAllBookings } from '../../controllers/bookings';
+import { white } from '../../Constants/colors';
 
 const socket = Config.socket;
 const NOTIFICATION_URL =
@@ -676,10 +677,14 @@ const styles = StyleSheet.create({
   },
   noticationsCount: {
     position: 'absolute',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     textAlignVertical: 'center',
     textAlign: 'center',
     borderRadius: 10,
-    color: 'white',
+    color: white,
+    fontSize: 10,
     right: 15,
     height: 20,
     width: 20,
