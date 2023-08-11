@@ -360,7 +360,7 @@ export default class App extends Component {
           <Stack.Screen name="ContactUs" component={ContactUsScreen} options={{ title: "Contact Us" }} />
 
           <Stack.Screen name="ProAllMessage" component={ProAllMessageScreen} options={{ title: "Messages" }} />
-          <Stack.Screen name="ProAcceptRejectJob" component={ProAcceptRejectJobScreen} options={{ title: "Respond to Job" }} />
+          <Stack.Screen name="ProAcceptRejectJob" component={ProAcceptRejectJobScreen} options={{ header: () => <></>, title: "Respond to Job" }} />
           <Stack.Screen name="ProBooking" component={ProBookingScreen} options={{ title: "Bookings" }} />
           <Stack.Screen name="ProBookingDetails" component={ProBookingDetailsScreen} options={{ title: "Booking Details" }} />
           <Stack.Screen name="ProLoginPhoneScreen" component={ProLoginPhoneScreen} options={{ title: "Phone Login" }} />
@@ -371,7 +371,7 @@ export default class App extends Component {
           <Stack.Screen name="ProAddAddress" component={ProAddAddressScreen} options={{ title: "My Address" }} />
           <Stack.Screen name="ProHome" component={ProHomeScreen} options={{ header: () => <></>, title: "Home" }} />
           <Stack.Screen name="ProMapDirection" component={ProMapDirectionScreen} options={{ title: "Directions" }} />
-          <Stack.Screen name="ProChatAccept" component={ProChatAcceptScreen} options={{ title: "Respond to Chat" }} />
+          <Stack.Screen name="ProChatAccept" component={ProChatAcceptScreen} options={{ header: () => <></>, title: "Respond to Chat" }} />
           <Stack.Screen name="ProChatAfterBookingDetails" component={ProChatAfterBookingDetailsScreen} options={{ title: "Chat" }} />
           <Stack.Screen name="ProMyProfile" component={ProMyProfileScreen} options={{ title: "Profile" }} />
           <Stack.Screen name="ProNotifications" component={ProNotificationsScreen} options={{ title: "Notifications" }} />

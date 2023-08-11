@@ -681,7 +681,7 @@ class ProDashboardScreen extends Component {
               <Text
                 style={{
                   color: white,
-                  fontSize: 11,
+                  fontSize: 10,
                   marginLeft: 10,
                   textAlignVertical: 'center',
                 }}>
@@ -690,7 +690,7 @@ class ProDashboardScreen extends Component {
               <Text
                 style={{
                   color: white,
-                  fontSize: 11,
+                  fontSize: 10,
                   marginLeft: 10,
                   textAlignVertical: 'center',
                   fontWeight: 'bold',
@@ -795,7 +795,6 @@ class ProDashboardScreen extends Component {
       generalInfo: { online, connectivityAvailable },
       userInfo: { providerDetails },
       fetchJobRequestHistory,
-      //getPendingJobRequestProvider,
     } = this.props;
     this.setState({
       status:
@@ -806,7 +805,6 @@ class ProDashboardScreen extends Component {
       isRecentUser: false,
     });
     await this.getAllRecentChatsPro();
-    //await getPendingJobRequestProvider(this.props, providerDetails.providerId);
     await fetchJobRequestHistory(providerDetails.providerId);
     this.springValue = new Animated.Value(100);
     this.setState({ refreshing: false });
@@ -823,7 +821,6 @@ class ProDashboardScreen extends Component {
   render() {
     const {
       jobsInfo: {
-        requestsProvidersFetched,
         jobRequestsProviders,
         dataWorkSource,
       },
@@ -1120,11 +1117,11 @@ class ProDashboardScreen extends Component {
               </View>
             )}
         </ScrollView>
-        {requestsProvidersFetched && jobRequestsProviders.length > 0 ? (
+        {jobRequestsProviders.length > 0 && (
           <View style={styles.pendingJobsContainer}>
             {jobRequestsProviders.map(this.renderPendingJobs)}
           </View>
-        ) : null}
+        )}
 
         <Modal
           transparent={true}
@@ -1358,7 +1355,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     fontWeight: 'bold',
     fontSize: 10,
-    color: '#4c4c4c',
+    color: darkGray,
   },
   touchaleHighlight: {
     width: 50,
@@ -1477,7 +1474,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    height: 55,
   },
   linearGradient: {
     flex: 1,
@@ -1495,13 +1491,12 @@ const styles = StyleSheet.create({
   },
   arrowView: {
     flex: 1,
-    height: 55,
     color: 'white',
     alignContent: 'center',
     justifyContent: 'center',
   },
   arrow: {
-    width: 20,
+    width: 40,
     height: 20,
     tintColor: white,
     alignSelf: 'flex-end',
@@ -1563,7 +1558,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginHorizontal: 10,
   },
   buttonView: {
     flex: 1,

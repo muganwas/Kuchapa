@@ -308,7 +308,7 @@ class FacebookGoogleScreen extends Component {
                 style={{
                   width: '100%',
                   marginTop: 10,
-                  paddingHorizontal: 20,
+                  paddingHorizontal: 10,
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                 }}>
@@ -319,15 +319,7 @@ class FacebookGoogleScreen extends Component {
                     })
                   }>
                   <Text
-                    style={{
-                      color: black,
-                      fontWeight: 'bold',
-                      fontSize: 13,
-                      marginBottom: 5,
-                      alignItems: 'flex-end',
-                      justifyContent: 'flex-end',
-                      alignSelf: 'flex-end',
-                    }}>
+                    style={styles.linkStyle}>
                     Login with Phone Number
                   </Text>
                 </TouchableOpacity>
@@ -336,15 +328,7 @@ class FacebookGoogleScreen extends Component {
                     this.props.navigation.navigate('ForgotPassword')
                   }>
                   <Text
-                    style={{
-                      color: black,
-                      fontWeight: 'bold',
-                      fontSize: 13,
-                      marginBottom: 5,
-                      alignItems: 'flex-end',
-                      justifyContent: 'flex-end',
-                      alignSelf: 'flex-end',
-                    }}>
+                    style={styles.linkStyle}>
                     Forgot password
                   </Text>
                 </TouchableOpacity>
@@ -408,14 +392,7 @@ class FacebookGoogleScreen extends Component {
                 })
               }>
               <Text
-                style={{
-                  color: 'black',
-                  fontWeight: 'bold',
-                  fontSize: 13,
-                  marginBottom: 5,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
+                style={styles.linkStyle}>
                 Don't have an account? Sign up
               </Text>
             </TouchableOpacity>
@@ -487,6 +464,15 @@ const styles = StyleSheet.create({
     elevation: 5,
     borderRadius: 4,
   },
+  linkStyle: {
+    color: black,
+    fontWeight: 'bold',
+    fontSize: 12,
+    marginBottom: 5,
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    alignSelf: 'flex-end',
+  },
   separator: {
     borderBottomWidth: 0.8,
     borderBottomColor: '#ebebeb',
@@ -510,7 +496,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: 175,
-    height: 40,
+    height: 50,
     backgroundColor: themeRed,
     shadowColor: black,
     shadowOffset: { width: 0, height: 3 },

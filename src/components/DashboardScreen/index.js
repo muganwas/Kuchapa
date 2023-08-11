@@ -440,7 +440,7 @@ class DashboardScreen extends Component {
               <Text
                 style={{
                   color: white,
-                  fontSize: 12,
+                  fontSize: 10,
                   marginLeft: 10,
                   fontWeight: 'bold',
                   textAlignVertical: 'center',
@@ -459,7 +459,7 @@ class DashboardScreen extends Component {
               <Text
                 style={{
                   color: white,
-                  fontSize: 11,
+                  fontSize: 10,
                   marginLeft: 10,
                   textAlignVertical: 'center',
                   fontWeight: 'bold',
@@ -806,7 +806,6 @@ const styles = StyleSheet.create({
   },
   arrowView: {
     flex: 2,
-    height: 55,
     alignContent: 'center',
     justifyContent: 'center',
   },
@@ -827,10 +826,14 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   cancelRequestText: {
+    textAlignVertical: 'center',
+    textAlign: 'center',
+    alignSelf: 'flex-end',
     fontWeight: 'bold',
+    fontSize: 10
   },
   arrow: {
-    width: 20,
+    width: 40,
     height: 20,
     tintColor: white,
     alignSelf: 'flex-end',

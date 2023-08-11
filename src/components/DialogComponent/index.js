@@ -71,7 +71,7 @@ const localStyles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.5)'
     },
     modal: {
-        height: 150,
+        height: 180,
         paddingTop: 10,
         alignSelf: 'center',
         alignItems: 'center',

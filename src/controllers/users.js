@@ -268,8 +268,7 @@ export const inhouseLogin = ({
           fetchJobRequestHistory(userId);
           fetchPendingJobInfo(props, userId, home);
         } else onLoginFailure(responseJson.message);
-      })
-      .catch(error => {
+      }).catch(error => {
         const message =
           error.message && error.message.indexOf('Network') > -1
             ? 'Check your internet connection and try again'
@@ -277,10 +276,9 @@ export const inhouseLogin = ({
         onLoginFailure(message);
       });
   } catch (e) {
-    const message =
-      error.message && error.message.indexOf('Network') > -1
-        ? 'Check your internet connection and try again'
-        : 'Something went wrong, try again later';
+    const message = e.message.indexOf('Network') > -1
+      ? 'Check your internet connection and try again'
+      : 'Something went wrong, try again later';
     onLoginFailure(message);
   }
 };
@@ -600,6 +598,7 @@ export const authenticateTask = async ({
                 onError('Something went wrong, please try again later.');
               });
           } catch (e) {
+            console.log('error ', e)
             onError('Something went wrong, please try again.');
           }
         } else {
