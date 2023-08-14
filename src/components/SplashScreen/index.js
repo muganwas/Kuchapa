@@ -54,6 +54,7 @@ import BookingDetailsScreen from '../BookingDetailsScreen';
 import ChatAfterBookingDetailsScreen from '../ChatAfterBookingDetailsScreen';
 import AllMessageScreen from '../AllMessageScreen';
 import NotificationsScreen from '../NotificationsScreen';
+import ProChatScreen from '../ProChatScreen';
 
 import {
   updateUserDetails,
@@ -158,6 +159,7 @@ class SplashScreen extends Component {
                 { userId, userType, fcmToken },
                 () => this.setState({ isLoading: true }),
                 (userId, userType, fcmToken) => {
+                  console.log('going inhouse login', userType)
                   const provider = userType === 'Provider';
                   inhouseLogin({
                     userId,
@@ -372,6 +374,7 @@ export default class App extends Component {
           <Stack.Screen name="ProHome" component={ProHomeScreen} options={{ header: () => <></>, title: "Home" }} />
           <Stack.Screen name="ProMapDirection" component={ProMapDirectionScreen} options={{ title: "Directions" }} />
           <Stack.Screen name="ProChatAccept" component={ProChatAcceptScreen} options={{ header: () => <></>, title: "Respond to Chat" }} />
+          <Stack.Screen name="ProChat" component={ProChatScreen} options={{ header: () => <></> }} />
           <Stack.Screen name="ProChatAfterBookingDetails" component={ProChatAfterBookingDetailsScreen} options={{ title: "Chat" }} />
           <Stack.Screen name="ProMyProfile" component={ProMyProfileScreen} options={{ title: "Profile" }} />
           <Stack.Screen name="ProNotifications" component={ProNotificationsScreen} options={{ title: "Notifications" }} />

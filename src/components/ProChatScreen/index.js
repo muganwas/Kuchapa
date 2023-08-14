@@ -66,16 +66,14 @@ class ProChatScreen extends Component {
     super();
     const {
       messagesInfo: { dataChatSource, fetched },
-      navigation: {
-        state: {
-          params: { currentPos },
-        },
+      route: {
+        params: { currentPos },
       },
       jobsInfo: {
         allJobRequestsProviders,
         selectedJobRequest: { user_id },
       },
-      navigation,
+      route,
       userInfo: { providerDetails },
       generalInfo: { OnlineUsers },
     } = props;
@@ -129,7 +127,7 @@ class ProChatScreen extends Component {
           online,
         }),
     });
-    navigation.addListener('willFocus', async () => {
+    navigation.addListener('focus', async () => {
       this.reInit();
       BackHandler.addEventListener('hardwareBackPress', () =>
         this.handleBackButtonClick(),

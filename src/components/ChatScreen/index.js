@@ -127,7 +127,6 @@ class ChatScreen extends Component {
       messagesInfo: { dataChatSource, fetched },
       generalInfo: { OnlineUsers },
       fetchClientMessages,
-      navigation,
       route,
     } = props;
     if (!socket.connected) {

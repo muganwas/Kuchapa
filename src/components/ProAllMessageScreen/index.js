@@ -50,7 +50,7 @@ const StatusBarPlaceHolder = () => {
 };
 
 class ProAllMessageScreen extends Component {
-  constructor(props) {
+  constructor() {
     super();
     this.state = {
       isLoading: true,
@@ -66,8 +66,22 @@ class ProAllMessageScreen extends Component {
   componentDidMount() {
     const {
       messagesInfo: { latestChats },
+      navigation
     } = this.props;
     this.setState({ dataSource: latestChats, isLoading: false });
+    console.log('latest chats', { latestChats })
+    navigation.addListener('focus', async () => {
+      BackHandler.addEventListener(
+        'hardwareBackPress',
+        this.handleBackButtonClick,
+      );
+    });
+    navigation.addListener('willBlur', () => {
+      BackHandler.removeEventListener(
+        'hardwareBackPress',
+        this.handleBackButtonClick,
+      );
+    });
   }
 
   componentDidUpdate(prevState) {
@@ -75,7 +89,7 @@ class ProAllMessageScreen extends Component {
       messagesInfo: { latestChats },
     } = this.props;
     if (!_.isEqual(prevState.messagesInfo.latestChats, latestChats)) {
-      this.setState({ dataSource: latestChats });
+      this.setState({ dataSource: latestChats, isLoading: false });
     }
   }
 
@@ -88,21 +102,16 @@ class ProAllMessageScreen extends Component {
       dispatchSelectedJobRequest,
       jobsInfo: { allJobRequestsProviders },
     } = this.props;
-    let currentPos;
-    allJobRequestsProviders.map((obj, key) => {
-      if (obj.user_id === item.id) {
-        currentPos = key;
-      }
-    });
-    if (allJobRequestsProviders[currentPos].user_details)
+    const selectedJobReq = allJobRequestsProviders.find((obj) => obj.user_id === item.id);
+    if (selectedJobReq.user_details)
       return (
         <TouchableOpacity
           key={index}
           style={styles.itemMainContainer}
           onPress={() => {
-            dispatchSelectedJobRequest({ user_id: item.id });
+            dispatchSelectedJobRequest(selectedJobReq);
             this.props.navigation.navigate('ProChat', {
-              currentPos,
+              currentPos: 1,
               receiverId: item.id,
               receiverName: item.name,
               receiverImage: item.image,
@@ -224,7 +233,7 @@ class ProAllMessageScreen extends Component {
           </View>
         </View>
 
-        {this.state.dataSource.length > 0 || this.state.isLoading && <ScrollView
+        {this.state.dataSource.length !== 0 && <ScrollView
           contentContainerStyle={{
             justifyContent: 'center',
             alignItems: 'center',

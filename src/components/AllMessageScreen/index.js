@@ -55,7 +55,7 @@ class AllMessageScreen extends Component {
   constructor() {
     super();
     this.state = {
-      isLoading: false,
+      isLoading: true,
       dataSource: [],
       isRecentMessage: false,
       query: '',
@@ -71,8 +71,8 @@ class AllMessageScreen extends Component {
       navigation,
       messagesInfo: { latestChats },
     } = this.props;
-    this.setState({ dataSource: latestChats });
-    navigation.addListener('willFocus', async () => {
+    this.setState({ dataSource: latestChats, isLoading: false });
+    navigation.addListener('focus', async () => {
       BackHandler.addEventListener(
         'hardwareBackPress',
         this.handleBackButtonClick,
@@ -91,7 +91,7 @@ class AllMessageScreen extends Component {
       messagesInfo: { latestChats },
     } = this.props;
     if (!_.isEqual(prevProps.messagesInfo.latestChats, latestChats)) {
-      this.setState({ dataSource: latestChats });
+      this.setState({ dataSource: latestChats, isLoading: false });
     }
   }
 
