@@ -40,27 +40,22 @@ export const requestClientForReview = async ({
       },
     };
     try {
-      await fetch(ASK_FOR_REVIEW, {
+      const resp = await fetch(ASK_FOR_REVIEW, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(askReviewData),
-      })
-        .then(response => response.json())
-        .then(response => {
-          if (response.result) {
-            toggleIsLoading();
-            onSuccess('Request submitted successfully');
-            fetchJobRequestHistory(providerDetails.providerId);
-          } else {
-            onError('Something went wrong');
-          }
-        })
-        .catch(error => {
-          onError('Something went wrong');
-        });
+      });
+      const response = await resp.json();
+      if (response.result) {
+        toggleIsLoading();
+        onSuccess('Request submitted successfully');
+        fetchJobRequestHistory(providerDetails.providerId);
+      } else {
+        onError('Something went wrong');
+      }
     } catch (e) {
       onError('Something went wrong, try again');
     }
@@ -134,30 +129,24 @@ export const jobCancelTask = async ({
             },
           },
         };
-    await fetch(REJECT_ACCEPT_REQUEST, {
+    const response = await fetch(REJECT_ACCEPT_REQUEST, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
-    })
-      .then(response => response.json())
-      .then(responseJson => {
-        if (responseJson.result) {
-          onSuccess && onSuccess();
-          toggleIsLoading(false);
-          newJobRequests.splice(currRequestPos, 1);
-          updatePendingJobInfo(newJobRequests);
-          navigate && navigate(dash);
-        } else {
-          onError('An error has occurred, please try again later');
-        }
-      })
-      .catch(error => {
-        console.log('cancel job error --', error);
-        onError("Couldn't cancel job, please try again later");
-      });
+    });
+    const responseJson = await response.json();
+    if (responseJson.result) {
+      onSuccess && onSuccess();
+      toggleIsLoading(false);
+      newJobRequests.splice(currRequestPos, 1);
+      updatePendingJobInfo(newJobRequests);
+      navigate && navigate(dash);
+    } else {
+      onError('An error has occurred, please try again later');
+    }
   } catch (e) {
     console.log('Error >>> ' + e);
     onError("Couldn't cancel job, please try again later");
@@ -215,52 +204,45 @@ export const acceptJobTask = async ({
     },
   };
   try {
-    fetch(REJECT_ACCEPT_REQUEST, {
+    const response = await fetch(REJECT_ACCEPT_REQUEST, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
-    })
-      .then(response => response.json())
-      .then(responseJson => {
-        let newjobRequestsProviders = cloneDeep(jobRequestsProviders);
-        if (responseJson.data) {
-          onSuccess();
-          if (dataWSPos || dataWSPos === 0) {
-            newDWS[dataWSPos].status = 'Accepted';
-            fetchedDataWorkSource(newDWS);
-          }
-          newjobRequestsProviders[currRequestPos].chat_status =
-            responseJson.data.chat_status;
-          newjobRequestsProviders[currRequestPos].status =
-            responseJson.data.status;
-          fetchedPendingJobInfo(newjobRequestsProviders);
-          getAllWorkRequestPro(providerDetails.providerId);
-          //Send Location to Firebase for tracking
-          Geolocation.getCurrentPosition(position => {
-            let locationData = {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            };
+    });
+    const responseJson = await response.json();
+    let newjobRequestsProviders = cloneDeep(jobRequestsProviders);
+    if (responseJson.data) {
+      onSuccess();
+      if (dataWSPos || dataWSPos === 0) {
+        newDWS[dataWSPos].status = 'Accepted';
+        fetchedDataWorkSource(newDWS);
+      }
+      newjobRequestsProviders[currRequestPos].chat_status =
+        responseJson.data.chat_status;
+      newjobRequestsProviders[currRequestPos].status =
+        responseJson.data.status;
+      fetchedPendingJobInfo(newjobRequestsProviders);
+      getAllWorkRequestPro(providerDetails.providerId);
+      //Send Location to Firebase for tracking
+      Geolocation.getCurrentPosition(position => {
+        let locationData = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        };
 
-            let updates = {};
-            updates['tracking/' + orderId] = locationData;
-            database()
-              .ref()
-              .update(updates);
-          });
-        } else {
-          onError();
-          SimpleToast.show('Something went wrong, please try again later');
-        }
-      })
-      .catch(error => {
-        console.log('Error >>> ' + error);
-        toggleIsLoading(false);
-        SimpleToast.show('Something went wrong, please try again later');
+        let updates = {};
+        updates['tracking/' + orderId] = locationData;
+        database()
+          .ref()
+          .update(updates);
       });
+    } else {
+      onError();
+      SimpleToast.show('Something went wrong, please try again later');
+    }
   } catch (e) {
     console.log('Error >>> ' + e);
     toggleIsLoading(false);
@@ -316,36 +298,29 @@ export const rejectJobTask = async ({
     },
   };
   try {
-    fetch(REJECT_ACCEPT_REQUEST, {
+    const response = await fetch(REJECT_ACCEPT_REQUEST, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
-    })
-      .then(response => response.json())
-      .then(responseJson => {
-        let newjobRequestsProviders = cloneDeep(jobRequestsProviders);
-        if (responseJson.result) {
-          onSuccess();
-          if (dataWSPos || dataWSPos === 0) {
-            newDWS.splice(dataWSPos, 1);
-            fetchedDataWorkSource(newDWS);
-          }
-          newjobRequestsProviders.splice(currRequestPos, 1);
-          fetchedPendingJobInfo(newjobRequestsProviders);
-          navigation.navigate('ProDashboard');
-        } else {
-          onError();
-          SimpleToast.show('Something went wrong, please try again later');
-        }
-      })
-      .catch(error => {
-        console.log('Error >>> ' + error);
-        toggleIsLoading(false);
-        SimpleToast.show('Something went wrong, please try again later');
-      });
+    });
+    const responseJson = await response.json();
+    let newjobRequestsProviders = cloneDeep(jobRequestsProviders);
+    if (responseJson.result) {
+      onSuccess();
+      if (dataWSPos || dataWSPos === 0) {
+        newDWS.splice(dataWSPos, 1);
+        fetchedDataWorkSource(newDWS);
+      }
+      newjobRequestsProviders.splice(currRequestPos, 1);
+      fetchedPendingJobInfo(newjobRequestsProviders);
+      navigation.navigate('ProDashboard');
+    } else {
+      onError();
+      SimpleToast.show('Something went wrong, please try again later');
+    }
   } catch (e) {
     console.log('Error >>> ' + e);
     toggleIsLoading(false);
@@ -420,46 +395,37 @@ export const jobCompleteTask = async ({
               },
             },
           };
-      await fetch(rejectAcceptURL, {
+      const response = await fetch(rejectAcceptURL, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      })
-        .then(response => response.json())
-        .then(responseJson => {
-          if (responseJson.result) {
-            onSuccess();
-            newJobRequests.splice(currRequestPos, 1);
-            updatePendingJobInfo(newJobRequests);
-            navigate(dash);
-          } else {
-            onError('An error has occurred, please try again later');
-          }
-        })
-        .catch(error => {
-          console.log('Error >>> ' + error);
-          onError('Something went wrong, try again later');
-        });
+      });
+      const responseJson = await response.json();
+      if (responseJson.result) {
+        onSuccess();
+        newJobRequests.splice(currRequestPos, 1);
+        updatePendingJobInfo(newJobRequests);
+        navigate(dash);
+      } else {
+        onError('An error has occurred, please try again later');
+      }
     } else {
-      simpleToast.show('Something went wrong, try logging in and out of app');
+      SimpleToast.show('Something went wrong, try logging in and out of app');
     }
   } catch (e) {
-    console.log('Error >>> ' + e);
     onError('Something went wrong, try again later');
   }
 };
 
 export const fetchServices = async ({ onSuccess, onError }) => {
-  await fetch(SERVICES_URL)
-    .then(response => response.json())
-    .then(responseJson => {
-      onSuccess(responseJson.data);
-    })
-    .catch(error => {
-      console.log(error);
-      onError('An error has occurred, check your internet connection');
-    });
+  try {
+    const response = await fetch(SERVICES_URL);
+    const responseJson = await response.json();
+    onSuccess(responseJson.data);
+  } catch (e) {
+    onError('An error has occurred, check your internet connection');
+  }
 };

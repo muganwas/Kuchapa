@@ -5,7 +5,6 @@ import {
   GraphRequest,
   GraphRequestManager,
 } from 'react-native-fbsdk';
-import Axios from 'axios';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import firebaseAuth from '@react-native-firebase/auth';
 import rNES from 'react-native-encrypted-storage';
@@ -211,13 +210,7 @@ export const inhouseLogin = async ({
   const provider = userType === 'Provider';
   const fetchProfileUrl = provider ? PRO_GET_PROFILE : USER_GET_PROFILE;
   try {
-    const response = await fetch(fetchProfileUrl + userId + '?fcm_id=' + fcmToken, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await fetch(fetchProfileUrl + userId + '?fcm_id=' + fcmToken);
     const responseJson = await response.json();
     let onlineStatus;
     if (responseJson && responseJson.result) {
@@ -338,143 +331,139 @@ export const fbGmailLoginTask = async ({
       type: loginType,
     };
     try {
-      Axios.post(registerUrl, { data: JSON.stringify(userData) })
-        .then(async responseJson => {
-          if (responseJson.status === 200 && responseJson.data.createdDate) {
-            const id = responseJson.data.id;
-            const onlineStatus = await synchroniseOnlineStatus(
-              id,
-              responseJson.data.online,
-            );
-            try {
-              const id = responseJson.data.id;
-              fetch(fetchProfileUrl + id + '?fcm_id=' + fcmToken, {
-                method: 'GET',
-                headers: {
-                  Accept: 'application/json',
-                  'Content-Type': 'application/json',
-                },
-              })
-                .then(response => response.json())
-                .then(async response => {
-                  toggleLoading();
-                  if (response && response.result) {
-                    const data = provider
-                      ? {
-                        providerId: response.data.id,
-                        name: response.data.username,
-                        email: response.data.email,
-                        password: response.data.password,
-                        imageSource: response.data.image,
-                        surname: response.data.surname,
-                        mobile: response.data.mobile,
-                        services: response.data.services,
-                        description: response.data.description,
-                        address: response.data.address,
-                        lat: response.data.lat,
-                        lang: response.data.lang,
-                        invoice: response.data.invoice,
-                        firebaseId,
-                        online: onlineStatus,
-                        status: response.data.status,
-                        fcmId: response.data.fcm_id,
-                        accountType: responseJson.data.account_type,
-                      }
-                      : {
-                        userId: response.data.id,
-                        accountType: response.data.acc_type,
-                        email: response.data.email,
-                        password: response.data.password,
-                        username: response.data.username,
-                        image: response.data.image,
-                        mobile: response.data.mobile,
-                        dob: response.data.dob,
-                        address: response.data.address,
-                        lat: response.data.lat,
-                        online: onlineStatus,
-                        lang: response.data.lang,
-                        firebaseId,
-                        fcmId: response.data.fcm_id,
-                      };
-                    updateAppUserDetails(data);
-                    //Store data like sharedPreference
-                    rNES.setItem('userId', id);
-                    rNES.setItem('userType', userTypeName);
-                    rNES.setItem('email', data.email);
-                    rNES.setItem('firebaseId', firebaseId);
-                    fetchJobRequestHistory(id);
-                    fetchAppUserJobRequests(props, id, home);
-                  } else {
-                    const data = provider
-                      ? {
-                        providerId: responseJson.data.id,
-                        name: responseJson.data.username,
-                        email: responseJson.data.email,
-                        password: responseJson.data.password,
-                        imageSource: responseJson.data.image,
-                        surname: responseJson.data.surname,
-                        mobile: responseJson.data.mobile,
-                        services: responseJson.data.services,
-                        description: responseJson.data.description,
-                        address: responseJson.data.address,
-                        lat: responseJson.data.lat,
-                        lang: responseJson.data.lang,
-                        invoice: responseJson.data.invoice,
-                        online: onlineStatus,
-                        status: responseJson.data.status,
-                        fcmId: responseJson.data.fcm_id,
-                        accountType: responseJson.data.account_type,
-                        firebaseId,
-                      }
-                      : {
-                        userId: responseJson.data.id,
-                        accountType: responseJson.data.acc_type,
-                        email: responseJson.data.email,
-                        password: responseJson.data.password,
-                        username: responseJson.data.username,
-                        image: responseJson.data.image,
-                        mobile: responseJson.data.mobile,
-                        dob: responseJson.data.dob,
-                        address: responseJson.data.address,
-                        online: onlineStatus,
-                        lat: responseJson.data.lat,
-                        lang: responseJson.data.lang,
-                        fcmId: responseJson.data.fcm_id,
-                        firebaseId,
-                      };
-                    updateAppUserDetails(data);
-                    //Store data like sharedPreference
-                    rNES.setItem('userId', id);
-                    rNES.setItem('userType', userTypeName);
-                    rNES.setItem('email', data.email);
-                    rNES.setItem('firebaseId', firebaseId);
-                    fetchJobRequestHistory(id);
-                    fetchAppUserJobRequests(props, id, home);
-                  }
-                })
-                .catch(error => {
-                  onError(error.message);
-                });
-            } catch (e) {
-              onError(e.message);
-            }
+      const response = await fetch(registerUrl, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ data: userData })
+      });
+      const responseJson = await response.json();
+      if (responseJson.status === 200 && responseJson.data.createdDate) {
+        const id = responseJson.data.id;
+        const onlineStatus = await synchroniseOnlineStatus(
+          id,
+          responseJson.data.online,
+        );
+        try {
+          const id = responseJson.data.id;
+          const resp = await fetch(fetchProfileUrl + id + '?fcm_id=' + fcmToken, {
+            method: 'GET',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+          });
+          const response = await resp.json();
+          toggleLoading();
+          if (response && response.result) {
+            const data = provider
+              ? {
+                providerId: response.data.id,
+                name: response.data.username,
+                email: response.data.email,
+                password: response.data.password,
+                imageSource: response.data.image,
+                surname: response.data.surname,
+                mobile: response.data.mobile,
+                services: response.data.services,
+                description: response.data.description,
+                address: response.data.address,
+                lat: response.data.lat,
+                lang: response.data.lang,
+                invoice: response.data.invoice,
+                firebaseId,
+                online: onlineStatus,
+                status: response.data.status,
+                fcmId: response.data.fcm_id,
+                accountType: responseJson.data.account_type,
+              }
+              : {
+                userId: response.data.id,
+                accountType: response.data.acc_type,
+                email: response.data.email,
+                password: response.data.password,
+                username: response.data.username,
+                image: response.data.image,
+                mobile: response.data.mobile,
+                dob: response.data.dob,
+                address: response.data.address,
+                lat: response.data.lat,
+                online: onlineStatus,
+                lang: response.data.lang,
+                firebaseId,
+                fcmId: response.data.fcm_id,
+              };
+            updateAppUserDetails(data);
+            //Store data like sharedPreference
+            rNES.setItem('userId', id);
+            rNES.setItem('userType', userTypeName);
+            rNES.setItem('email', data.email);
+            rNES.setItem('firebaseId', firebaseId);
+            fetchJobRequestHistory(id);
+            fetchAppUserJobRequests(props, id, home);
           } else {
-            const message =
-              responseJson.message === 'Email not found'
-                ? "You're not registered, register then login"
-                : responseJson.data?.message?.indexOf('deactivated') > -1
-                  ? 'Your account is currently innactive, contact admin'
-                  : responseJson.message
-                    ? responseJson.message
-                    : 'Something went wrong, please try again later';
-            onError(message);
+            const data = provider
+              ? {
+                providerId: responseJson.data.id,
+                name: responseJson.data.username,
+                email: responseJson.data.email,
+                password: responseJson.data.password,
+                imageSource: responseJson.data.image,
+                surname: responseJson.data.surname,
+                mobile: responseJson.data.mobile,
+                services: responseJson.data.services,
+                description: responseJson.data.description,
+                address: responseJson.data.address,
+                lat: responseJson.data.lat,
+                lang: responseJson.data.lang,
+                invoice: responseJson.data.invoice,
+                online: onlineStatus,
+                status: responseJson.data.status,
+                fcmId: responseJson.data.fcm_id,
+                accountType: responseJson.data.account_type,
+                firebaseId,
+              }
+              : {
+                userId: responseJson.data.id,
+                accountType: responseJson.data.acc_type,
+                email: responseJson.data.email,
+                password: responseJson.data.password,
+                username: responseJson.data.username,
+                image: responseJson.data.image,
+                mobile: responseJson.data.mobile,
+                dob: responseJson.data.dob,
+                address: responseJson.data.address,
+                online: onlineStatus,
+                lat: responseJson.data.lat,
+                lang: responseJson.data.lang,
+                fcmId: responseJson.data.fcm_id,
+                firebaseId,
+              };
+            updateAppUserDetails(data);
+            //Store data like sharedPreference
+            rNES.setItem('userId', id);
+            rNES.setItem('userType', userTypeName);
+            rNES.setItem('email', data.email);
+            rNES.setItem('firebaseId', firebaseId);
+            fetchJobRequestHistory(id);
+            fetchAppUserJobRequests(props, id, home);
           }
-        })
-        .catch(error => {
-          onError(
-            error.message || 'Something went wrong, please try again later.',
-          );
-        });
+        } catch (e) {
+          onError(e.message);
+        }
+      } else {
+        const message =
+          responseJson.message === 'Email not found'
+            ? "You're not registered, register then login"
+            : responseJson.data?.message?.indexOf('deactivated') > -1
+              ? 'Your account is currently innactive, contact admin'
+              : responseJson.message
+                ? responseJson.message
+                : 'Something went wrong, please try again later';
+        onError(message);
+      }
     } catch (e) {
       onError('Something went wrong, please try again later.');
     }
@@ -504,7 +493,7 @@ export const authenticateTask = async ({
   if (fcmToken) {
     firebaseAuth()
       .signInWithEmailAndPassword(email, password)
-      .then(result => {
+      .then(async result => {
         const { user } = result;
         if (user && typeof user === 'object') {
           const {
@@ -517,79 +506,74 @@ export const authenticateTask = async ({
             fcm_id: fcmToken,
           };
           try {
-            fetch(authURL, {
+            const response = await fetch(authURL, {
               method: 'POST',
               headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify(data),
-            })
-              .then(response => response.json())
-              .then(async responseJson => {
-                if (responseJson && responseJson.result) {
-                  const onlineStatus = await synchroniseOnlineStatus(
-                    responseJson.data.id,
-                    responseJson.data.online,
-                  );
-                  toggleLoading();
-                  const id = responseJson.data.id;
-                  const data = provider
-                    ? {
-                      providerId: responseJson.data.id,
-                      name: responseJson.data.username,
-                      email: responseJson.data.email,
-                      password: responseJson.data.password,
-                      imageSource: responseJson.data.image,
-                      surname: responseJson.data.surname,
-                      mobile: responseJson.data.mobile,
-                      services: responseJson.data.services,
-                      description: responseJson.data.description,
-                      address: responseJson.data.address,
-                      lat: responseJson.data.lat,
-                      lang: responseJson.data.lang,
-                      invoice: responseJson.data.invoice,
-                      online: onlineStatus,
-                      status: responseJson.data.status,
-                      fcmId: responseJson.data.fcm_id,
-                      accountType: responseJson.data.account_type,
-                      firebaseId: uid,
-                    }
-                    : {
-                      userId: responseJson.data.id,
-                      accountType: responseJson.data.acc_type,
-                      email: responseJson.data.email,
-                      password: responseJson.data.password,
-                      username: responseJson.data.username,
-                      image: responseJson.data.image,
-                      mobile: responseJson.data.mobile,
-                      dob: responseJson.data.dob,
-                      online: onlineStatus,
-                      address: responseJson.data.address,
-                      lat: responseJson.data.lat,
-                      lang: responseJson.data.lang,
-                      fcmId: responseJson.data.fcm_id,
-                      firebaseId: uid,
-                    };
-                  updateAppUserDetails(data);
-                  //Store data like sharedPreference
-                  rNES.setItem('userId', id);
-                  rNES.setItem('userType', userType);
-                  const auth = {
-                    email,
-                    password,
-                  };
-                  rNES.setItem('auth', JSON.stringify(auth));
-                  rNES.setItem('firebaseId', uid);
-                  fetchJobRequestHistory(id);
-                  fetchAppUserJobRequests(props, id, home);
-                } else {
-                  onError(responseJson.message);
+            });
+            const responseJson = await response.json();
+            if (responseJson && responseJson.result) {
+              const onlineStatus = await synchroniseOnlineStatus(
+                responseJson.data.id,
+                responseJson.data.online,
+              );
+              toggleLoading();
+              const id = responseJson.data.id;
+              const data = provider
+                ? {
+                  providerId: responseJson.data.id,
+                  name: responseJson.data.username,
+                  email: responseJson.data.email,
+                  password: responseJson.data.password,
+                  imageSource: responseJson.data.image,
+                  surname: responseJson.data.surname,
+                  mobile: responseJson.data.mobile,
+                  services: responseJson.data.services,
+                  description: responseJson.data.description,
+                  address: responseJson.data.address,
+                  lat: responseJson.data.lat,
+                  lang: responseJson.data.lang,
+                  invoice: responseJson.data.invoice,
+                  online: onlineStatus,
+                  status: responseJson.data.status,
+                  fcmId: responseJson.data.fcm_id,
+                  accountType: responseJson.data.account_type,
+                  firebaseId: uid,
                 }
-              })
-              .catch(error => {
-                onError('Something went wrong, please try again later.');
-              });
+                : {
+                  userId: responseJson.data.id,
+                  accountType: responseJson.data.acc_type,
+                  email: responseJson.data.email,
+                  password: responseJson.data.password,
+                  username: responseJson.data.username,
+                  image: responseJson.data.image,
+                  mobile: responseJson.data.mobile,
+                  dob: responseJson.data.dob,
+                  online: onlineStatus,
+                  address: responseJson.data.address,
+                  lat: responseJson.data.lat,
+                  lang: responseJson.data.lang,
+                  fcmId: responseJson.data.fcm_id,
+                  firebaseId: uid,
+                };
+              updateAppUserDetails(data);
+              //Store data like sharedPreference
+              rNES.setItem('userId', id);
+              rNES.setItem('userType', userType);
+              const auth = {
+                email,
+                password,
+              };
+              rNES.setItem('auth', JSON.stringify(auth));
+              rNES.setItem('firebaseId', uid);
+              fetchJobRequestHistory(id);
+              fetchAppUserJobRequests(props, id, home);
+            } else {
+              onError(responseJson.message);
+            }
           } catch (e) {
             console.log('error ', e)
             onError('Something went wrong, please try again.');
@@ -627,39 +611,25 @@ export const forgotPasswordTask = async ({
     const data = {
       email,
     };
-    await fetch(forgotPasswordURL, {
+    const response = await fetch(forgotPasswordURL, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
-    })
-      .then(response => response.json())
-      .then(responseJson => {
-        if (responseJson.result) {
-          const msg =
-            responseJson.message ||
-            'Check you registered email address for further instructions.';
-          onSuccess(msg);
-        } else {
-          const msg =
-            responseJson.message || 'Something went wrong, please try again';
-          onError(msg);
-        }
-      })
-      .catch(error => {
-        const errorMsg = error.message;
-        const basicMsg = 'Something went wrong, Try again later';
-        let msg;
-        if (errorMsg && errorMsg.indexOf('Network') > -1) {
-          msg = 'Please check your internet connection and try again.';
-        }
-        if (!msg) {
-          msg = basicMsg;
-        }
-        onError(msg);
-      });
+    });
+    const responseJson = await response.json();
+    if (responseJson.result) {
+      const msg =
+        responseJson.message ||
+        'Check you registered email address for further instructions.';
+      onSuccess(msg);
+    } else {
+      const msg =
+        responseJson.message || 'Something went wrong, please try again';
+      onError(msg);
+    }
   } catch (e) {
     const errorMsg = e.message;
     const basicMsg = 'Something went wrong, Try again later';
@@ -691,26 +661,28 @@ export const updateProfileImageTask = async ({
     .then(uploadRes => {
       const { state } = uploadRes;
       if (state === 'success') {
-        userDataRef.getDownloadURL().then(urlResult => {
-          Axios.post(updateURL + userId, {
-            type: imageObject.type,
-            uri: urlResult,
-            name: imageObject.fileName,
-          })
-            .then(async res => {
-              let newUserDetails = cloneDeep(userDetails);
-              /** cater for different names for user and client */
-              newUserDetails.image = newUserDetails.imageSource = urlResult;
-              await updateUserDetails(newUserDetails);
-              toggleIsLoading(false);
-              if (res && res.data.result) {
-                SimpleToast.show(res.data.message);
-              }
+        userDataRef.getDownloadURL().then(async urlResult => {
+          const response = await fetch(updateURL, {
+            method: 'PUT',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              userId,
+              uri: urlResult,
+              name: imageObject.fileName,
             })
-            .catch(error => {
-              toggleIsLoading(false);
-              SimpleToast.show('Something went wrong, try again later');
-            });
+          });
+          const res = await response.json();
+          let newUserDetails = cloneDeep(userDetails);
+          /** cater for different names for user and client */
+          newUserDetails.image = newUserDetails.imageSource = urlResult;
+          await updateUserDetails(newUserDetails);
+          toggleIsLoading(false);
+          if (res && res.data.result) {
+            SimpleToast.show(res.data.message);
+          }
         });
       } else {
         SimpleToast.show('Upload failed, try again please.');
@@ -731,29 +703,23 @@ export const updateProfileInfo = async ({
   toggleIsLoading,
 }) => {
   try {
-    await fetch(updateURL + userId, {
+    const resp = await fetch(updateURL + userId, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(userData),
-    })
-      .then(response => response.json())
-      .then(response => {
-        if (response.result) {
-          onSuccess(userData);
-          SimpleToast.show(response.message);
-          fetchUserProfile(userId, fcmId);
-        } else {
-          toggleIsLoading(false);
-          SimpleToast.show(response.message);
-        }
-      })
-      .catch(error => {
-        toggleIsLoading(false);
-        SimpleToast.show('Something went wrong, try again later.');
-      });
+    });
+    const response = await resp.json();
+    if (response.result) {
+      onSuccess(userData);
+      SimpleToast.show(response.message);
+      fetchUserProfile(userId, fcmId);
+    } else {
+      toggleIsLoading(false);
+      SimpleToast.show(response.message);
+    }
   } catch (e) {
     toggleIsLoading(false);
     SimpleToast.show('Something went wrong, try again later.');
@@ -789,141 +755,138 @@ export const phoneLoginTask = async ({
         fcm_id: fcmToken,
         type: loginType,
       };
-      Axios.post(registerURL, { data: JSON.stringify(userData) })
-        .then(async responseJson => {
-          if (responseJson.status === 200 && responseJson.data.createdDate) {
-            const id = responseJson.data.id;
-            const onlineStatus = await synchroniseOnlineStatus(
-              id,
-              responseJson.data.online,
-            );
-            try {
-              /** get stored profile if exists */
-              fetch(getProfileURL + id + '?fcm_id=' + fcmToken, {
-                method: 'GET',
-                headers: {
-                  Accept: 'application/json',
-                  'Content-Type': 'application/json',
-                },
-              })
-                .then(response => response.json())
-                .then(async response => {
-                  toggleIsLoading(false);
-                  if (response && response.result) {
-                    const data =
-                      userType === 'Provider'
-                        ? {
-                          providerId: response.data.id,
-                          name: response.data.username,
-                          email: response.data.email,
-                          password: response.data.password,
-                          imageSource: response.data.image,
-                          surname: response.data.surname,
-                          mobile: response.data.mobile,
-                          services: response.data.services,
-                          description: response.data.description,
-                          address: response.data.address,
-                          lat: response.data.lat,
-                          lang: response.data.lang,
-                          invoice: response.data.invoice,
-                          online: onlineStatus,
-                          firebaseId,
-                          status: response.data.status,
-                          fcmId: response.data.fcm_id,
-                          accountType: response.data.account_type,
-                        }
-                        : {
-                          userId: response.data.id,
-                          accountType: response.data.acc_type,
-                          email: response.data.email,
-                          password: response.data.password,
-                          username: response.data.username,
-                          image: response.data.image,
-                          mobile: response.data.mobile,
-                          dob: response.data.dob,
-                          address: response.data.address,
-                          online: onlineStatus,
-                          lat: response.data.lat,
-                          lang: response.data.lang,
-                          firebaseId,
-                          fcmId: response.data.fcm_id,
-                        };
-                    updateUserDetails(data);
-                    //Store data like sharedPreference
-                    rNES.setItem('userId', id);
-                    rNES.setItem('userType', userType);
-                    rNES.setItem('email', data.email);
-                    rNES.setItem('firebaseId', firebaseId);
-                    //Check if any Ongoing Request
-                    fetchJobRequestHistory(id);
-                    fetchJobRequests(props, id, Home);
-                  } else {
-                    const data =
-                      userType === 'Provider'
-                        ? {
-                          providerId: responseJson.data.id,
-                          name: responseJson.data.username,
-                          email: responseJson.data.email,
-                          password: responseJson.data.password,
-                          imageSource: responseJson.data.image,
-                          surname: responseJson.data.surname,
-                          mobile: responseJson.data.mobile,
-                          services: responseJson.data.services,
-                          description: responseJson.data.description,
-                          address: responseJson.data.address,
-                          lat: responseJson.data.lat,
-                          lang: responseJson.data.lang,
-                          online: onlineStatus,
-                          invoice: responseJson.data.invoice,
-                          status: responseJson.data.status,
-                          fcmId: responseJson.data.fcm_id,
-                          accountType: responseJson.data.account_type,
-                          firebaseId,
-                        }
-                        : {
-                          userId: responseJson.data.id,
-                          accountType: responseJson.data.acc_type,
-                          email: responseJson.data.email,
-                          password: responseJson.data.password,
-                          username: responseJson.data.username,
-                          image: responseJson.data.image,
-                          mobile: responseJson.data.mobile,
-                          dob: responseJson.data.dob,
-                          online: onlineStatus,
-                          address: responseJson.data.address,
-                          lat: responseJson.data.lat,
-                          lang: responseJson.data.lang,
-                          fcmId: responseJson.data.fcm_id,
-                          firebaseId: this.state.firebaseId,
-                        };
-                    updateUserDetails(data);
-                    //Store data like sharedPreference
-                    rNES.setItem('userId', id);
-                    rNES.setItem('userType', userType);
-                    rNES.setItem('email', data.email);
-                    rNES.setItem('firebaseId', firebaseId);
-                    fetchJobRequestHistory(id);
-                    fetchJobRequests(props, id, Home);
-                  }
-                })
-                .catch(error => {
-                  toggleIsLoading(false);
-                  SimpleToast.show('Something went wrong', SimpleToast.SHORT);
-                });
-            } catch (e) {
-              toggleIsLoading(false);
-              SimpleToast.show(
-                'Something went wrong, try again',
-                SimpleToast.SHORT,
-              );
-            }
+      const response = await fetch(registerURL, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ data: userData })
+      });
+      const responseJson = await response.json();
+      if (responseJson.status === 200 && responseJson.data.createdDate) {
+        const id = responseJson.data.id;
+        const onlineStatus = await synchroniseOnlineStatus(
+          id,
+          responseJson.data.online,
+        );
+        try {
+          /** get stored profile if exists */
+          const resp = await fetch(getProfileURL + id + '?fcm_id=' + fcmToken, {
+            method: 'GET',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+          });
+          const response = await resp.json();
+          toggleIsLoading(false);
+          if (response && response.result) {
+            const data =
+              userType === 'Provider'
+                ? {
+                  providerId: response.data.id,
+                  name: response.data.username,
+                  email: response.data.email,
+                  password: response.data.password,
+                  imageSource: response.data.image,
+                  surname: response.data.surname,
+                  mobile: response.data.mobile,
+                  services: response.data.services,
+                  description: response.data.description,
+                  address: response.data.address,
+                  lat: response.data.lat,
+                  lang: response.data.lang,
+                  invoice: response.data.invoice,
+                  online: onlineStatus,
+                  firebaseId,
+                  status: response.data.status,
+                  fcmId: response.data.fcm_id,
+                  accountType: response.data.account_type,
+                }
+                : {
+                  userId: response.data.id,
+                  accountType: response.data.acc_type,
+                  email: response.data.email,
+                  password: response.data.password,
+                  username: response.data.username,
+                  image: response.data.image,
+                  mobile: response.data.mobile,
+                  dob: response.data.dob,
+                  address: response.data.address,
+                  online: onlineStatus,
+                  lat: response.data.lat,
+                  lang: response.data.lang,
+                  firebaseId,
+                  fcmId: response.data.fcm_id,
+                };
+            updateUserDetails(data);
+            //Store data like sharedPreference
+            rNES.setItem('userId', id);
+            rNES.setItem('userType', userType);
+            rNES.setItem('email', data.email);
+            rNES.setItem('firebaseId', firebaseId);
+            //Check if any Ongoing Request
+            fetchJobRequestHistory(id);
+            fetchJobRequests(props, id, Home);
           } else {
-            onError(responseJson.data.message || 'Something went wrong');
+            const data =
+              userType === 'Provider'
+                ? {
+                  providerId: responseJson.data.id,
+                  name: responseJson.data.username,
+                  email: responseJson.data.email,
+                  password: responseJson.data.password,
+                  imageSource: responseJson.data.image,
+                  surname: responseJson.data.surname,
+                  mobile: responseJson.data.mobile,
+                  services: responseJson.data.services,
+                  description: responseJson.data.description,
+                  address: responseJson.data.address,
+                  lat: responseJson.data.lat,
+                  lang: responseJson.data.lang,
+                  online: onlineStatus,
+                  invoice: responseJson.data.invoice,
+                  status: responseJson.data.status,
+                  fcmId: responseJson.data.fcm_id,
+                  accountType: responseJson.data.account_type,
+                  firebaseId,
+                }
+                : {
+                  userId: responseJson.data.id,
+                  accountType: responseJson.data.acc_type,
+                  email: responseJson.data.email,
+                  password: responseJson.data.password,
+                  username: responseJson.data.username,
+                  image: responseJson.data.image,
+                  mobile: responseJson.data.mobile,
+                  dob: responseJson.data.dob,
+                  online: onlineStatus,
+                  address: responseJson.data.address,
+                  lat: responseJson.data.lat,
+                  lang: responseJson.data.lang,
+                  fcmId: responseJson.data.fcm_id,
+                  firebaseId: this.state.firebaseId,
+                };
+            updateUserDetails(data);
+            //Store data like sharedPreference
+            rNES.setItem('userId', id);
+            rNES.setItem('userType', userType);
+            rNES.setItem('email', data.email);
+            rNES.setItem('firebaseId', firebaseId);
+            fetchJobRequestHistory(id);
+            fetchJobRequests(props, id, Home);
           }
-        })
-        .catch(error => {
-          onError('Something went wrong');
-        });
+        } catch (e) {
+          toggleIsLoading(false);
+          SimpleToast.show(
+            'Something went wrong, try again',
+            SimpleToast.SHORT,
+          );
+        }
+      } else {
+        onError(responseJson.data.message || 'Something went wrong');
+      }
     } catch (e) {
       onError('Something went wrong, try again.');
     }
@@ -1004,32 +967,39 @@ export const registerTask = async ({
         .then(uploadRes => {
           const { state } = uploadRes;
           if (state === 'success') {
-            userDataRef.getDownloadURL().then(urlResult => {
+            userDataRef.getDownloadURL().then(async urlResult => {
               let newUserData = cloneDeep(userData);
               newUserData.image = urlResult;
-              Axios.post(registerURL, { data: JSON.stringify(newUserData) })
-                .then(responseJson => {
-                  if (
-                    responseJson.status === 200 &&
-                    responseJson.data.createdDate
-                  ) {
-                    onSuccess(
-                      'Please check your email inbox for an account verificatoin link.',
-                    );
-                  } else {
-                    onError(
-                      responseJson.data.message ||
-                      'Something went wrong, try again later',
-                    );
-                  }
+              try {
+                const response = await fetch(registerURL, {
+                  method: 'POST',
+                  headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ data: newUserData })
                 })
-                .catch(error => {
-                  onError('Something went wrong, please try again.');
-                });
+                const responseJson = await response.json();
+                if (
+                  responseJson.status === 200 &&
+                  responseJson.data.createdDate
+                ) {
+                  onSuccess(
+                    'Please check your email inbox for an account verificatoin link.',
+                  );
+                } else {
+                  onError(
+                    responseJson.data.message ||
+                    'Something went wrong, try again later',
+                  );
+                }
+              } catch (e) {
+                onError('Something went wrong, please try again.');
+              };
             });
           }
         })
-        .catch(error => {
+        .catch((e) => {
           onError('Image upload failed');
         });
     })
@@ -1061,35 +1031,27 @@ export const getAllProviders = async ({
     lang: userDetails.lang,
   };
   try {
-    await fetch(GET_ALL_PROVIDER_URL + serviceId, {
+    const response = await fetch(GET_ALL_PROVIDER_URL + serviceId, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
-    })
-      .then(response => response.json())
-      .then(async responseJson => {
-        if (responseJson.result) {
-          let dataSource = responseJson.data;
-          await calculateDistance({
-            usersCoordinates,
-            dataSource,
-            setDistInfo,
-            onSuccess: setDistDataSource,
-          });
-          onSuccess();
-        } else {
-          onError();
-        }
-      })
-      .catch(error => {
-        toggleIsLoading(false);
-        SimpleToast.show(
-          'Something went wrong, Check your internet connection',
-        );
+    });
+    const responseJson = await response.json();
+    if (responseJson.result) {
+      let dataSource = responseJson.data;
+      await calculateDistance({
+        usersCoordinates,
+        dataSource,
+        setDistInfo,
+        onSuccess: setDistDataSource,
       });
+      onSuccess();
+    } else {
+      onError();
+    }
   } catch (e) {
     toggleIsLoading(false);
     SimpleToast.show('Something went wrong, try again');
@@ -1146,59 +1108,54 @@ export const fetchProfile = async ({
   userGetProfileURL,
 }) => {
   try {
-    await fetch(userGetProfileURL + userId, {
+    const response = await fetch(userGetProfileURL + userId, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-    })
-      .then(response => response.json())
-      .then(async responseJson => {
-        let imageAvailable =
-          responseJson.data.image && !responseJson.data.image !== 'no-image.jpg'
-            ? true
-            : false;
-        if (imageAvailable)
-          imageAvailable = await imageExists(responseJson.data.image);
-        if (responseJson.result) {
-          const id = responseJson.data.id;
-          onSuccess({
-            userId: responseJson.data.id,
-            userName: responseJson.data.username,
-            userImage: responseJson.data.image,
-            imageAvailable,
-            userMobile: responseJson.data.mobile,
-            userDob: responseJson.data.dob,
-            userAddress: responseJson.data.address,
-            userLat: responseJson.data.lat,
-            userLang: responseJson.data.lang,
-            userFcmId: responseJson.data.fcm_id,
-          });
-          await database()
-            .ref(`liveLocation/${id}`)
-            .once('value', result => {
-              const { latitude, longitude } = result.val();
-              const fullDist = getDistance(
-                latitude,
-                longitude,
-                responseJson.data.lat,
-                responseJson.data.lang,
-                'K',
-              );
-              const distance = parseFloat(fullDist).toFixed(1);
-              setDistance(distance);
-            })
-            .catch(e => {
-              onError("Someting went wrong, couldn't fetch user information");
-            });
-        } else {
-          onError('Something went wrong, try again');
-        }
-      })
-      .catch(error => {
-        onError("Someting went wrong, couldn't fetch user information");
+    });
+    const responseJson = await response.json();
+    let imageAvailable =
+      responseJson.data.image && !responseJson.data.image !== 'no-image.jpg'
+        ? true
+        : false;
+    if (imageAvailable)
+      imageAvailable = await imageExists(responseJson.data.image);
+    if (responseJson.result) {
+      const id = responseJson.data.id;
+      onSuccess({
+        userId: responseJson.data.id,
+        userName: responseJson.data.username,
+        userImage: responseJson.data.image,
+        imageAvailable,
+        userMobile: responseJson.data.mobile,
+        userDob: responseJson.data.dob,
+        userAddress: responseJson.data.address,
+        userLat: responseJson.data.lat,
+        userLang: responseJson.data.lang,
+        userFcmId: responseJson.data.fcm_id,
       });
+      await database()
+        .ref(`liveLocation/${id}`)
+        .once('value', result => {
+          const { latitude, longitude } = result.val();
+          const fullDist = getDistance(
+            latitude,
+            longitude,
+            responseJson.data.lat,
+            responseJson.data.lang,
+            'K',
+          );
+          const distance = parseFloat(fullDist).toFixed(1);
+          setDistance(distance);
+        })
+        .catch(e => {
+          onError("Someting went wrong, couldn't fetch user information");
+        });
+    } else {
+      onError('Something went wrong, try again');
+    }
   } catch (e) {
     onError("Someting went wrong, couldn't fetch user information");
   }
@@ -1207,9 +1164,9 @@ export const fetchProfile = async ({
 export const getRating = async ({ id, ratingsURL }) => {
   let avg = 0;
   try {
-    await Axios.get(ratingsURL + id).then(res => {
-      if (res.data.rating > 0) avg = res.data.rating;
-    });
+    const response = await fetch(ratingsURL + id);
+    const res = await response.json();
+    if (res.data.rating > 0) avg = res.data.rating;
   } catch (e) {
     console.log(e);
   }

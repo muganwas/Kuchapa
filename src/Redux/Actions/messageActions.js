@@ -1,5 +1,4 @@
 import Toast from 'react-native-simple-toast';
-import Axios from 'axios';
 import Config from '../../components/Config';
 import {
   FETCHING_MESSAGES,
@@ -53,49 +52,43 @@ export const setLatestChatsError = () => {
   };
 };
 
-export const fetchEmployeeMessages = ({receiverId, callBack}) => {
+export const fetchEmployeeMessages = ({ receiverId, callBack }) => {
   return async dispatch => {
     try {
-      await Axios.get(
+      const res = await fetch(
         FETCH_MESSAGES + '?sender=' + receiverId + '&userType=employee',
-      )
-        .then(async results => {
-          const {data} = results;
-          let messages = {};
-          let otherUsers = {};
-          // get ids of other users this user has chatted with
-          if (!data.message) {
-            await data.map(msgObj => {
-              const {sender, recipient} = msgObj;
-              if (sender !== receiverId) otherUsers[sender] = sender;
-              else if (recipient !== receiverId)
-                otherUsers[recipient] = recipient;
-            });
-            // if any user, seperate the different groups of messages
-            if (Object.keys(otherUsers).length > 0) {
-              await Object.keys(otherUsers).map(async otherUser => {
-                const thisUsersMessages = [];
-                await data.map(msgObj => {
-                  const {sender, recipient} = msgObj;
-                  if (otherUser === sender || otherUser === recipient)
-                    thisUsersMessages.push(msgObj);
-                });
-                if (thisUsersMessages.length > 0)
-                  messages[otherUser] = thisUsersMessages;
-              });
-            }
-            dispatch(dbMessagesFetched(messages));
-            callBack && callBack();
-          } else {
-            callBack && callBack();
-            Toast.show('Something went wrong, please reload app');
-          }
-        })
-        .catch(e => {
-          console.log('mongo messages error', e);
-          dispatch(messagesError(e.message));
-          callBack && callBack();
+      );
+      const results = await res.json();
+      const { data } = results;
+      let messages = {};
+      let otherUsers = {};
+      // get ids of other users this user has chatted with
+      if (!data.message) {
+        await data.map(msgObj => {
+          const { sender, recipient } = msgObj;
+          if (sender !== receiverId) otherUsers[sender] = sender;
+          else if (recipient !== receiverId)
+            otherUsers[recipient] = recipient;
         });
+        // if any user, seperate the different groups of messages
+        if (Object.keys(otherUsers).length > 0) {
+          await Object.keys(otherUsers).map(async otherUser => {
+            const thisUsersMessages = [];
+            await data.map(msgObj => {
+              const { sender, recipient } = msgObj;
+              if (otherUser === sender || otherUser === recipient)
+                thisUsersMessages.push(msgObj);
+            });
+            if (thisUsersMessages.length > 0)
+              messages[otherUser] = thisUsersMessages;
+          });
+        }
+        dispatch(dbMessagesFetched(messages));
+        callBack && callBack();
+      } else {
+        callBack && callBack();
+        Toast.show('Something went wrong, please reload app');
+      }
     } catch (e) {
       console.log('mongo messages error', e);
       dispatch(messagesError(e.message));
@@ -104,48 +97,42 @@ export const fetchEmployeeMessages = ({receiverId, callBack}) => {
   };
 };
 
-export const fetchClientMessages = ({senderId, callBack}) => {
+export const fetchClientMessages = async ({ senderId, callBack }) => {
   return async dispatch => {
     try {
-      await Axios.get(
+      const res = await fetch(
         FETCH_MESSAGES + '?sender=' + senderId + '&userType=client',
-      )
-        .then(async results => {
-          const {data} = results;
-          let messages = {};
-          let otherUsers = {};
-          // get ids of other users this user has chatted with
-          if (!data.message) {
-            await data.map(msgObj => {
-              const {sender, recipient} = msgObj;
-              if (sender !== senderId) otherUsers[sender] = sender;
-              else if (recipient !== senderId)
-                otherUsers[recipient] = recipient;
-            });
-            // if any user, seperate the different groups of messages
-            if (Object.keys(otherUsers).length > 0) {
-              await Object.keys(otherUsers).map(async otherUser => {
-                const thisUsersMessages = [];
-                await data.map(msgObj => {
-                  const {sender, recipient} = msgObj;
-                  if (otherUser === sender || otherUser === recipient)
-                    thisUsersMessages.push(msgObj);
-                });
-                if (thisUsersMessages.length > 0)
-                  messages[otherUser] = thisUsersMessages;
-              });
-            }
-            dispatch(dbMessagesFetched(messages));
-            callBack && callBack();
-          } else {
-            Toast.show('Something went wrong, please reload app');
-          }
-        })
-        .catch(e => {
-          console.log('mongo messages error', e);
-          dispatch(messagesError(e.message));
-          callBack && callBack();
+      );
+      const results = await res.json();
+      const { data } = results;
+      let messages = {};
+      let otherUsers = {};
+      // get ids of other users this user has chatted with
+      if (!data.message) {
+        await data.map(msgObj => {
+          const { sender, recipient } = msgObj;
+          if (sender !== senderId) otherUsers[sender] = sender;
+          else if (recipient !== senderId)
+            otherUsers[recipient] = recipient;
         });
+        // if any user, seperate the different groups of messages
+        if (Object.keys(otherUsers).length > 0) {
+          await Object.keys(otherUsers).map(async otherUser => {
+            const thisUsersMessages = [];
+            await data.map(msgObj => {
+              const { sender, recipient } = msgObj;
+              if (otherUser === sender || otherUser === recipient)
+                thisUsersMessages.push(msgObj);
+            });
+            if (thisUsersMessages.length > 0)
+              messages[otherUser] = thisUsersMessages;
+          });
+        }
+        dispatch(dbMessagesFetched(messages));
+        callBack && callBack();
+      } else {
+        Toast.show('Something went wrong, please reload app');
+      }
     } catch (e) {
       dispatch(messagesError(e.message));
       callBack && callBack();

@@ -77,48 +77,43 @@ export const acceptChatRequest = async (
     },
   };
   try {
-    await fetch(REJECT_ACCEPT_REQUEST, {
+    const response = await fetch(REJECT_ACCEPT_REQUEST, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
-    })
-      .then(response => response.json())
-      .then(async responseJson => {
-        if (responseJson.result) {
-          toggleLoading();
-          let jobData = {
-            id: responseJson.data.id,
-            order_id,
-            user_id,
-            image,
-            fcm_id,
-            name,
-            mobile,
-            dob,
-            address,
-            lat,
-            lang,
-            service_name,
-            chat_status: '1',
-            status,
-            delivery_address,
-            delivery_lat,
-            delivery_lang,
-          };
-          jobData.imageAvailable = await imageExists(image);
-          newjobRequests[pos] = jobData;
-          fetchedPendingJobInfo(newjobRequests);
-          if (redirect) navigate();
-        } else {
-          onError('Something went wrong');
-        }
-      })
-      .catch(error => {
-        onError(error.message);
-      });
+    });
+    const responseJson = response.json();
+    if (responseJson.result) {
+      toggleLoading();
+      let jobData = {
+        id: responseJson.data.id,
+        order_id,
+        user_id,
+        image,
+        fcm_id,
+        name,
+        mobile,
+        dob,
+        address,
+        lat,
+        lang,
+        service_name,
+        chat_status: '1',
+        status,
+        delivery_address,
+        delivery_lat,
+        delivery_lang,
+      };
+      jobData.imageAvailable = await imageExists(image);
+      newjobRequests[pos] = jobData;
+      fetchedPendingJobInfo(newjobRequests);
+      if (redirect) navigate();
+    } else {
+      onError('Something went wrong');
+    }
   } catch (e) {
     onError(e.message);
   }
@@ -170,31 +165,26 @@ export const rejectChatRequest = async (
     },
   };
   try {
-    fetch(REJECT_ACCEPT_REQUEST, {
+    const response = await fetch(REJECT_ACCEPT_REQUEST, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
-    })
-      .then(response => response.json())
-      .then(responseJson => {
-        if (responseJson.result) {
-          if (!rejectionData) {
-            toggleLoading(false);
-            newjobRequestsProviders.splice(pos, 1);
-            fetchedPendingJobInfo(newjobRequestsProviders);
-          }
-          onSuccess && onSuccess();
-        } else {
-          onError('Something went wrong');
-        }
-        if (redirect) navigate();
-      })
-      .catch(error => {
-        onError(error.message);
-      });
+    });
+    const responseJson = await response.json();
+    if (responseJson.result) {
+      if (!rejectionData) {
+        toggleLoading(false);
+        newjobRequestsProviders.splice(pos, 1);
+        fetchedPendingJobInfo(newjobRequestsProviders);
+      }
+      onSuccess && onSuccess();
+    } else {
+      onError('Something went wrong');
+    }
+    if (redirect) navigate();
   } catch (e) {
     onError(e.message);
   }
@@ -210,33 +200,24 @@ export const updateAvailabilityInMongoDB = async ({
 }) => {
   try {
     let newProDits = cloneDeep(providerDetails);
-    await fetch(PRO_INFO_UPDATE + providerDetails.providerId, {
+    const resp = await fetch(PRO_INFO_UPDATE + providerDetails.providerId, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(userData),
-    })
-      .then(response => {
-        return response.json();
-      })
-      .then(response => {
-        const { result, data } = response;
-        if (result && data) {
-          newProDits.online = data.online;
-          updateProviderDetails(newProDits);
-          onSuccess(response.message, online, data.online);
-        } else {
-          onError(response.message);
-        }
-      })
-      .catch(error => {
-        console.log('Error :' + error);
-        onError('Someting went wrong, please try again later');
-      });
+    });
+    const response = resp.json();
+    const { result, data } = response;
+    if (result && data) {
+      newProDits.online = data.online;
+      updateProviderDetails(newProDits);
+      onSuccess(response.message, online, data.online);
+    } else {
+      onError(response.message);
+    }
   } catch (e) {
-    console.log('Error :' + e);
     onError('Something went wrong, please try again later');
   }
 };

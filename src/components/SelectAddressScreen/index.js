@@ -91,30 +91,18 @@ export default class SelectAddressScreen extends Component {
     return true;
   };
 
-  getAddress = value => {
+  getAddress = async value => {
     this.setState({
       isLoading: true,
     });
     try {
-      fetch(GOOGLE_ADDRESS_SERVICE + value)
-        .then(response => response.json())
-        .then(responseJson => {
-          this.setState({
-            dataSource: responseJson.predictions,
-            isLoading: false,
-          });
-        })
-        .catch(error => {
-          this.setState({
-            isLoading: false,
-          });
-          ToastAndroid.show(
-            'Something went wrong, Check your internet connection',
-            ToastAndroid.SHORT,
-          );
-        });
+      const response = await fetch(GOOGLE_ADDRESS_SERVICE + value);
+      const responseJson = await response.json();
+      this.setState({
+        dataSource: responseJson.predictions,
+        isLoading: false,
+      });
     } catch (e) {
-      console.log(e);
       this.setState({
         isLoading: false,
       });
@@ -122,40 +110,29 @@ export default class SelectAddressScreen extends Component {
     }
   };
 
-  moveToPreviousScreen = (placeId, description) => {
+  moveToPreviousScreen = async (placeId, description) => {
     this.setState({
       isLoading: true,
     });
     try {
-      fetch(LAT_LNG_URL + placeId)
-        .then(response => response.json())
-        .then(responseJson => {
-          const { navigation, route } = this.props;
-          const from = route.params.from;
-          const callback = route.params.onGoBack;
-          this.setState({
-            isLoading: false
-          });
-          callback(
-            description + '/' + responseJson.result.geometry.location.lat + '/' + responseJson.result.geometry.location.lng,
-          );
-          if (from === 'profile-screen') {
-            this.props.navigation.navigate('ProMyProfile', {
-              accountType: route.params.accountType,
-              onGoBack: callback,
-              from: 'address-screen',
-            });
-          } else navigation.goBack();
-        })
-        .catch(error => {
-          this.setState({
-            isLoading: false,
-          });
-          ToastAndroid.show(
-            'Something went wrong, Check your internet connection',
-            ToastAndroid.SHORT,
-          );
+      const response = await fetch(LAT_LNG_URL + placeId);
+      const responseJson = await response.json();
+      const { navigation, route } = this.props;
+      const from = route.params.from;
+      const callback = route.params.onGoBack;
+      this.setState({
+        isLoading: false
+      });
+      callback(
+        description + '/' + responseJson.result.geometry.location.lat + '/' + responseJson.result.geometry.location.lng,
+      );
+      if (from === 'profile-screen') {
+        this.props.navigation.navigate('ProMyProfile', {
+          accountType: route.params.accountType,
+          onGoBack: callback,
+          from: 'address-screen',
         });
+      } else navigation.goBack();
     } catch (e) {
       this.setState({
         isLoading: false,

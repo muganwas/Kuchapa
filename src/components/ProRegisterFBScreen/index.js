@@ -17,7 +17,6 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview'
 import { connect } from 'react-redux';
 import rNES from 'react-native-encrypted-storage';
 import messaging from '@react-native-firebase/messaging';
-import Axios from 'axios';
 import Config from '../Config';
 import WaitingDialog from '../WaitingDialog';
 import DialogComponent from '../DialogComponent';
@@ -140,90 +139,71 @@ class ProRegisterFBScreen extends Component {
         isLoading: true,
       });
       try {
-        Axios.post(REGISTER_URL, { data: JSON.stringify(userData) })
-          .then(responseJson => {
-            console.log(responseJson);
-            this.setState({
-              isLoading: false,
-            });
-            if (responseJson.status === 200 && responseJson.data.createdDate) {
-              const id = responseJson.data.id;
-              var providerData = {
-                providerId: responseJson.data.id,
-                name: responseJson.data.username,
-                email: responseJson.data.email,
-                password: responseJson.data.password,
-                imageSource: responseJson.data.image,
-                surname: responseJson.data.surname,
-                mobile: responseJson.data.mobile,
-                services: responseJson.data.services,
-                description: responseJson.data.description,
-                address: responseJson.data.address,
-                lat: responseJson.data.lat,
-                lang: responseJson.data.lang,
-                invoice: responseJson.data.invoice,
-                status: responseJson.data.status,
-                fcmId: responseJson.data.fcm_id,
-                accountType: responseJson.data.account_type,
-              };
-              updateProviderDetails(providerData);
-              //Store data like sharedPreference
-              rNES.setItem('userId', id);
-              rNES.setItem('userType', 'Provider');
+        const response = await fetch(REGISTER_URL, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ data: userData })
+        });
+        const responseJson = await response.json();
+        console.log(responseJson);
+        this.setState({
+          isLoading: false,
+        });
+        if (responseJson.status === 200 && responseJson.data.createdDate) {
+          const id = responseJson.data.id;
+          var providerData = {
+            providerId: responseJson.data.id,
+            name: responseJson.data.username,
+            email: responseJson.data.email,
+            password: responseJson.data.password,
+            imageSource: responseJson.data.image,
+            surname: responseJson.data.surname,
+            mobile: responseJson.data.mobile,
+            services: responseJson.data.services,
+            description: responseJson.data.description,
+            address: responseJson.data.address,
+            lat: responseJson.data.lat,
+            lang: responseJson.data.lang,
+            invoice: responseJson.data.invoice,
+            status: responseJson.data.status,
+            fcmId: responseJson.data.fcm_id,
+            accountType: responseJson.data.account_type,
+          };
+          updateProviderDetails(providerData);
+          //Store data like sharedPreference
+          rNES.setItem('userId', id);
+          rNES.setItem('userType', 'Provider');
 
-              //ToastAndroid.show('Successfully Registered', ToastAndroid.SHORT);
-              this.props.navigation.navigate('ProHome');
-            } else {
-              this.leftButtonActon = () => {
-                this.setState({
-                  isLoading: false,
-                  showDialog: false,
-                  dialogType: null,
-                });
-              };
-              this.rightButtonAction = async () => {
-                await this.autoLogin(userId, userType, fcmToken);
-                this.setState({
-                  showDialog: false,
-                  dialogType: null,
-                });
-              };
-              this.setState({
-                isLoading: false,
-                showDialog: true,
-                dialogType: 'fb',
-                dialogTitle: 'OOPS!',
-                dialogDesc: responseJson.data.message,
-                dialogLeftText: 'Cancel',
-                dialogRightText: 'Retry',
-              });
-            }
-          })
-          .catch(error => {
-            this.leftButtonActon = () => {
-              this.setState({
-                isLoading: false,
-                showDialog: false,
-                dialogType: null,
-              });
-            };
-            this.rightButtonAction = async () => {
-              await this.autoLogin(userId, userType, fcmToken);
-              this.setState({
-                showDialog: false,
-                dialogType: null,
-              });
-            };
+          //ToastAndroid.show('Successfully Registered', ToastAndroid.SHORT);
+          this.props.navigation.navigate('ProHome');
+        } else {
+          this.leftButtonActon = () => {
             this.setState({
               isLoading: false,
-              showDialog: true,
-              dialogType: 'fb',
-              dialogTitle: 'OOPS!',
-              dialogDesc: error.message,
-              dialogLeftText: 'Cancel',
-              dialogRightText: 'Retry',
+              showDialog: false,
+              dialogType: null,
             });
+          };
+          this.rightButtonAction = async () => {
+            await this.autoLogin(userId, userType, fcmToken);
+            this.setState({
+              showDialog: false,
+              dialogType: null,
+            });
+          };
+          this.setState({
+            isLoading: false,
+            showDialog: true,
+            dialogType: 'fb',
+            dialogTitle: 'OOPS!',
+            dialogDesc: responseJson.data.message,
+            dialogLeftText: 'Cancel',
+            dialogRightText: 'Retry',
           });
+        }
       } catch (e) {
         this.leftButtonActon = () => {
           this.setState({

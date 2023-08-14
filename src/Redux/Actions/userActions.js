@@ -54,60 +54,55 @@ export const updateProviderAuthToken = payload => {
 };
 
 export const fetchProviderProfile = (userId, fcmToken) => {
-  return dispatch => {
+  return async dispatch => {
     try {
-      fetch(PRO_GET_PROFILE + userId + '?fcm_id=' + fcmToken, {
+      const response = await fetch(PRO_GET_PROFILE + userId + '?fcm_id=' + fcmToken, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-      })
-        .then(response => response.json())
-        .then(async responseJson => {
-          let status;
-          if (responseJson && responseJson.result) {
-            const id = responseJson.data.id;
-            const usersRef = database().ref(`users/${id}`);
-            await usersRef.once('value', snapshot => {
-              const value = snapshot.val();
-              if (value) status = value.status;
-              else {
-                usersRef
-                  .set({status: responseJson.data.status})
-                  .then(() => {
-                    console.log('status set');
-                  })
-                  .catch(e => {
-                    console.log(e.message);
-                  });
-              }
-            });
-            var providerData = {
-              providerId: responseJson.data.id,
-              name: responseJson.data.username,
-              email: responseJson.data.email,
-              password: responseJson.data.password,
-              imageSource: responseJson.data.image,
-              surname: responseJson.data.surname,
-              mobile: responseJson.data.mobile,
-              services: responseJson.data.services,
-              description: responseJson.data.description,
-              address: responseJson.data.address,
-              lat: responseJson.data.lat,
-              lang: responseJson.data.lang,
-              invoice: responseJson.data.invoice,
-              firebaseId: responseJson.data.id,
-              status: status != undefined ? status : responseJson.data.status,
-              fcmId: responseJson.data.fcm_id,
-              accountType: responseJson.data.account_type,
-            };
-            dispatch(updateProviderDetails(providerData));
+      });
+      const responseJson = await response.json();
+      let status;
+      if (responseJson && responseJson.result) {
+        const id = responseJson.data.id;
+        const usersRef = database().ref(`users/${id}`);
+        await usersRef.once('value', snapshot => {
+          const value = snapshot.val();
+          if (value) status = value.status;
+          else {
+            usersRef
+              .set({ status: responseJson.data.status })
+              .then(() => {
+                console.log('status set');
+              })
+              .catch(e => {
+                console.log(e.message);
+              });
           }
-        })
-        .catch(error => {
-          console.log('pro profile fetch error', error);
         });
+        var providerData = {
+          providerId: responseJson.data.id,
+          name: responseJson.data.username,
+          email: responseJson.data.email,
+          password: responseJson.data.password,
+          imageSource: responseJson.data.image,
+          surname: responseJson.data.surname,
+          mobile: responseJson.data.mobile,
+          services: responseJson.data.services,
+          description: responseJson.data.description,
+          address: responseJson.data.address,
+          lat: responseJson.data.lat,
+          lang: responseJson.data.lang,
+          invoice: responseJson.data.invoice,
+          firebaseId: responseJson.data.id,
+          status: status != undefined ? status : responseJson.data.status,
+          fcmId: responseJson.data.fcm_id,
+          accountType: responseJson.data.account_type,
+        };
+        dispatch(updateProviderDetails(providerData));
+      }
     } catch (e) {
       console.log('pro profile fetch error', e);
     }
@@ -115,55 +110,50 @@ export const fetchProviderProfile = (userId, fcmToken) => {
 };
 
 export const fetchUserProfile = (userId, fcmToken) => {
-  return dispatch => {
+  return async dispatch => {
     try {
-      fetch(USER_GET_PROFILE + userId + '?fcm_id=' + fcmToken, {
+      const response = await fetch(USER_GET_PROFILE + userId + '?fcm_id=' + fcmToken, {
         method: 'GET',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-      })
-        .then(response => response.json())
-        .then(async responseJson => {
-          if (responseJson && responseJson.result) {
-            let userData = {
-              userId: responseJson.data.id,
-              accountType: responseJson.data.acc_type,
-              email: responseJson.data.email,
-              password: responseJson.data.password,
-              username: responseJson.data.username,
-              image: responseJson.data.image,
-              mobile: responseJson.data.mobile,
-              dob: responseJson.data.dob,
-              address: responseJson.data.address,
-              lat: responseJson.data.lat,
-              lang: responseJson.data.lang,
-              firebaseId: responseJson.data.id,
-              fcmId: responseJson.data.fcm_id,
-            };
-            const id = responseJson.data.id;
-            const usersRef = database().ref(`users/${id}`);
-            await usersRef.once('value', snapshot => {
-              const value = snapshot.val();
-              if (value) status = value.status;
-              else {
-                usersRef
-                  .set({status: responseJson.data.status})
-                  .then(() => {
-                    console.log('status set');
-                  })
-                  .catch(e => {
-                    console.log(e.message);
-                  });
-              }
-            });
-            dispatch(updateUserDetails(userData));
+      });
+      const responseJson = await response.json();
+      if (responseJson && responseJson.result) {
+        let userData = {
+          userId: responseJson.data.id,
+          accountType: responseJson.data.acc_type,
+          email: responseJson.data.email,
+          password: responseJson.data.password,
+          username: responseJson.data.username,
+          image: responseJson.data.image,
+          mobile: responseJson.data.mobile,
+          dob: responseJson.data.dob,
+          address: responseJson.data.address,
+          lat: responseJson.data.lat,
+          lang: responseJson.data.lang,
+          firebaseId: responseJson.data.id,
+          fcmId: responseJson.data.fcm_id,
+        };
+        const id = responseJson.data.id;
+        const usersRef = database().ref(`users/${id}`);
+        await usersRef.once('value', snapshot => {
+          const value = snapshot.val();
+          if (value) status = value.status;
+          else {
+            usersRef
+              .set({ status: responseJson.data.status })
+              .then(() => {
+                console.log('status set');
+              })
+              .catch(e => {
+                console.log(e.message);
+              });
           }
-        })
-        .catch(error => {
-          console.log('user profile fetch error --', error);
         });
+        dispatch(updateUserDetails(userData));
+      }
     } catch (e) {
       console.log('user profile fetch error --', e);
     }

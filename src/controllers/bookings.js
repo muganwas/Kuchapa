@@ -16,45 +16,34 @@ export const getAllBookings = async ({
   try {
     let bookingCompleteData = [];
     let bookingRejectData = [];
-    await fetch(bookingHistoryURL + userId + '/bookings')
-      .then(response => response.json())
-      .then(async responseJson => {
-        if (responseJson.result && responseJson.data) {
-          console.log(responseJson.data);
-          let newData = cloneDeep(responseJson.data);
-          for (let i = 0; i < newData.length; i++) {
-            if (userType === 'Provider')
-              if (newData[i]?.user_details)
-                newData[i].user_details.imageAvailable = await imageExists(newData[i]?.user_details?.image);
-              else
-                if (newData[i]?.employee_details)
-                  newData[i].employee_details.imageAvailable = await imageExists(newData[i]?.employee_details?.image);
-            if (newData[i].chat_status === '1') {
-              if (newData[i].status === 'Completed') {
-                bookingCompleteData.push(newData[i]);
-              } else if (newData[i].status === 'Rejected') {
-                bookingRejectData.push(newData[i]);
-              }
-            } else {
-              if (newData[i].status === 'Rejected') {
-                bookingRejectData.push(newData[i]);
-              }
-            }
+    const response = await fetch(bookingHistoryURL + userId + '/bookings');
+    const responseJson = await response.json();
+    if (responseJson.result && responseJson.data) {
+      let newData = cloneDeep(responseJson.data);
+      for (let i = 0; i < newData.length; i++) {
+        if (userType === 'Provider')
+          if (newData[i]?.user_details)
+            newData[i].user_details.imageAvailable = await imageExists(newData[i]?.user_details?.image);
+          else
+            if (newData[i]?.employee_details)
+              newData[i].employee_details.imageAvailable = await imageExists(newData[i]?.employee_details?.image);
+        if (newData[i].chat_status === '1') {
+          if (newData[i].status === 'Completed') {
+            bookingCompleteData.push(newData[i]);
+          } else if (newData[i].status === 'Rejected') {
+            bookingRejectData.push(newData[i]);
           }
-          onSuccess(bookingCompleteData, bookingRejectData);
         } else {
-          toggleIsLoading(false);
+          if (newData[i].status === 'Rejected') {
+            bookingRejectData.push(newData[i]);
+          }
         }
-      })
-      .catch(error => {
-        console.log('Booking fetch error', error);
-        toggleIsLoading(false);
-        SimpleToast.show(
-          'Something went wrong, check your internet connection',
-        );
-      });
+      }
+      onSuccess(bookingCompleteData, bookingRejectData);
+    } else {
+      toggleIsLoading(false);
+    }
   } catch (e) {
-    console.log(e);
     toggleIsLoading(false);
     SimpleToast.show('Something went wrong, please try again');
   }
@@ -92,28 +81,22 @@ export const reviewTask = async ({
     },
   };
   try {
-    fetch(reviewURL, {
+    const resp = await fetch(reviewURL, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(reviewData),
-    })
-      .then(response => response.json())
-      .then(response => {
-        if (response.result) {
-          onSuccess();
-          SimpleToast.show('Review Submitted');
-        } else {
-          toggleIsLoading();
-          SimpleToast.show('Something went wrong, please try again.');
-        }
-      })
-      .catch(error => {
-        toggleIsLoading();
-        SimpleToast.show('Something went wrong, please try again.');
-      });
+    });
+    const response = resp.json();
+    if (response.result) {
+      onSuccess();
+      SimpleToast.show('Review Submitted');
+    } else {
+      toggleIsLoading();
+      SimpleToast.show('Something went wrong, please try again.');
+    }
   } catch (e) {
     toggleIsLoading();
     SimpleToast.show('Something went wrong, please try again.');
@@ -177,45 +160,38 @@ export const requestForBooking = async ({
       );
     }
     try {
-      fetch(BOOKING_REQUEST, {
+      const response = await fetch(BOOKING_REQUEST, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      })
-        .then(response => response.json())
-        .then(responseJson => {
-          if (responseJson.result) {
-            onSuccess('Waiting for acceptance...');
-          } else {
-            if (responseJson.message === 'Already Exist') {
-              onError(
-                false,
-                'You already have a running job with this provider',
-              );
-            } else if (responseJson.message === 'Service provider busy') {
-              onError(
-                false,
-                'Service provider is currently busy. please try another service provider',
-              );
-            } else if (responseJson.message === 'Service provider is offline') {
-              onError(
-                false,
-                'Service provider is offline. Book another service provider',
-              );
-            } else {
-              onError(true, 'Something went wrong');
-            }
-          }
-        })
-        .catch(error => {
-          console.log('pro req error ', error);
-          onError(true, 'Something went wrong, try again later');
-        });
+      });
+      const responseJson = await response.json();
+      if (responseJson.result) {
+        onSuccess('Waiting for acceptance...');
+      } else {
+        if (responseJson.message === 'Already Exist') {
+          onError(
+            false,
+            'You already have a running job with this provider',
+          );
+        } else if (responseJson.message === 'Service provider busy') {
+          onError(
+            false,
+            'Service provider is currently busy. please try another service provider',
+          );
+        } else if (responseJson.message === 'Service provider is offline') {
+          onError(
+            false,
+            'Service provider is offline. Book another service provider',
+          );
+        } else {
+          onError(true, 'Something went wrong');
+        }
+      }
     } catch (e) {
-      console.log('Pro request err !', e);
       onError(true, 'Something went wrong, try again later');
     }
   }

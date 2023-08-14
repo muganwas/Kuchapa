@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { PermissionsAndroid, Platform } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import Polyline from '@mapbox/polyline';
@@ -37,23 +36,20 @@ export const locationPermissionRequest = async (action = () => { }) => {
 export const returnCoordDetails = async ({ lat = '', lng = '' }) => {
   let url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${Config.mapsApiKey}`;
   let msg = {};
-  lat &&
-    lng &&
-    (await fetch(url)
-      .then(resp => resp.json())
-      .then(resp => {
-        if (resp.status.toLowerCase() === 'ok')
-          msg = {
-            address: resp?.results[0]?.formatted_address,
-            msg: 'ok',
-          };
-        else msg = { msg: 'error' };
-      })
-      .catch(e => {
-        console.log('address error ', e);
-        msg = { msg: 'error' };
-      }));
-  return msg;
+  if (lat && lng) {
+    try {
+      const response = await fetch(url);
+      const resp = await response.json();
+      if (resp.status.toLowerCase() === 'ok')
+        return msg = {
+          address: resp?.results[0]?.formatted_address,
+          msg: 'ok',
+        };
+      else return msg = { msg: 'error' };
+    } catch (e) {
+      return msg = { msg: 'error' };
+    }
+  }
 };
 
 export const phoneNumberCheck = async (phoneNumber, countryLetterCode) => {
@@ -275,24 +271,22 @@ export const selectPhoto = async callback => {
 export const getDirections = async ({ startLoc, destinationLoc, onSuccess }) => {
   if (startLoc && destinationLoc) {
     try {
-      fetch(
+      const resp = await fetch(
         `https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}&key=${Config.mapsApiKey}`,
-      )
-        .then(resp => resp.json())
-        .then(async respJson => {
-          if (respJson && respJson.routes[0]) {
-            const points = Polyline.decode(
-              respJson.routes[0].overview_polyline.points,
-            );
-            let coords = await points.map((point, index) => {
-              return {
-                latitude: point[0],
-                longitude: point[1],
-              };
-            });
-            onSuccess(coords);
-          }
+      );
+      const respJson = await resp.json();
+      if (respJson && respJson.routes[0]) {
+        const points = Polyline.decode(
+          respJson.routes[0].overview_polyline.points,
+        );
+        let coords = await points.map((point, index) => {
+          return {
+            latitude: point[0],
+            longitude: point[1],
+          };
         });
+        onSuccess(coords);
+      }
     } catch (error) {
       console.log('get loc error', error);
       SimpleToast.show('Something went wrong, try again later.');

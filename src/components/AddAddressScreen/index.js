@@ -112,7 +112,7 @@ class AddAddressScreen extends Component {
     if (Platform.OS === 'ios') {
       Geolocation.requestAuthorization();
       Geolocation.getCurrentPosition(
-        position => {
+        async position => {
           console.log('Position : ' + JSON.stringify(position));
 
           this.setState({
@@ -121,79 +121,70 @@ class AddAddressScreen extends Component {
           });
           try {
             //Update Address to Database
-            fetch(
+            const resp = await fetch(
               'https://maps.googleapis.com/maps/api/geocode/json?address=' +
               position.coords.latitude +
               ',' +
               position.coords.longitude +
               '&key=' +
               Config.mapsApiKey
-            )
-              .then(response => response.json())
-              .then(responseJson => {
-                console.log(
-                  'ADDRESS GEOCODE is BACK!! => ' +
-                  JSON.stringify(responseJson.results[0].formatted_address),
-                );
+            );
+            const responseJson = await resp.json();
+            console.log(
+              'ADDRESS GEOCODE is BACK!! => ' +
+              JSON.stringify(responseJson.results[0].formatted_address),
+            );
 
+            this.setState({
+              address: responseJson.results[0].formatted_address,
+              isLoading: false,
+            });
+
+            const userData = {
+              address: responseJson.results[0].formatted_address,
+              lat: this.state.latitude,
+              lang: this.state.longitude,
+            };
+            try {
+              const res = await fetch(USER_INFO_UPDATE + userDetails.userId, {
+                method: 'POST',
+                headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData),
+              });
+              const response = await res.json()
+              if (response.result) {
                 this.setState({
-                  address: responseJson.results[0].formatted_address,
                   isLoading: false,
                 });
-
                 const userData = {
-                  address: responseJson.results[0].formatted_address,
-                  lat: this.state.latitude,
-                  lang: this.state.longitude,
+                  userId: response.data.id,
+                  accountType: response.data.acc_type,
+                  email: response.data.email,
+                  password: response.data.password,
+                  username: response.data.username,
+                  image: response.data.image,
+                  mobile: responseJson.data.mobile,
+                  dob: response.data.dob,
+                  address: response.data.address,
+                  lat: response.data.lat,
+                  lang: response.data.lang,
+                  fcmId: response.data.fcm_id,
                 };
-                try {
-                  fetch(USER_INFO_UPDATE + userDetails.userId, {
-                    method: 'POST',
-                    headers: {
-                      Accept: 'application/json',
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(userData),
-                  })
-                    .then(response => response.json())
-                    .then(response => {
-                      if (response.result) {
-                        this.setState({
-                          isLoading: false,
-                        });
-                        var userData = {
-                          userId: response.data.id,
-                          accountType: response.data.acc_type,
-                          email: response.data.email,
-                          password: response.data.password,
-                          username: response.data.username,
-                          image: response.data.image,
-                          mobile: responseJson.data.mobile,
-                          dob: response.data.dob,
-                          address: response.data.address,
-                          lat: response.data.lat,
-                          lang: response.data.lang,
-                          fcmId: response.data.fcm_id,
-                        };
-                        updateUserDetails(userData);
-                      } else {
-                        this.setState({
-                          isLoading: false,
-                        });
-                        this.showToast(response.message);
-                      }
-                    })
-                    .catch(error => {
-                      this.setState({
-                        isLoading: false,
-                      });
-                    });
-                } catch (e) {
-                  this.setState({
-                    isLoading: false,
-                  });
-                }
+                updateUserDetails(userData);
+              } else {
+                this.setState({
+                  isLoading: false,
+                });
+                this.showToast(response.message);
+              }
+            } catch (e) {
+              this.setState({
+                isLoading: false,
               });
+            }
           } catch (e) {
             this.setState({
               isLoading: false,
@@ -216,96 +207,84 @@ class AddAddressScreen extends Component {
       );
       if (granted) {
         Geolocation.getCurrentPosition(
-          position => {
-            console.log('Position >> ' + JSON.stringify(position));
+          async position => {
             this.setState({
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
             });
             try {
               //Update Address to Database
-              fetch(
+              const response = await fetch(
                 'https://maps.googleapis.com/maps/api/geocode/json?address=' +
                 position.coords.latitude +
                 ',' +
                 position.coords.longitude +
                 '&key=' +
                 Config.mapsApiKey,
-              )
-                .then(response => response.json())
-                .then(responseJson => {
-                  console.log('maps address ..', responseJson)
-                  const {
-                    userInfo: { userDetails },
-                    updateUserDetails,
-                  } = this.props;
+              );
+              const responseJson = await response.json();
+              console.log('maps address ..', responseJson);
+              const {
+                userInfo: { userDetails },
+                updateUserDetails,
+              } = this.props;
+              this.setState({
+                address: responseJson.results[0].formatted_address,
+                isLoading: false,
+              });
+
+              const userData = {
+                address: responseJson.results[0].formatted_address,
+                lat: this.state.latitude,
+                lang: this.state.longitude,
+              };
+              try {
+                const resp = await fetch(USER_INFO_UPDATE + userDetails.userId, {
+                  method: 'POST',
+                  headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(userData),
+                });
+                const response = await resp();
+                if (response.result) {
                   this.setState({
-                    address: responseJson.results[0].formatted_address,
                     isLoading: false,
                   });
-
                   const userData = {
-                    address: responseJson.results[0].formatted_address,
-                    lat: this.state.latitude,
-                    lang: this.state.longitude,
+                    userId: response.data.id,
+                    accountType: response.data.acc_type,
+                    email: response.data.email,
+                    password: response.data.password,
+                    username: response.data.username,
+                    image: response.data.image,
+                    mobile: response.data.mobile,
+                    dob: response.data.dob,
+                    address: response.data.address,
+                    lat: response.data.lat,
+                    lang: response.data.lang,
+                    fcmId: response.data.fcm_id,
                   };
-                  try {
-                    fetch(USER_INFO_UPDATE + userDetails.userId, {
-                      method: 'POST',
-                      headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify(userData),
-                    })
-                      .then(response => response.json())
-                      .then(response => {
-                        if (response.result) {
-                          this.setState({
-                            isLoading: false,
-                          });
-                          var userData = {
-                            userId: response.data.id,
-                            accountType: response.data.acc_type,
-                            email: response.data.email,
-                            password: response.data.password,
-                            username: response.data.username,
-                            image: response.data.image,
-                            mobile: response.data.mobile,
-                            dob: response.data.dob,
-                            address: response.data.address,
-                            lat: response.data.lat,
-                            lang: response.data.lang,
-                            fcmId: response.data.fcm_id,
-                          };
-                          updateUserDetails(userData);
-                        } else {
-                          this.setState({
-                            isLoading: false,
-                          });
-                          this.showToast(response.message);
-                        }
-                      })
-                      .catch(error => {
-                        this.setState({
-                          isLoading: false,
-                        });
-                      });
-                  } catch (e) {
-                    this.setState({
-                      isLoading: false,
-                    });
-                  }
+                  updateUserDetails(userData);
+                } else {
+                  this.setState({
+                    isLoading: false,
+                  });
+                  this.showToast(response.message);
+                }
+              } catch (e) {
+                this.setState({
+                  isLoading: false,
                 });
+              }
             } catch (e) {
-              console.log('get address error', { e });
               this.setState({
                 isLoading: false,
               });
             }
           },
           error => {
-            console.log('Error: ' + error.code, error.message);
             this.setState({
               isErrorToast: true,
             });
@@ -329,33 +308,26 @@ class AddAddressScreen extends Component {
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        Geolocation.getCurrentPosition(position => {
+        Geolocation.getCurrentPosition(async position => {
           this.setState({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
           try {
-            fetch(
+            const response = await fetch(
               'https://maps.googleapis.com/maps/api/geocode/json?address=' +
               position.coords.latitude +
               ',' +
               position.coords.longitude +
               '&key=' +
               Config.mapsApiKey,
-            )
-              .then(response => response.json())
-              .then(responseJson => {
-                console.log(
-                  'ADDRESS GEOCODE is BACK!! ==> ' +
-                  JSON.stringify(responseJson.results[0].formatted_address),
-                );
-
-                this.updateAddressToDatabase(
-                  position.coords.latitude,
-                  position.coords.longitude,
-                  responseJson.results[0].formatted_address,
-                );
-              });
+            );
+            const responseJson = response.json();
+            this.updateAddressToDatabase(
+              position.coords.latitude,
+              position.coords.longitude,
+              responseJson.results[0].formatted_address,
+            );
           } catch (e) {
             console.log(e.message);
           }
@@ -383,7 +355,7 @@ class AddAddressScreen extends Component {
   };
 
   //Update Address to Database
-  updateAddressToDatabase(latitude, longitude, address) {
+  updateAddressToDatabase = async (latitude, longitude, address) => {
     const userData = {
       address: address,
       lat: latitude,
@@ -394,53 +366,44 @@ class AddAddressScreen extends Component {
       updateUserDetails,
     } = this.props;
     try {
-      fetch(USER_INFO_UPDATE + userDetails.userId, {
+      const resp = await fetch(USER_INFO_UPDATE + userDetails.userId, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(userData),
-      })
-        .then(response => response.json())
-        .then(response => {
-          console.log('Response' + JSON.stringify(response));
-          if (response.result) {
-            this.setState({
-              isLoading: false,
-              address: address,
-            });
-
-            var userData = {
-              userId: response.data.id,
-              accountType: response.data.acc_type,
-              email: response.data.email,
-              password: response.data.password,
-              username: response.data.username,
-              image: response.data.image,
-              mobile: response.data.mobile,
-              dob: response.data.dob,
-              address: response.data.address,
-              lat: response.data.lat,
-              lang: response.data.lang,
-              fcmId: response.data.fcm_id,
-            };
-            updateUserDetails(userData);
-            this.showToast(response.message);
-          } else {
-            this.setState({
-              isLoading: false,
-            });
-            this.showToast(response.message);
-          }
-        })
-        .catch(error => {
-          this.setState({
-            isLoading: false,
-          });
+      });
+      const response = await resp.json()
+      if (response.result) {
+        this.setState({
+          isLoading: false,
+          address: address,
         });
+
+        const userData = {
+          userId: response.data.id,
+          accountType: response.data.acc_type,
+          email: response.data.email,
+          password: response.data.password,
+          username: response.data.username,
+          image: response.data.image,
+          mobile: response.data.mobile,
+          dob: response.data.dob,
+          address: response.data.address,
+          lat: response.data.lat,
+          lang: response.data.lang,
+          fcmId: response.data.fcm_id,
+        };
+        updateUserDetails(userData);
+        this.showToast(response.message);
+      } else {
+        this.setState({
+          isLoading: false,
+        });
+        this.showToast(response.message);
+      }
     } catch (e) {
-      console.log('Error :' + e);
       this.setState({
         isLoading: false,
       });
