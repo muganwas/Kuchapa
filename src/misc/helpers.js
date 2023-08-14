@@ -1,10 +1,11 @@
 import { PermissionsAndroid, Platform } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import Polyline from '@mapbox/polyline';
+import database from '@react-native-firebase/database';
 import messaging from '@react-native-firebase/messaging';
 import { exitApp } from 'react-native-exit-app';
 import { PhoneNumberUtil } from 'google-libphonenumber';
-import ImagePicker, { launchImageLibrary } from 'react-native-image-picker';
+import { launchImageLibrary } from 'react-native-image-picker';
 import { cloneDeep } from 'lodash';
 import SimpleToast from 'react-native-simple-toast';
 import moment from 'moment';
@@ -13,6 +14,17 @@ import Config from '../components/Config';
 const phoneUtil = PhoneNumberUtil.getInstance();
 const emailRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
 const passwordRegex = /[^\w\d]*(([0-9]+.*[A-Z]+.*)|[A-Z]+.*([0-9]+.*))/;
+
+const FETCH_MESSAGES = Config.baseURL + 'chat/fetchChats';
+const PRO_GET_PROFILE = Config.baseURL + 'employee/';
+const USER_GET_PROFILE = Config.baseURL + 'users/';
+const PENDING_JOB_PROVIDER =
+  Config.baseURL + 'jobrequest/provider_status_check/';
+const PENDING_JOB_CUSTOMER =
+  Config.baseURL + 'jobrequest/customer_status_check/';
+const BOOKING_HISTORY = Config.baseURL + 'jobrequest/employee_request/';
+const CUSTOMER_BOOKING_HISTORY =
+  Config.baseURL + 'jobrequest/customer_request/';
 
 export const locationPermissionRequest = async (action = () => { }) => {
   try {
@@ -296,5 +308,319 @@ export const getDirections = async ({ startLoc, destinationLoc, onSuccess }) => 
       'Destination co-ordinates missing, try later',
       SimpleToast.LONG,
     );
+  }
+};
+
+export const fetchEmployeeMessagesFunc = async (receiverId, dispatch, dbMessagesFetched, callBack) => {
+  const res = await fetch(
+    FETCH_MESSAGES + '?sender=' + receiverId + '&userType=employee',
+  );
+  const data = await res.json();
+  let messages = {};
+  let otherUsers = {};
+  // get ids of other users this user has chatted with
+  if (!data.message) {
+    await data.map(msgObj => {
+      const { sender, recipient } = msgObj;
+      if (sender !== receiverId) otherUsers[sender] = sender;
+      else if (recipient !== receiverId)
+        otherUsers[recipient] = recipient;
+    });
+    // if any user, seperate the different groups of messages
+    if (Object.keys(otherUsers).length > 0) {
+      await Object.keys(otherUsers).map(async otherUser => {
+        const thisUsersMessages = [];
+        await data.map(msgObj => {
+          const { sender, recipient } = msgObj;
+          if (otherUser === sender || otherUser === recipient)
+            thisUsersMessages.push(msgObj);
+        });
+        if (thisUsersMessages.length > 0)
+          messages[otherUser] = thisUsersMessages;
+      });
+    }
+    dispatch(dbMessagesFetched(messages));
+    callBack && callBack();
+  } else {
+    dispatch(messagesError(data.message));
+    callBack && callBack();
+    SimpleToast.show('Something went wrong, please reload app');
+  }
+}
+
+export const fetchMessagesFunc = async (senderId, dispatch, dbMessagesFetched, callBack) => {
+  const res = await fetch(
+    FETCH_MESSAGES + '?sender=' + senderId + '&userType=client',
+  );
+  const data = await res.json();
+  let messages = {};
+  let otherUsers = {};
+  // get ids of other users this user has chatted with
+  if (!data.message) {
+    await data.map(msgObj => {
+      const { sender, recipient } = msgObj;
+      if (sender !== senderId) otherUsers[sender] = sender;
+      else if (recipient !== senderId)
+        otherUsers[recipient] = recipient;
+    });
+    // if any user, seperate the different groups of messages
+    if (Object.keys(otherUsers).length > 0) {
+      await Object.keys(otherUsers).map(async otherUser => {
+        const thisUsersMessages = [];
+        await data.map(msgObj => {
+          const { sender, recipient } = msgObj;
+          if (otherUser === sender || otherUser === recipient)
+            thisUsersMessages.push(msgObj);
+        });
+        if (thisUsersMessages.length > 0)
+          messages[otherUser] = thisUsersMessages;
+      });
+    }
+    dispatch(dbMessagesFetched(messages));
+    callBack && callBack();
+  } else {
+    dispatch(messagesError(e.message));
+    callBack && callBack();
+    SimpleToast.show('Something went wrong, please reload app');
+  }
+}
+
+export const fetchUserProfileFunc = async (userId, fcmToken, updateUserDetails, dispatch) => {
+  const response = await fetch(USER_GET_PROFILE + userId + '?fcm_id=' + fcmToken, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+  const responseJson = await response.json();
+  if (responseJson && responseJson.result) {
+    let userData = {
+      userId: responseJson.data.id,
+      accountType: responseJson.data.acc_type,
+      email: responseJson.data.email,
+      password: responseJson.data.password,
+      username: responseJson.data.username,
+      image: responseJson.data.image,
+      mobile: responseJson.data.mobile,
+      dob: responseJson.data.dob,
+      address: responseJson.data.address,
+      lat: responseJson.data.lat,
+      lang: responseJson.data.lang,
+      firebaseId: responseJson.data.id,
+      fcmId: responseJson.data.fcm_id,
+    };
+    const id = responseJson.data.id;
+    const usersRef = database().ref(`users/${id}`);
+    await usersRef.once('value', snapshot => {
+      const value = snapshot.val();
+      if (value) status = value.status;
+      else {
+        usersRef
+          .set({ status: responseJson.data.status })
+          .then(() => {
+            console.log('status set');
+          })
+          .catch(e => {
+            console.log(e.message);
+          });
+      }
+    });
+    dispatch(updateUserDetails(userData));
+  }
+};
+
+export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderDetails, dispatch) => {
+  const response = await fetch(PRO_GET_PROFILE + userId + '?fcm_id=' + fcmToken, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+  const responseJson = await response.json();
+  let status;
+  if (responseJson && responseJson.result) {
+    const id = responseJson.data.id;
+    const usersRef = database().ref(`users/${id}`);
+    await usersRef.once('value', snapshot => {
+      const value = snapshot.val();
+      if (value) status = value.status;
+      else {
+        usersRef
+          .set({ status: responseJson.data.status })
+          .then(() => {
+            console.log('status set');
+          })
+          .catch(e => {
+            console.log(e.message);
+          });
+      }
+    });
+    const providerData = {
+      providerId: responseJson.data.id,
+      name: responseJson.data.username,
+      email: responseJson.data.email,
+      password: responseJson.data.password,
+      imageSource: responseJson.data.image,
+      surname: responseJson.data.surname,
+      mobile: responseJson.data.mobile,
+      services: responseJson.data.services,
+      description: responseJson.data.description,
+      address: responseJson.data.address,
+      lat: responseJson.data.lat,
+      lang: responseJson.data.lang,
+      invoice: responseJson.data.invoice,
+      firebaseId: responseJson.data.id,
+      status: status != undefined ? status : responseJson.data.status,
+      fcmId: responseJson.data.fcm_id,
+      accountType: responseJson.data.account_type,
+    };
+    dispatch(updateProviderDetails(providerData));
+  }
+};
+
+export const getPendingJobRequestProviderFunc = async (providerId, navigation, navTo, fetchedJobProviderInfo, dispatch) => {
+  const newJobRequestsProviders = [];
+  const response = await fetch(PENDING_JOB_PROVIDER + providerId + '/pending', {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+  const responseJson = await response.json();
+  if (responseJson.result) {
+    responseJson.data.map(async (job, index) => {
+      if (job && job.customer_details) {
+        var jobData = {
+          id: job._id,
+          order_id: job.order_id,
+          user_id: job.customer_details && job.customer_details._id,
+          image: job.customer_details && job.customer_details.image,
+          fcm_id: job.customer_details && job.customer_details.fcm_id,
+          name: job.customer_details && job.customer_details.username,
+          mobile: job.customer_details && job.customer_details.mobile,
+          dob: job.customer_details && job.customer_details.dob,
+          address: job.customer_details && job.customer_details.address,
+          lat: job.customer_details && job.customer_details.lat,
+          lang: job.customer_details && job.customer_details.lang,
+          service_name: job.service_details.service_name,
+          chat_status: job.chat_status,
+          status: job.status,
+          delivery_address: job.delivery_address,
+          delivery_lat: job.delivery_lat,
+          delivery_lang: job.delivery_lang,
+          customer_details: job.customer_details,
+        };
+        //check if image is reachable
+        if (job.customer_details)
+          jobData.imageAvailable = await imageExists(job.customer_details.image);
+        newJobRequestsProviders.push(jobData);
+      }
+    });
+    dispatch(fetchedJobProviderInfo(newJobRequestsProviders));
+    if (navigation && navTo) navigation.navigate(navTo);
+  } else {
+    dispatch(fetchedJobProviderInfo(newJobRequestsProviders));
+    if (navigation && navTo) navigation.navigate(navTo);
+  }
+};
+
+export const getAllWorkRequestProFunc = async (providerId, fetchedDataWorkSource, fetchedAllJobRequestsPro, dispatch) => {
+  const response = await fetch(BOOKING_HISTORY + providerId + '/Cancelled');
+  const responseJson = await response.json();
+  let newAllProvidersDetails = responseJson.data
+    ? cloneDeep(responseJson.data)
+    : [];
+  const dataWorkSource = [];
+  if (responseJson.result) {
+    for (let i = 0; i < responseJson.data.length; i++) {
+      newAllProvidersDetails[i].imageAvailable = await imageExists(responseJson.data[i].user_details.image);
+      if (responseJson.data[i].chat_status === '1') {
+        dataWorkSource.push(responseJson.data[i]);
+      } else if (responseJson.data[i].chat_status === '0') {
+        if (responseJson.data[i].status !== 'Pending') {
+          dataWorkSource.push(responseJson.data[i]);
+        }
+      }
+    }
+  }
+  dispatch(fetchedDataWorkSource(dataWorkSource));
+  dispatch(fetchedAllJobRequestsPro(newAllProvidersDetails));
+};
+
+export const getAllWorkRequestClientFunc = async (clientId, fetchedDataWorkSource, fetchedAllJobRequestsClient, dispatch) => {
+  const response = await fetch(CUSTOMER_BOOKING_HISTORY + clientId + '/null');
+  const responseJson = await response.json();
+  let newAllClientDetails = responseJson.data
+    ? cloneDeep(responseJson.data)
+    : [];
+  const dataWorkSource = [];
+  if (responseJson.result) {
+    for (let i = 0; i < responseJson.data.length; i++) {
+      if (responseJson.data[i]) {
+        if (responseJson.data[i].employee_details)
+          newAllClientDetails[i].imageAvailable = await imageExists(responseJson.data[i].employee_details.image);
+        if (responseJson.data[i].chat_status == '1') {
+          dataWorkSource.push(responseJson.data[i]);
+        } else if (responseJson.data[i].chat_status == '0') {
+          if (responseJson.data[i].status != 'Pending') {
+            dataWorkSource.push(responseJson.data[i]);
+          }
+        }
+      }
+    }
+  }
+  dispatch(fetchedDataWorkSource(dataWorkSource));
+  dispatch(fetchedAllJobRequestsClient(newAllClientDetails));
+};
+
+export const getPendingJobRequestFunc = async (userId, navigation, navTo, fetchedJobCustomerInfo, dispatch) => {
+  const response = await fetch(PENDING_JOB_CUSTOMER + userId + '/pending', {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+  const responseJson = await response.json();
+  const newJobRequest = [];
+  if (responseJson.result) {
+    //const id = responseJson.data.id;
+    responseJson.data.map(async (job, index) => {
+      if (job && job.employee_details) {
+        let jobData = {
+          id: job._id,
+          order_id: job.order_id,
+          employee_id: job.employee_details && job.employee_details._id,
+          image: job.employee_details && job.employee_details.image,
+          fcm_id: job.employee_details && job.employee_details.fcm_id,
+          name: job.employee_details && job.employee_details.username,
+          surName: job.employee_details && job.employee_details.surname,
+          status: job.status,
+          chat_status: job.chat_status,
+          mobile: job.employee_details && job.employee_details.mobile,
+          description:
+            job.employee_details && job.employee_details.description,
+          address: job.employee_details && job.employee_details.address,
+          lat: job.employee_details && job.employee_details.lat,
+          lang: job.employee_details && job.employee_details.lang,
+          service_name: job.service_details.service_name,
+          employee_details: job.employee_details,
+        };
+        //check if image is reachable
+        if (job.employee_details)
+          jobData.imageAvailable = await imageExists(job.employee_details.image);
+        newJobRequest.push(jobData);
+      }
+    });
+    dispatch(fetchedJobCustomerInfo(newJobRequest));
+    /** navigate away */
+    if (navigation && navTo) navigation.navigate(navTo);
+  } else {
+    /** navigate away */
+    dispatch(fetchedJobCustomerInfo(newJobRequest));
+    if (navigation && navTo) navigation.navigate(navTo);
   }
 };

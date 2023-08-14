@@ -99,9 +99,42 @@ class AllMessageScreen extends Component {
     this.props.navigation.goBack();
   };
 
-  renderRecentMessageItem = (item, index) => {
+  goToChat = ({ selectedJobReq, item }, index) => {
     const {
       dispatchSelectedJobRequest,
+      navigation
+    } = this.props;
+    dispatchSelectedJobRequest(selectedJobReq);
+    if (selectedJobReq?.status.toLowerCase() === 'pending') {
+      navigation.navigate('Chat', {
+        providerId: item.id,
+        fcmId: selectedJobReq?.employee_details?.fcm_id,
+        currentPosition: index,
+        providerName: item.name,
+        providerSurname: '',
+        providerImage: item.image,
+        serviceName: item.serviceName,
+        orderId: item.orderId,
+        pageTitle: 'AllMessage',
+        isJobAccepted: false,
+      });
+    } else {
+      navigation.navigate('ChatAfterBookingDetails', {
+        providerId: item.id,
+        providerName: item.name,
+        providerSurname: '',
+        providerImage: item.image,
+        orderId: item.orderId,
+        serviceName: item.serviceName,
+        imageAvailable: item.exists,
+        pageTitle: 'AllMessage',
+        fcmId: selectedJobReq?.employee_details?.fcm_id,
+      });
+    }
+  }
+
+  renderRecentMessageItem = (item, index) => {
+    const {
       jobsInfo: { allJobRequestsClient },
     } = this.props;
     const selectedJobReq = allJobRequestsClient.find(
@@ -112,20 +145,7 @@ class AllMessageScreen extends Component {
         <TouchableOpacity
           key={index}
           style={styles.itemMainContainer}
-          onPress={() => {
-            dispatchSelectedJobRequest(selectedJobReq);
-            this.props.navigation.navigate('ChatAfterBookingDetails', {
-              providerId: item.id,
-              providerName: item.name,
-              providerSurname: '',
-              providerImage: item.image,
-              orderId: item.orderId,
-              serviceName: item.serviceName,
-              imageAvailable: item.exists,
-              pageTitle: 'AllMessage',
-              fcmId: selectedJobReq?.employee_details?.fcm_id,
-            });
-          }}>
+          onPress={() => this.goToChat({ selectedJobReq, item }, index)}>
           <View style={styles.itemImageView}>
             <Image
               style={{ width: 40, height: 40, borderRadius: 100 }}

@@ -69,7 +69,6 @@ class ProAllMessageScreen extends Component {
       navigation
     } = this.props;
     this.setState({ dataSource: latestChats, isLoading: false });
-    console.log('latest chats', { latestChats })
     navigation.addListener('focus', async () => {
       BackHandler.addEventListener(
         'hardwareBackPress',
@@ -102,7 +101,9 @@ class ProAllMessageScreen extends Component {
       dispatchSelectedJobRequest,
       jobsInfo: { allJobRequestsProviders },
     } = this.props;
-    const selectedJobReq = allJobRequestsProviders.find((obj) => obj.user_id === item.id);
+    /**TODO: find a faster way to get id and selectdJobReq */
+    let selectedJobReq = allJobRequestsProviders.find((obj) => obj.user_id === item.id);
+    const currentPos = allJobRequestsProviders.findIndex(el => el.user_id === item.id);
     if (selectedJobReq.user_details)
       return (
         <TouchableOpacity
@@ -111,7 +112,7 @@ class ProAllMessageScreen extends Component {
           onPress={() => {
             dispatchSelectedJobRequest(selectedJobReq);
             this.props.navigation.navigate('ProChat', {
-              currentPos: 1,
+              currentPos,
               receiverId: item.id,
               receiverName: item.name,
               receiverImage: item.image,

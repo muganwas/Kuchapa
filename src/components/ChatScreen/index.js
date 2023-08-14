@@ -392,7 +392,6 @@ class ChatScreen extends Component {
     this.setState(prevState => ({ showDialog: !prevState.showDialog }));
 
   render() {
-    console.log('reg chat');
     const {
       requestStatus,
       showButton,
