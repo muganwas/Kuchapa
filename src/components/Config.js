@@ -12,7 +12,8 @@ import {
   FIREBASE_PROJECT_ID,
   FIREBASE_STORAGE_BUCKET,
   FIREBASE_MESSAGING_SENDER_ID,
-  MAPS_API_KEY
+  MAPS_API_KEY,
+  MAP_BOX_ACCESS_TOKEN
 } from "../../config.json";
 export default class Config {
   static clientId = WEB_CLIENT_ID;
@@ -25,6 +26,7 @@ export default class Config {
   static databaseURL = FIREBASE_DATABASE_URL;
   static projectId = FIREBASE_PROJECT_ID;
   static storageBucket = FIREBASE_STORAGE_BUCKET;
+  static mapboxAccessToken = MAP_BOX_ACCESS_TOKEN;
   static messagingSenderId = FIREBASE_MESSAGING_SENDER_ID;
   static appId = FIREBASE_APP_ID;
   static socket = io(this.baseURL, {
