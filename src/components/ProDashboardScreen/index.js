@@ -187,67 +187,72 @@ class ProDashboardScreen extends Component {
         fetchedNotifications,
         navigation,
       } = this.props;
-      let currentPos;
-      allJobRequestsProviders.map((request, index) => {
-        if (String(request.user_id) === String(item.id)) currentPos = index;
-      });
-      return (
-        <TouchableOpacity
-          key={index}
-          style={styles.itemMainContainer}
-          onPress={() => {
-            dispatchSelectedJobRequest({ user_id: item.id });
-            setTimeout(() => {
-              fetchedNotifications({ type: 'messages', value: 0 });
-              navigation.navigate('ProChat', {
-                currentPos,
-                userId: item.id,
-                name: item.name,
-                image: item.image,
-                orderId: item.orderId,
-                serviceName: item.serviceName,
-                pageTitle: 'ProDashboard',
-                imageAvailable: item.imageAvailable,
-              });
-            }, 100);
-          }}>
-          <View style={styles.itemImageView}>
-            <Image
-              style={{ width: 40, height: 40, borderRadius: 100 }}
-              source={{ uri: item.image }}
-            />
-          </View>
-          <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
-            <Text
-              style={{
-                fontSize: 14,
-                color: 'black',
-                textAlignVertical: 'center',
-              }}>
-              {item.name}
-            </Text>
-            <Text
-              style={{
-                width: screenWidth - 150,
-                fontSize: 10,
-                color: 'black',
-                textAlignVertical: 'center',
-                color: 'gray',
-                marginTop: 3,
-              }}
-              numberOfLines={2}>
-              {item.textMessage}
-            </Text>
-          </View>
 
-          <View
-            style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
-            <Text style={{ alignSelf: 'flex-end', marginRight: 20, fontSize: 8 }}>
-              {item.date}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      );
+      const currentPos = allJobRequestsProviders.findIndex(el => el.user_id === item.id);
+      const selectedJobReq = allJobRequestsProviders[currentPos];
+
+      if (selectedJobReq.user_details)
+        return (
+          <TouchableOpacity
+            key={index}
+            style={styles.itemMainContainer}
+            onPress={() => {
+              dispatchSelectedJobRequest(selectedJobReq);
+              fetchedNotifications({ type: 'messages', value: 0 });
+              if (selectedJobReq.status === 'Pending') {
+                navigation.navigate('ProAcceptRejectJob', {
+                  currentPos,
+                  orderId: selectedJobReq.orderId,
+                });
+              } else
+                navigation.navigate('ProChat', {
+                  currentPos,
+                  userId: item.id,
+                  name: item.name,
+                  image: item.image,
+                  orderId: item.orderId,
+                  serviceName: item.serviceName,
+                  pageTitle: 'ProDashboard',
+                  imageAvailable: item.imageAvailable,
+                });
+            }}>
+            <View style={styles.itemImageView}>
+              <Image
+                style={{ width: 40, height: 40, borderRadius: 100 }}
+                source={{ uri: item.image }}
+              />
+            </View>
+            <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: 'black',
+                  textAlignVertical: 'center',
+                }}>
+                {item.name}
+              </Text>
+              <Text
+                style={{
+                  width: screenWidth - 150,
+                  fontSize: 10,
+                  color: 'black',
+                  textAlignVertical: 'center',
+                  color: 'gray',
+                  marginTop: 3,
+                }}
+                numberOfLines={2}>
+                {item.textMessage}
+              </Text>
+            </View>
+
+            <View
+              style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
+              <Text style={{ alignSelf: 'flex-end', marginRight: 20, fontSize: 8 }}>
+                {item.date}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        );
     }
   };
 

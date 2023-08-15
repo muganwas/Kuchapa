@@ -100,10 +100,12 @@ class ProAllMessageScreen extends Component {
     const {
       dispatchSelectedJobRequest,
       jobsInfo: { allJobRequestsProviders },
+      navigation
     } = this.props;
-    /**TODO: find a faster way to get id and selectdJobReq */
-    let selectedJobReq = allJobRequestsProviders.find((obj) => obj.user_id === item.id);
+
     const currentPos = allJobRequestsProviders.findIndex(el => el.user_id === item.id);
+    const selectedJobReq = allJobRequestsProviders[currentPos];
+
     if (selectedJobReq.user_details)
       return (
         <TouchableOpacity
@@ -111,15 +113,22 @@ class ProAllMessageScreen extends Component {
           style={styles.itemMainContainer}
           onPress={() => {
             dispatchSelectedJobRequest(selectedJobReq);
-            this.props.navigation.navigate('ProChat', {
-              currentPos,
-              receiverId: item.id,
-              receiverName: item.name,
-              receiverImage: item.image,
-              orderId: item.orderId,
-              serviceName: item.serviceName,
-              pageTitle: 'ProAllMessage',
-            });
+            if (selectedJobReq.status === 'Pending')
+              navigation.navigate('ProAcceptRejectJob', {
+                currentPos: currentPos,
+                orderId: item.orderId,
+              });
+            else
+              navigation.navigate('ProChat', {
+                currentPos,
+                receiverId: item.id,
+                receiverName: item.name,
+                receiverImage: item.image,
+                orderId: item.orderId,
+                serviceName: item.serviceName,
+                pageTitle: 'ProAllMessage',
+                imageAvailable: item.imageAvailable
+              });
           }}>
           <View style={styles.itemImageView}>
             <Image
