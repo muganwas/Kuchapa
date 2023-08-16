@@ -15,7 +15,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { isEqual } from 'lodash';
-import MapView from 'react-native-maps';
+import MapView, { Marker, Polyline } from 'react-native-maps';
 import SlidingPanel from 'react-native-sliding-up-down-panels';
 import SimpleToast from 'react-native-simple-toast';
 import Config from '../Config';
@@ -134,7 +134,7 @@ class ProMapDirectionScreen extends Component {
       usersCoordinates.latitude + ',' + usersCoordinates.longitude,
       destination,
     );
-    navigation.addListener('willFocus', async () => {
+    navigation.addListener('focus', async () => {
       this.onRefresh(this.props);
       BackHandler.addEventListener('hardwareBackPress', () =>
         this.handleBackButtonClick(),
@@ -181,7 +181,6 @@ class ProMapDirectionScreen extends Component {
         jobRequestsProviders,
         selectedJobRequest: { user_id },
       },
-      navigation,
       route,
     } = props;
     let currentPos = route.params.currentPos || 0;
@@ -237,7 +236,7 @@ class ProMapDirectionScreen extends Component {
 
   handleBackButtonClick = () => {
     if (this.state.pageTitle == 'ProDashboard')
-      this.props.navigation.navigate('ProDashboard');
+      this.props.navigation.navigate('ProHome');
     else if (this.state.pageTitle == 'ProAcceptRejectJob')
       this.props.navigation.navigate('ProAcceptRejectJob');
     else this.props.navigation.goBack();
@@ -439,7 +438,7 @@ class ProMapDirectionScreen extends Component {
                 </View>
               </View>
             )}
-            <MapView.Marker
+            <Marker
               coordinate={{
                 latitude: sourceLat,
                 longitude: sourceLng,
@@ -450,8 +449,8 @@ class ProMapDirectionScreen extends Component {
                 style={{ width: 35, height: 35, backgroundColor: 'transparent' }}
                 source={require('../../icons/car_marker.png')}
               />
-            </MapView.Marker>
-            <MapView.Marker
+            </Marker>
+            <Marker
               coordinate={{
                 latitude: destinationLat,
                 longitude: destinationLng,
@@ -462,8 +461,8 @@ class ProMapDirectionScreen extends Component {
                 style={{ width: 35, height: 35, backgroundColor: 'transparent' }}
                 source={require('../../icons/home_marker.png')}
               />
-            </MapView.Marker>
-            <MapView.Polyline
+            </Marker>
+            <Polyline
               coordinates={routeCoordinates}
               strokeColor={themeRed} // fallback for when `strokeColors` is not supported by the map-provider
               strokeColors={[

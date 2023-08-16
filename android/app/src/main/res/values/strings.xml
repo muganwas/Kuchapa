@@ -3,4 +3,5 @@
     <string name="facebook_app_id">1679165772239477</string>
     <string name="fb_login_protocol_scheme">fb1234</string>
     <string name="facebook_client_token">2459f85b18dcd202678d403f43ee0d52</string>
+    <string name="MAPS_API_KEY">AIzaSyClDCmXk1z9iK83kEB1rRSIRJ8zaWSK-1Q</string>
 </resources>

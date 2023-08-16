@@ -366,18 +366,18 @@ export default class App extends Component {
           <Stack.Screen name="ProBooking" component={ProBookingScreen} options={{ title: "Bookings" }} />
           <Stack.Screen name="ProBookingDetails" component={ProBookingDetailsScreen} options={{ title: "Booking Details" }} />
           <Stack.Screen name="ProLoginPhoneScreen" component={ProLoginPhoneScreen} options={{ title: "Phone Login" }} />
-          <Stack.Screen name="ProDashboard" component={ProDashboardScreen} options={{ title: "Dashboard" }} />
+          <Stack.Screen name="ProDashboard" component={ProDashboardScreen} options={{ header: () => <></>, title: "Dashboard" }} />
           <Stack.Screen name="ProFacebookGoogle" component={ProFacebookGoogleScreen} options={{ title: "Login" }} />
           <Stack.Screen name="ProForgotPassword" component={ProForgotPasswordScreen} options={{ title: "Forgot Password" }} />
           <Stack.Screen name="ProAccountType" component={ProAccountTypeScreen} options={{ title: "Account Type" }} />
           <Stack.Screen name="ProAddAddress" component={ProAddAddressScreen} options={{ title: "My Address" }} />
           <Stack.Screen name="ProHome" component={ProHomeScreen} options={{ header: () => <></>, title: "Home" }} />
-          <Stack.Screen name="ProMapDirection" component={ProMapDirectionScreen} options={{ title: "Directions" }} />
+          <Stack.Screen name="ProMapDirection" component={ProMapDirectionScreen} options={{ header: () => <></>, title: "Directions" }} />
           <Stack.Screen name="ProChatAccept" component={ProChatAcceptScreen} options={{ header: () => <></>, title: "Respond to Chat" }} />
           <Stack.Screen name="ProChat" component={ProChatScreen} options={{ header: () => <></> }} />
           <Stack.Screen name="ProChatAfterBookingDetails" component={ProChatAfterBookingDetailsScreen} options={{ title: "Chat" }} />
-          <Stack.Screen name="ProMyProfile" component={ProMyProfileScreen} options={{ title: "Profile" }} />
-          <Stack.Screen name="ProNotifications" component={ProNotificationsScreen} options={{ title: "Notifications" }} />
+          <Stack.Screen name="ProMyProfile" component={ProMyProfileScreen} options={{ header: () => <></>, title: "Profile" }} />
+          <Stack.Screen name="ProNotifications" component={ProNotificationsScreen} options={{ header: () => <></>, title: "Notifications" }} />
           <Stack.Screen name="ProRegisterFB" component={ProRegisterFBScreen} options={{ title: "Register" }} />
           <Stack.Screen name="ProRegister" component={ProRegisterScreen} options={{ title: "Register" }} />
           <Stack.Screen name="ProServiceSelect" component={ProServiceSelectScreen} options={{ title: "Select Services" }} />

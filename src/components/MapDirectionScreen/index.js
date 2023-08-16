@@ -15,7 +15,7 @@ import {
 import { connect } from 'react-redux';
 import { isEqual } from 'lodash';
 import SimpleToast from 'react-native-simple-toast';
-import MapView from 'react-native-maps';
+import MapView, { Marker, Polyline } from 'react-native-maps';
 import SlidingPanel from 'react-native-sliding-up-down-panels';
 import {
   startFetchingNotification,
@@ -137,7 +137,6 @@ class MapDirectionScreen extends Component {
         jobRequests,
         selectedJobRequest: { employee_id },
       },
-      navigation,
       route,
     } = props;
     const currRequestPos = route.params.currentPos;
@@ -220,7 +219,7 @@ class MapDirectionScreen extends Component {
       destination,
     );
 
-    navigation.addListener('willFocus', async () => {
+    navigation.addListener('focus', async () => {
       this.reInit(this.props);
       this.refetchDirections();
       BackHandler.addEventListener('hardwareBackPress', () =>
@@ -555,7 +554,7 @@ class MapDirectionScreen extends Component {
                 </View>
               </View>
             )}
-            <MapView.Marker
+            <Marker
               coordinate={{
                 latitude: sourceLat,
                 longitude: sourceLng,
@@ -570,9 +569,9 @@ class MapDirectionScreen extends Component {
                 }}
                 source={require('../../icons/home_marker.png')}
               />
-            </MapView.Marker>
+            </Marker>
 
-            <MapView.Marker
+            <Marker
               coordinate={{
                 latitude: destinationLat,
                 longitude: destinationLng,
@@ -587,8 +586,8 @@ class MapDirectionScreen extends Component {
                 }}
                 source={require('../../icons/car_marker.png')}
               />
-            </MapView.Marker>
-            <MapView.Polyline
+            </Marker>
+            <Polyline
               coordinates={coords}
               strokeColor={themeRed} // fallback for when `strokeColors` is not supported by the map-provider
               strokeColors={[
