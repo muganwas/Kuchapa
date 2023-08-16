@@ -1,1 +1,2 @@
-1 - Replace `react-native-sliding-up-down-panels` with something newer
+1 - Fix data fetching sequence and figure out where to fetch data.
+2 - Fix issues with sliding panel in map view
