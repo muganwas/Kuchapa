@@ -31,7 +31,6 @@ import {
 import {
   startFetchingJobProvider,
   fetchAllJobRequestsProError,
-  fetchedAllJobRequestsPro,
   fetchedJobProviderInfo,
   fetchProviderJobInfoError,
   setSelectedJobRequest,
@@ -90,7 +89,6 @@ class ProDashboardScreen extends Component {
       generalInfo: { online, connectivityAvailable },
       userInfo: { providerDetails },
     } = props;
-    console.log('provider ...', { providerDetails })
     this.state = {
       isLoading: true,
       isErrorToast: false,
@@ -122,22 +120,17 @@ class ProDashboardScreen extends Component {
 
   //Get All Bookings
   componentDidMount = () => {
-    this.initiateProps();
-    this.onRefresh();
-    const { navigation } = this.props;
-    navigation.addListener('willFocus', () => {
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+    this.props.navigation.addListener('focus', () => {
       this.initiateProps();
-      //this.onRefresh();
-      BackHandler.addEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
-    });
-    navigation.addListener('willBlur', () => {
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
+      this.onRefresh();
     });
   };
 
@@ -809,8 +802,8 @@ class ProDashboardScreen extends Component {
       isJobRequest: false,
       isRecentUser: false,
     });
-    await this.getAllRecentChatsPro();
     await fetchJobRequestHistory(providerDetails.providerId);
+    await this.getAllRecentChatsPro();
     this.springValue = new Animated.Value(100);
     this.setState({ refreshing: false });
   };
@@ -1194,9 +1187,6 @@ const mapDispatchToProps = dispatch => {
     },
     dispatchSelectedJobRequest: job => {
       dispatch(setSelectedJobRequest(job));
-    },
-    dispatchAllFetchedProJobRequests: jobs => {
-      dispatch(fetchedAllJobRequestsPro(jobs));
     },
     fetchAllProJobRequestsError: () => {
       dispatch(fetchAllJobRequestsProError());

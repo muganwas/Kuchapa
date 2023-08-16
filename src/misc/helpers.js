@@ -103,22 +103,18 @@ export const checkNoficationsAvailability = async () => {
         } else {
           try {
             await messaging().requestPermission();
-            console.log('FCM permission granted');
           } catch (error) {
-            console.log('FCM Permission Error', error);
             SimpleToast.show(
               "FCM Permission Error, you can't receive notifications",
             );
           }
         }
       } else {
-        console.log('FCM Token not available');
         SimpleToast.show(
           "FCM Token not available, you can't receive notifications",
         );
       }
     } catch (e) {
-      console.log('Error initializing FCM', e);
       SimpleToast.show(
         "Error initializing FCM, you can't receive notifications",
       );
@@ -300,7 +296,6 @@ export const getDirections = async ({ startLoc, destinationLoc, onSuccess }) => 
         onSuccess(coords);
       }
     } catch (error) {
-      console.log('get loc error', error);
       SimpleToast.show('Something went wrong, try again later.');
     }
   } else {
@@ -544,10 +539,10 @@ export const getAllWorkRequestProFunc = async (providerId, fetchedDataWorkSource
           dataWorkSource.push(responseJson.data[i]);
         }
       }
+      dispatch(fetchedDataWorkSource(dataWorkSource));
+      dispatch(fetchedAllJobRequestsPro(newAllProvidersDetails));
     }
   }
-  dispatch(fetchedDataWorkSource(dataWorkSource));
-  dispatch(fetchedAllJobRequestsPro(newAllProvidersDetails));
 };
 
 export const getAllWorkRequestClientFunc = async (clientId, fetchedDataWorkSource, fetchedAllJobRequestsClient, dispatch) => {
@@ -570,10 +565,10 @@ export const getAllWorkRequestClientFunc = async (clientId, fetchedDataWorkSourc
           }
         }
       }
+      dispatch(fetchedDataWorkSource(dataWorkSource));
+      dispatch(fetchedAllJobRequestsClient(newAllClientDetails));
     }
   }
-  dispatch(fetchedDataWorkSource(dataWorkSource));
-  dispatch(fetchedAllJobRequestsClient(newAllClientDetails));
 };
 
 export const getPendingJobRequestFunc = async (userId, navigation, navTo, fetchedJobCustomerInfo, dispatch) => {

@@ -174,6 +174,7 @@ class ProHamburger extends React.Component {
         this.getAllBookingsProvider();
       }
     });
+    await getAllWorkRequestPro(receiverId);
     await this.fetchOthersLocations();
     await checkNoficationsAvailability();
     await checkForUserType(navigation.navigate);
@@ -287,7 +288,6 @@ class ProHamburger extends React.Component {
               });
             })
             .catch(e => {
-              console.log(e.message);
               fetchCoordinatesError(e.message);
             });
         },
@@ -328,7 +328,6 @@ class ProHamburger extends React.Component {
               });
             })
             .catch(e => {
-              console.log(e.message);
               fetchCoordinatesError(e.message);
             });
         },

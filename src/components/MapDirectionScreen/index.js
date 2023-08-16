@@ -72,7 +72,6 @@ class MapDirectionScreen extends Component {
         jobRequests,
         selectedJobRequest: { employee_id },
       },
-      navigation,
       route,
     } = props;
     const currRequestPos = route.params.currentPos;
@@ -219,18 +218,16 @@ class MapDirectionScreen extends Component {
       destination,
     );
 
+    BackHandler.addEventListener('hardwareBackPress', () =>
+      this.handleBackButtonClick(),
+    );
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
     navigation.addListener('focus', async () => {
       this.reInit(this.props);
       this.refetchDirections();
-      BackHandler.addEventListener('hardwareBackPress', () =>
-        this.handleBackButtonClick(),
-      );
-    });
-    navigation.addListener('willBlur', () => {
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
     });
   }
 

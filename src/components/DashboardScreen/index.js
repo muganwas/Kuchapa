@@ -86,17 +86,14 @@ class DashboardScreen extends Component {
   };
 
   componentDidMount = () => {
-    const { navigation } = this.props;
     this.onRefresh();
-    navigation.addListener('willFocus', async () => {
-      //this.onRefresh();
-      BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-    });
-    navigation.addListener('willBlur', () => {
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButton,
-      );
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButton,
+    );
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    this.props.navigation.addListener('focus', () => {
+      this.onRefresh();
     });
   };
 
@@ -264,6 +261,7 @@ class DashboardScreen extends Component {
   };
 
   onRefresh = async () => {
+    /** Has to be called on mount because service have to be populated */
     const {
       getAllWorkRequestClient,
       userInfo: { userDetails },

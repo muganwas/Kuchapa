@@ -74,7 +74,6 @@ class ProMapDirectionScreen extends Component {
         jobRequestsProviders,
         selectedJobRequest: { user_id },
       },
-      navigation,
       route,
     } = props;
     let currentPos = route.params.currentPos;
@@ -134,17 +133,16 @@ class ProMapDirectionScreen extends Component {
       usersCoordinates.latitude + ',' + usersCoordinates.longitude,
       destination,
     );
+    this.onRefresh(this.props);
+    BackHandler.addEventListener('hardwareBackPress', () =>
+      this.handleBackButtonClick(),
+    );
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
     navigation.addListener('focus', async () => {
       this.onRefresh(this.props);
-      BackHandler.addEventListener('hardwareBackPress', () =>
-        this.handleBackButtonClick(),
-      );
-    });
-    navigation.addListener('willBlur', () => {
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
     });
   }
 
