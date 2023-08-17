@@ -31,7 +31,6 @@ import {
 import {
   startFetchingJobProvider,
   fetchAllJobRequestsProError,
-  fetchedJobProviderInfo,
   fetchProviderJobInfoError,
   setSelectedJobRequest,
   getAllWorkRequestPro,
@@ -128,6 +127,9 @@ class ProDashboardScreen extends Component {
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
+    this.initiateProps();
+    this.onRefresh();
+
     this.props.navigation.addListener('focus', () => {
       this.initiateProps();
       this.onRefresh();
@@ -821,12 +823,14 @@ class ProDashboardScreen extends Component {
       jobsInfo: {
         jobRequestsProviders,
         dataWorkSource,
+        allJobRequestsProviders
       },
       generalInfo: { online, connectivityAvailable },
       userInfo: { providerDetails },
       messagesInfo: { latestChats },
       navigation,
     } = this.props;
+    console.log('jobs info ', { jobRequestsProviders, allJobRequestsProviders })
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
@@ -1115,7 +1119,7 @@ class ProDashboardScreen extends Component {
               </View>
             )}
         </ScrollView>
-        {jobRequestsProviders.length > 0 && (
+        {jobRequestsProviders && jobRequestsProviders.length > 0 && (
           <View style={styles.pendingJobsContainer}>
             {jobRequestsProviders.map(this.renderPendingJobs)}
           </View>
@@ -1178,9 +1182,6 @@ const mapDispatchToProps = dispatch => {
     },
     fetchingPendingJobInfo: () => {
       dispatch(startFetchingJobProvider());
-    },
-    fetchedPendingJobInfo: info => {
-      dispatch(fetchedJobProviderInfo(info));
     },
     fetchingPendingJobInfoError: error => {
       dispatch(fetchProviderJobInfoError(error));

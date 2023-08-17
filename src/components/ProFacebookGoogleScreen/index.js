@@ -17,7 +17,6 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview'
 import 'react-native-gesture-handler';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import {
-  getPendingJobRequestProvider,
   getAllWorkRequestPro,
 } from '../../Redux/Actions/jobsActions';
 import Config from '../Config';
@@ -428,9 +427,6 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    fetchProvidersJobRequests: (props, providerId, navTo) => {
-      dispatch(getPendingJobRequestProvider(props, providerId, navTo));
-    },
     fetchJobRequestHistory: providerId => {
       dispatch(getAllWorkRequestPro(providerId));
     },

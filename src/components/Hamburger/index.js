@@ -137,7 +137,9 @@ class Hamburger extends React.Component {
         fetchedPendingJobInfo,
         getAllWorkRequestClient,
         jobsInfo: { jobRequests },
+        userInfo: { userDetails },
       } = this.props;
+      const senderId = userDetails.userId;
       const { currentMessage } = this.state;
       const currentGenericCount = notificationsInfo.generic;
       this.setState({ currentMessage: message });
@@ -356,6 +358,10 @@ class Hamburger extends React.Component {
     const { updateOnlineStatus, updateConnectivityStatus } = this.props;
 
     NetInfo.addEventListener(status => {
+      const {
+        userInfo: { userDetails },
+      } = this.props;
+      const senderId = userDetails.userId;
       if (status.isConnected && !this.state.prevConnectivityStatus) {
         setTimeout(() => {
           getAllWorkRequestClient(senderId);
@@ -384,21 +390,17 @@ class Hamburger extends React.Component {
     });
 
     socket.on('authorized', response => {
-      console.log(response.message);
       updateOnlineStatus(true);
     });
 
     socket.on('unauthorized', reason => {
-      console.log('unauthorized --', reason);
       updateOnlineStatus(false);
     });
 
     socket.on('user-disconnected', users => {
-      console.log('user disconnected..');
       updateLiveChatUsers(users);
     });
     socket.on('user-joined', users => {
-      console.log('user joined..');
       updateLiveChatUsers(users);
     });
     socket.on('chat-message', data => {
@@ -422,7 +424,6 @@ class Hamburger extends React.Component {
       }
     });
     socket.on('disconnect', info => {
-      console.log('disconnection info --', info);
       updateLiveChatUsers({});
       const {
         generalInfo: { connectivityAvailable },
@@ -430,7 +431,6 @@ class Hamburger extends React.Component {
       updateOnlineStatus(false);
       if (connectivityAvailable) {
         setTimeout(() => {
-          console.log('reconnecting...');
           socket.close();
           socket.open();
         }, 1000);

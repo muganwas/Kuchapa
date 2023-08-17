@@ -125,7 +125,9 @@ class ProHamburger extends React.Component {
       const {
         notificationsInfo,
         jobsInfo: { jobRequestsProviders },
+        userInfo: { providerDetails }
       } = this.props;
+      const receiverId = providerDetails.providerId;
       const { currentMessage } = this.state;
       const { title, main_id } = data;
       const check = main_id + title;
@@ -182,16 +184,14 @@ class ProHamburger extends React.Component {
     const { updateConnectivityStatus, updateOnlineStatus } = this.props;
 
     NetInfo.addEventListener(state => {
-      if (state.isConnected && !this.state.prevConnectivityStatus) {
-        setTimeout(() => {
-          getAllWorkRequestPro(receiverId);
-          getPendingJobRequests(this.props, receiverId);
-        }, 1000);
+      const { userInfo: { providerDetails } } = this.props;
+      const receiverId = providerDetails.providerId;
+      if (state.isConnected && !this.state.prevConnectivityStatus && receiverId)
         this.setState({ prevConnectivityStatus: state.isConnected });
-      }
-      if (!state.isConnected) {
+
+      if (!state.isConnected)
         this.setState({ prevConnectivityStatus: state.isConnected });
-      }
+
       updateConnectivityStatus(state.isConnected);
     });
     NetInfo.fetch().then(state => {

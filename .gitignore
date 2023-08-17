@@ -189,3 +189,4 @@ ios/kuchapa/GoogleService-Info.plist
 config.json
 google-services.json
 .cxx/
+android/app/src/main/res/values/secrets.xml

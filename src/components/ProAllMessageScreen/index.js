@@ -23,7 +23,6 @@ import {
 } from '../../Redux/Actions/notificationActions';
 import {
   startFetchingJobProvider,
-  fetchedJobProviderInfo,
   fetchProviderJobInfoError,
   setSelectedJobRequest,
 } from '../../Redux/Actions/jobsActions';
@@ -295,9 +294,6 @@ const mapDispatchToProps = dispatch => {
     },
     fetchingPendingJobInfo: () => {
       dispatch(startFetchingJobProvider());
-    },
-    fetchedPendingJobInfo: info => {
-      dispatch(fetchedJobProviderInfo(info));
     },
     fetchingPendingJobInfoError: error => {
       dispatch(fetchProviderJobInfoError(error));
