@@ -60,17 +60,10 @@ class ListOfProviderScreen extends Component {
   }
 
   componentDidMount() {
-    const { navigation } = this.props;
     this.initialize();
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
-    navigation.addListener('willBlur', () => {
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
-    });
   }
 
   componentWillUnmount() {

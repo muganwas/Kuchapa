@@ -102,22 +102,25 @@ class ProAcceptRejectJobScreen extends Component {
       },
     } = this.props;
     this.init(this.props);
-    navigation.addListener('willFocus', async () => {
+    BackHandler.addEventListener('hardwareBackPress', () =>
+      this.handleBackButtonClick(),
+    );
+    navigation.addListener('focus', async () => {
       this.init(this.props);
-      BackHandler.addEventListener('hardwareBackPress', () =>
-        this.handleBackButtonClick(),
-      );
     });
-    navigation.addListener('willBlur', () => {
+    navigation.addListener('blur', () => {
       deregisterOnlineStatusListener(user_id);
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
     });
     this.setState({
       isLoading: false,
     });
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
   }
 
   init = props => {
@@ -208,7 +211,7 @@ class ProAcceptRejectJobScreen extends Component {
     const { pageTitle } = this.state;
     if (pageTitle === 'ProMapDirection')
       this.props.navigation.navigate('ProMapDirection');
-    else if (pageTitle === 'ProDashboard')
+    else if (pageTitle === 'ProHome')
       this.props.navigation.navigate('ProDashboard');
     else if (pageTitle === 'ProAllMessage')
       this.props.navigation.navigate('ProAllMessage');

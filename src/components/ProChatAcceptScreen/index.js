@@ -91,16 +91,10 @@ class ProChatAcceptScreen extends Component {
   //get UserData
   componentDidMount() {
     const { navigation } = this.props;
-    navigation.addListener('willFocus', async () => {
-      BackHandler.addEventListener('hardwareBackPress', () =>
-        this.handleBackButtonClick(),
-      );
-    });
-    navigation.addListener('willBlur', () => {
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
+    BackHandler.addEventListener('hardwareBackPress', () =>
+      this.handleBackButtonClick(),
+    );
+    navigation.addListener('blur', () => {
       const {
         userInfo: { providerDetails },
         getPendingJobRequestProvider,
@@ -128,8 +122,15 @@ class ProChatAcceptScreen extends Component {
     });
   }
 
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+
   handleBackButtonClick = () => {
-    this.props.navigation.navigate('ProDashboard');
+    this.props.navigation.navigate('ProHome', { from: "ProChatAccept" });
     return true;
   };
 

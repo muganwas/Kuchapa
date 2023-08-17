@@ -101,20 +101,23 @@ class ChatScreen extends Component {
     } = this.props;
     this.reInit(this.props);
     fetchedNotifications({ type: 'messages', value: 0 });
-    navigation.addListener('willFocus', async () => {
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+    navigation.addListener('focus', async () => {
       this.reInit(this.props);
-      BackHandler.addEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
     });
-    navigation.addListener('willBlur', () => {
+    navigation.addListener('blur', () => {
       deregisterOnlineStatusListener(employee_id);
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
     });
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
   }
 
   reInit = props => {
@@ -240,20 +243,6 @@ class ChatScreen extends Component {
     }
   }
 
-  handleBackButtonClick = () => {
-    const { titlePage } = this.state;
-    const { navigation } = this.props;
-    if (titlePage === 'MapDirection')
-      navigation.navigate('MapDirection', {
-        titlePage: 'Chat',
-      });
-    else if ((titlePage = 'ProviderDetails'))
-      navigation.navigate('ProviderDetails');
-    else if (titlePage === 'AllMessage') navigation.navigate('AllMessage');
-    else navigation.goBack();
-    return true;
-  };
-
   showHideButton = input => {
     this.setState({
       inputMessage: input,
@@ -371,6 +360,8 @@ class ChatScreen extends Component {
       navigation.navigate('MapDirection', {
         titlePage: 'Chat',
       });
+    else if (titlePage === 'Dashboard')
+      navigation.navigate('Home');
     else if (titlePage === 'ProviderDetails')
       navigation.navigate('ProviderDetails');
     else if (titlePage === 'AllMessage') navigation.navigate('AllMessage');

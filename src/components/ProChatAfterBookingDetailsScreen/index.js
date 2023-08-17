@@ -68,6 +68,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
       },
       generalInfo: { OnlineUsers },
       userInfo: { providerDetails },
+      route
     } = props;
     let imageAvailable;
     imageAvailable = imageExists(route.params.receiverImage);
@@ -124,22 +125,25 @@ class ProChatAfterBookingDetailsScreen extends Component {
           online,
         }),
     });
-    navigation.addListener('willFocus', async () => {
+    BackHandler.addEventListener('hardwareBackPress', () =>
+      this.handleBackButtonClick(),
+    );
+    navigation.addListener('focus', async () => {
       this.reInit();
-      BackHandler.addEventListener('hardwareBackPress', () =>
-        this.handleBackButtonClick(),
-      );
     });
-    navigation.addListener('willBlur', () => {
+    navigation.addListener('blur', () => {
       deregisterOnlineStatusListener(user_id);
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
     });
     this.setState({
       isLoading: false,
     });
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
   }
 
   reInit = async () => {
@@ -149,7 +153,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
         selectedJobRequest: { user_id },
       },
       generalInfo: { OnlineUsers },
-      navigation,
+      route,
       userInfo: { providerDetails },
       fetchEmployeeMessages,
     } = this.props;
@@ -220,7 +224,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
     const { pageTitle } = this.state;
     if (pageTitle === 'ProMapDirection')
       this.props.navigation.navigate('ProMapDirection');
-    else if (pageTitle === 'ProDashboard')
+    else if (pageTitle === 'ProHome')
       this.props.navigation.navigate('ProDashboard');
     else if (pageTitle === 'ProAllMessage')
       this.props.navigation.navigate('ProAllMessage');
@@ -330,7 +334,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
             receiverImage={receiverImage}
             imageAvailable={imageAvailable}
             receiverName={receiverName}
-            handleBackButtonClick={() => this.props.navigation.goBack()}
+            handleBackButtonClick={this.handleBackButtonClick}
           />
           <ScrollView
             ref={ref => (this.scrollView = ref)}

@@ -172,21 +172,17 @@ class ProviderDetailsScreen extends Component {
   componentDidMount() {
     this.initialRender();
     const { navigation } = this.props;
-    navigation.addListener('focus', async () => {
+    BackHandler.addEventListener('hardwareBackPress', () =>
+      this.handleBackButtonClick(),
+    );
+    navigation.addListener('focus', () => {
       //this.initialRender();
-      BackHandler.addEventListener('hardwareBackPress', () =>
-        this.handleBackButtonClick(),
-      );
     });
-    navigation.addListener('willBlur', () => {
+    navigation.addListener('blur', () => {
       this.setState({
         isLoading: false,
         requestStatus: '',
       });
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
       const {
         userInfo: { userDetails },
         getPendingJobRequest,
@@ -195,9 +191,15 @@ class ProviderDetailsScreen extends Component {
     });
   }
 
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+
   initialRender = async () => {
     const {
-      navigation,
       route,
       generalInfo: { OnlineUsers },
     } = this.props;

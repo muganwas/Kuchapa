@@ -63,18 +63,16 @@ export default class SelectAddressScreen extends Component {
   }
 
   componentWillMount() {
-    const { navigation } = this.props;
-    navigation.addListener('willFocus', async () => {
-      BackHandler.addEventListener('hardwareBackPress', () =>
-        this.handleBackButtonClick(),
-      );
-    });
-    navigation.addListener('willBlur', () => {
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
-    });
+    BackHandler.addEventListener('hardwareBackPress', () =>
+      this.handleBackButtonClick(),
+    );
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
   }
 
   handleBackButtonClick = () => {
@@ -82,7 +80,7 @@ export default class SelectAddressScreen extends Component {
     const from = route.params.from;
     const onGoBack = route.params.onGoBack;
     if (from === 'profile-screen') {
-      this.props.navigation.navigate('ProMyProfile', {
+      navigation.navigate('ProMyProfile', {
         accountType: route.params.accountType,
         onGoBack,
         from: 'address-screen',

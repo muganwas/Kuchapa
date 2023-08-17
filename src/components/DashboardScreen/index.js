@@ -87,15 +87,18 @@ class DashboardScreen extends Component {
 
   componentDidMount = () => {
     this.onRefresh();
-    BackHandler.removeEventListener(
-      'hardwareBackPress',
-      this.handleBackButton,
-    );
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
     this.props.navigation.addListener('focus', () => {
       this.onRefresh();
     });
   };
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButton,
+    );
+  }
 
   _spring = () => {
     this.setState({ backClickCount: 1 }, () => {
@@ -313,7 +316,8 @@ class DashboardScreen extends Component {
     });
 
   goToNextPage = (chat_status, jobInfo) => {
-    const { dispatchSelectedJobRequest, fetchedNotifications } = this.props;
+    const { dispatchSelectedJobRequest, fetchedNotifications, generalInfo: { othersCoordinates }, } = this.props;
+
     if (chat_status === '0') {
       this.showToast('Your chat request has been accepted yet. Please wait...');
     } else {
@@ -347,6 +351,7 @@ class DashboardScreen extends Component {
           isJobAccepted: status === 'Accepted',
         });
       } else if (jobInfo.status.toLowerCase() === 'accepted') {
+        if (!othersCoordinates || !othersCoordinates[employee_id]) return Toast.show('Fetching co-ordinates, please wait');
         this.props.navigation.navigate('MapDirection', {
           currentPos: jobInfo.currentPos,
           titlePage: 'Dashboard',

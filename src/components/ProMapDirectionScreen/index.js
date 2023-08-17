@@ -132,7 +132,7 @@ class ProMapDirectionScreen extends Component {
       usersCoordinates.latitude + ',' + usersCoordinates.longitude,
       destination,
     );
-    this.onRefresh(this.props);
+    this.onRefresh();
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
@@ -141,7 +141,7 @@ class ProMapDirectionScreen extends Component {
       this.handleBackButtonClick,
     );
     navigation.addListener('focus', async () => {
-      this.onRefresh(this.props);
+      this.onRefresh();
     });
   }
 
@@ -167,11 +167,11 @@ class ProMapDirectionScreen extends Component {
         oldProps.generalInfo.usersCoordinates &&
         !isEqual(usersCoordinates, oldProps.generalInfo.usersCoordinates))
     ) {
-      this.onRefresh(this.props);
+      this.onRefresh();
     }
   }
 
-  onRefresh = props => {
+  onRefresh = () => {
     const {
       generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
@@ -179,7 +179,7 @@ class ProMapDirectionScreen extends Component {
         selectedJobRequest: { user_id },
       },
       route,
-    } = props;
+    } = this.props;
     let currentPos = route.params.currentPos || 0;
     const currentRequest = jobRequestsProviders[currentPos] || {};
     if (currentPos || (currentPos === 0 && jobRequestsProviders[currentPos])) {
@@ -380,7 +380,7 @@ class ProMapDirectionScreen extends Component {
           <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
             <TouchableOpacity
               style={{ width: 35, height: 35, justifyContent: 'center' }}
-              onPress={() => this.props.navigation.goBack()}>
+              onPress={this.handleBackButtonClick}>
               <Image
                 style={{
                   width: 20,

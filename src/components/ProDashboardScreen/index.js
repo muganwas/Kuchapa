@@ -123,18 +123,20 @@ class ProDashboardScreen extends Component {
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    BackHandler.removeEventListener(
-      'hardwareBackPress',
-      this.handleBackButtonClick,
-    );
     this.initiateProps();
     this.onRefresh();
-
     this.props.navigation.addListener('focus', () => {
       this.initiateProps();
       this.onRefresh();
     });
   };
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
 
   initiateProps = () => {
     this.setState({ isLoading: false, isWorkRequest: true });
@@ -407,6 +409,7 @@ class ProDashboardScreen extends Component {
               });
             })
             .catch(e => {
+              SimpleToast.show('Could not update online status');
               console.log(e.message);
             });
         } else {
@@ -418,6 +421,7 @@ class ProDashboardScreen extends Component {
               });
             })
             .catch(e => {
+              SimpleToast.show('Could not update online status');
               console.log(e.message);
             });
         }
@@ -437,6 +441,7 @@ class ProDashboardScreen extends Component {
               });
             })
             .catch(e => {
+              SimpleToast.show('Could not update online status');
               console.log(e.message);
             });
         } else {
@@ -448,6 +453,7 @@ class ProDashboardScreen extends Component {
               });
             })
             .catch(e => {
+              SimpleToast.show('Could not update online status');
               console.log(e.message);
             });
         }
@@ -466,6 +472,7 @@ class ProDashboardScreen extends Component {
               this.updateAvailabilityInDB({ online: newStatus });
             })
             .catch(e => {
+              SimpleToast.show('Could not update online status');
               console.log(e.message);
             });
         } else {
@@ -477,6 +484,7 @@ class ProDashboardScreen extends Component {
               });
             })
             .catch(e => {
+              SimpleToast.show('Could not update online status');
               console.log(e.message);
             });
         }
@@ -549,6 +557,7 @@ class ProDashboardScreen extends Component {
   goToProMapDirection = (chat_status, status, jobInfo) => {
     const {
       navigation: { navigate },
+      generalInfo: { usersCoordinates, othersCoordinates },
     } = this.props;
     if (chat_status.toString() === '0') {
       this.setState({
@@ -564,6 +573,7 @@ class ProDashboardScreen extends Component {
           orderId: jobInfo.orderId,
         });
       } else if (status === 'Accepted') {
+        if (!othersCoordinates || !othersCoordinates[jobInfo.user_id]) return SimpleToast.show('Fetching co-ordinates, please wait');
         navigate('ProMapDirection', {
           currentPos: jobInfo.currentPos,
           pageTitle: 'ProDashboard',
@@ -1040,7 +1050,9 @@ class ProDashboardScreen extends Component {
                           </Text>
                           <TouchableOpacity
                             onPress={() => {
-                              navigation.navigate('ProMyProfile');
+                              navigation.navigate('ProMyProfile', {
+                                from: "ProDashboard"
+                              });
                             }}
                             style={{
                               backgroundColor: themeRed,

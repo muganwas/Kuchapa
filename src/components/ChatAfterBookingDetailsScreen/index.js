@@ -126,20 +126,23 @@ class ChatAfterBookingDetailsScreen extends Component {
           online,
         }),
     });
-    navigation.addListener('willFocus', async () => {
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+    navigation.addListener('focus', async () => {
       this.reInit();
-      BackHandler.addEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
     });
-    navigation.addListener('willBlur', () => {
+    navigation.addListener('blur', () => {
       deregisterOnlineStatusListener(employee_id);
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
     });
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
   }
 
   reInit = () => {
@@ -226,6 +229,8 @@ class ChatAfterBookingDetailsScreen extends Component {
       navigation.navigate('MapDirection', {
         titlePage: 'Chat',
       });
+    else if (titlePage === 'Dashboard')
+      navigation.navigate('Home');
     else if (titlePage === 'ProviderDetails')
       navigation.navigate('ProviderDetails');
     else if (titlePage === 'AllMessage') navigation.navigate('AllMessage');

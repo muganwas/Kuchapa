@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   Text,
@@ -7,23 +7,21 @@ import {
   BackHandler,
   Image,
 } from 'react-native';
-import {themeRed, black, white} from '../../Constants/colors';
+import { themeRed, black, white } from '../../Constants/colors';
 
 export default class ProAccountTypeScreen extends Component {
   componentDidMount() {
-    const {navigation} = this.props;
-    navigation.addListener('willFocus', async () => {
-      BackHandler.addEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
-    });
-    navigation.addListener('willBlur', () => {
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
-    });
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
   }
 
   handleBackButtonClick = () => {
@@ -36,7 +34,7 @@ export default class ProAccountTypeScreen extends Component {
       <View style={styles.container}>
         <StatusBar barStyle="dark-content" backgroundColor={white} />
         <Image
-          style={{width: 140, height: 140, marginBottom: 10}}
+          style={{ width: 140, height: 140, marginBottom: 10 }}
           source={require('../../images/kuchapa_logo.png')}
           resizeMode="contain"
         />
@@ -86,7 +84,7 @@ const styles = {
     width: 250,
     backgroundColor: themeRed,
     shadowColor: black,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,

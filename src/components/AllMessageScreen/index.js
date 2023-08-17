@@ -68,22 +68,20 @@ class AllMessageScreen extends Component {
 
   componentDidMount() {
     const {
-      navigation,
       messagesInfo: { latestChats },
     } = this.props;
     this.setState({ dataSource: latestChats, isLoading: false });
-    navigation.addListener('focus', async () => {
-      BackHandler.addEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
-    });
-    navigation.addListener('willBlur', () => {
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
-    });
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
   }
 
   componentDidUpdate(prevProps) {

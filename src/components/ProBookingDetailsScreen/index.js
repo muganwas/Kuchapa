@@ -78,18 +78,20 @@ class ProBookingDetailsScreen extends Component {
 
   componentDidMount() {
     const { navigation } = this.props;
-    navigation.addListener('willFocus', async () => {
+    BackHandler.addEventListener('hardwareBackPress', () =>
+      this.handleBackButtonClick(),
+    );
+    navigation.addListener('focus', async () => {
       this.init(this.props);
-      BackHandler.addEventListener('hardwareBackPress', () =>
-        this.handleBackButtonClick(),
-      );
+
     });
-    navigation.addListener('willBlur', () => {
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
-    });
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
   }
 
   init = props => {
@@ -114,7 +116,13 @@ class ProBookingDetailsScreen extends Component {
   };
 
   handleBackButtonClick = () => {
-    this.props.navigation.goBack();
+    const { route, navigation } = this.props;
+    const from = route.params.from;
+    if (from == 'ProDashboard')
+      navigation.navigate('ProHome', { from: 'DetailsScreen' });
+    if (from === 'ProBooking')
+      navigation.navigate('ProBooking', { from: 'DetailsScreen' });
+    else navigation.goBack();
     return true;
   };
 
@@ -218,9 +226,7 @@ class ProBookingDetailsScreen extends Component {
                 alignSelf: 'center',
                 justifyContent: 'center',
               }}
-              onPress={() =>
-                navigation.navigate('ProBooking', { from: 'detailsScreen' })
-              }>
+              onPress={this.handleBackButtonClick}>
               <Image
                 style={{
                   width: 20,

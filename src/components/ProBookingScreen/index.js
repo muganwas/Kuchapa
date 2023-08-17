@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import RNExitApp from 'react-native-exit-app';
 import Toast from 'react-native-simple-toast';
 import Config from '../Config';
 import WaitingDialog from '../WaitingDialog';
@@ -67,27 +66,23 @@ class ProBookingScreen extends Component {
   }
 
   componentDidMount() {
-    const { navigation } = this.props;
     this.getAllBookingsProvider();
-    navigation.addListener('willFocus', async () => {
-      BackHandler.addEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
-    });
-    navigation.addListener('willBlur', () => {
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
-    });
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
   }
 
   handleBackButtonClick = () => {
-    if (Platform.OS === 'ios')
-      this.state.backClickCount === 1 ? RNExitApp.exitApp() : this._spring();
-    else
-      this.state.backClickCount === 1 ? BackHandler.exitApp() : this._spring();
+    const { navigation } = this.props;
+    navigation.goBack();
   };
 
   _spring = () => {

@@ -221,14 +221,17 @@ class MapDirectionScreen extends Component {
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
-    BackHandler.removeEventListener(
-      'hardwareBackPress',
-      this.handleBackButtonClick,
-    );
     navigation.addListener('focus', async () => {
       this.reInit(this.props);
       this.refetchDirections();
     });
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
   }
 
   componentDidUpdate(oldProps) {
@@ -308,7 +311,7 @@ class MapDirectionScreen extends Component {
 
   handleBackButtonClick = () => {
     if (this.state.titlePage === 'Dashboard')
-      this.props.navigation.navigate('Dashboard');
+      this.props.navigation.navigate('Home');
     else if (this.state.titlePage === 'ProviderDetails')
       this.props.navigation.navigate('ProviderDetails');
     else if (this.state.titlePage === 'Chat')

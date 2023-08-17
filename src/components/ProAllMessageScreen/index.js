@@ -10,6 +10,7 @@ import {
   ScrollView,
   TextInput,
   ActivityIndicator,
+  BackHandler,
   StatusBar,
   Platform,
   Animated,
@@ -65,21 +66,12 @@ class ProAllMessageScreen extends Component {
   componentDidMount() {
     const {
       messagesInfo: { latestChats },
-      navigation
     } = this.props;
     this.setState({ dataSource: latestChats, isLoading: false });
-    navigation.addListener('focus', async () => {
-      BackHandler.addEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
-    });
-    navigation.addListener('willBlur', () => {
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
-    });
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
   }
 
   componentDidUpdate(prevState) {
@@ -89,6 +81,13 @@ class ProAllMessageScreen extends Component {
     if (!_.isEqual(prevState.messagesInfo.latestChats, latestChats)) {
       this.setState({ dataSource: latestChats, isLoading: false });
     }
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
   }
 
   handleBackButtonClick = () => {

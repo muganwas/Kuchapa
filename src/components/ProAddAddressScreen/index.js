@@ -69,18 +69,10 @@ class ProAddAddressScreen extends Component {
       userInfo: { providerDetails },
       navigation,
     } = this.props;
-    navigation.addListener('willFocus', async () => {
-      BackHandler.addEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
-    });
-    navigation.addListener('willBlur', () => {
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
-    });
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
     if (this.state.address != '') {
       this.setState({
         address: providerDetails.address,
@@ -99,6 +91,10 @@ class ProAddAddressScreen extends Component {
   }
 
   componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
     this.watchID != null && Geolocation.clearWatch(this.watchID);
   }
 

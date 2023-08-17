@@ -107,24 +107,22 @@ class MyProfileScreen extends Component {
 
   componentDidMount = async () => {
     const {
-      navigation,
       validationInfo: { countryCode },
     } = this.props;
     const { mobile } = this.state;
     let newMobile = await sanitizeMobileNumber(mobile, countryCode, false);
     this.setState({ mobile: newMobile });
-    navigation.addListener('willFocus', async () => {
-      BackHandler.addEventListener('hardwareBackPress', () =>
-        this.handleBackButtonClick(),
-      );
-    });
-    navigation.addListener('willBlur', () => {
-      BackHandler.removeEventListener(
-        'hardwareBackPress',
-        this.handleBackButtonClick,
-      );
-    });
+    BackHandler.addEventListener('hardwareBackPress', () =>
+      this.handleBackButtonClick(),
+    );
   };
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
 
   handleBackButtonClick = () => {
     if (Platform.OS == 'ios')

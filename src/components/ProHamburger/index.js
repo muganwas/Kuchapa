@@ -171,7 +171,7 @@ class ProHamburger extends React.Component {
           newJobRequestsProviders.splice(pos, 1);
           dispatchFetchedProJobRequests(newJobRequestsProviders);
           navigation.navigate('ProHome');
-        } else getPendingJobRequests(this.props, receiverId, 'ProHome');
+        } else getPendingJobRequests(this.props, receiverId, 'ProDashboard');
         getAllWorkRequestPro(receiverId);
         this.getAllBookingsProvider();
       }
