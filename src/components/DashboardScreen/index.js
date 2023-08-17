@@ -498,6 +498,7 @@ class DashboardScreen extends Component {
   render() {
     const {
       jobsInfo: { jobRequests, requestsFetched },
+      userInfo: { userDetails },
       navigation,
     } = this.props;
     const { isLoading } = this.state;
@@ -516,7 +517,7 @@ class DashboardScreen extends Component {
               justifyContent: 'center',
               alignContent: 'center',
             }}
-            onPress={() => navigation.navigate('AddAddress')}>
+            onPress={() => navigation.navigate('AddAddress', { accountType: userDetails.accountType })}>
             <Image
               style={{
                 width: 22,
