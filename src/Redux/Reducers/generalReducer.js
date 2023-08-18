@@ -14,8 +14,10 @@ import {
 } from '../types';
 
 const initialState = {
-    usersCoordinates: {latitude: 0, longitude: 0},
+    usersCoordinates: { latitude: 0, longitude: 0 },
     othersCoordinates: {},
+    othersCoordinatesFetched: false,
+    fetchingOthersCoordinates: false,
     coordinatesFetched: false,
     fetchingCoordinates: false,
     fetched: false,
@@ -24,20 +26,21 @@ const initialState = {
     online: false,
     OnlineUsers: {},
     connectivityAvailable: false,
-    coordinatesError: null
+    coordinatesError: null,
+    othersCoordinatesError: null
 }
 
-const generalReducer = (state=initialState, action) => {
-    switch(action.type){
-        case FETCHING_GENERAL_INFO: 
+const generalReducer = (state = initialState, action) => {
+    switch (action.type) {
+        case FETCHING_GENERAL_INFO:
             return {
                 ...state,
                 fetching: true,
                 fetched: false,
                 error: null
             }
-        case FETCHED_GENERAL_INFO: 
-            return{
+        case FETCHED_GENERAL_INFO:
+            return {
                 ...state,
                 fetched: true,
                 generalInfo: action.payload,
@@ -51,13 +54,13 @@ const generalReducer = (state=initialState, action) => {
                 fetching: false,
                 error: action.payload
             }
-        case FETCHING_COORDINATES: 
+        case FETCHING_COORDINATES:
             return {
                 ...state,
                 fetchingCoordinates: true,
                 coordinatesFetched: false,
             }
-        case FETCHED_COORDINATES: 
+        case FETCHED_COORDINATES:
             return {
                 ...state,
                 fetchingCoordinates: false,
@@ -72,43 +75,43 @@ const generalReducer = (state=initialState, action) => {
                 coordinatesError: action.payload
             }
         }
-        case FETCHING_OTHERS_COORDINATES: 
+        case FETCHING_OTHERS_COORDINATES:
             return {
                 ...state,
-                fetchingCoordinates: true,
-                coordinatesFetched: false,
+                fetchingOthersCoordinates: true,
+                othersCoordinatesFetched: false,
             }
-        case FETCHED_OTHERS_COORDINATES: 
+        case FETCHED_OTHERS_COORDINATES:
             return {
                 ...state,
-                fetchingCoordinates: false,
-                coordinatesFetched: true,
+                fetchingOthersCoordinates: false,
+                othersCoordinatesFetched: true,
                 othersCoordinates: action.payload
             }
         case FETCHING_OTHERS_COORDINATES_ERROR: {
             return {
                 ...state,
-                fetchingCoordinates: false,
-                coordinatesFetched: false,
-                coordinatesError: action.payload
+                fetchingOthersCoordinates: false,
+                othersCoordinatesFetched: false,
+                othersCoordinatesError: action.payload
             }
         }
-        case UPDATE_ONLINE_STATUS: 
+        case UPDATE_ONLINE_STATUS:
             return {
                 ...state,
                 online: action.payload
             }
-        case UPDATE_CONNECTIVITY_STATUS: 
+        case UPDATE_CONNECTIVITY_STATUS:
             return {
                 ...state,
                 connectivityAvailable: action.payload
             }
-        case UPDATE_LIVE_CHAT_USERS: 
+        case UPDATE_LIVE_CHAT_USERS:
             return {
                 ...state,
                 OnlineUsers: action.payload
             }
-        default: 
+        default:
             return {
                 ...state
             }

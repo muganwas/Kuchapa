@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,7 +8,7 @@ import {
   Image,
   TextInput,
 } from 'react-native';
-import {AirbnbRating} from 'react-native-ratings';
+import { AirbnbRating } from 'react-native-ratings';
 import {
   lightGray,
   white,
@@ -26,32 +26,33 @@ export default class DialogReview extends Component {
       width: Dimensions.get('window').width,
       isReviewDialogVisible: false,
     };
+  }
+
+  componentDidMount() {
     Dimensions.addEventListener('change', e => {
       this.setState(e.window);
     });
   }
 
   closeReviewDialog = action => {
-    const {changeDialogVisibility} = this.props;
+    const { changeDialogVisibility } = this.props;
     if (action === 'Submit') {
-      console.log('Submit');
-      changeDialogVisibility(false, 'Submit');
+      changeDialogVisibility(false, 'Submitted');
     } else if (action === 'Not now') {
-      console.log('Not now');
       changeDialogVisibility(false, 'Not now');
     }
   };
 
   render() {
-    const {data, review, rating, updateRating, updateReview} = this.props;
+    const { data, review, rating, updateRating, updateReview } = this.props;
     return (
       <TouchableOpacity
         activeOpacity={1}
         disabled={true}
         style={styles.contentContainer}>
-        <View style={[styles.modal, {width: this.state.width - 80}]}>
+        <View style={[styles.modal, { width: this.state.width - 80 }]}>
           <View style={styles.textView}>
-            <Text style={[styles.text, {fontSize: 20}]}> Review </Text>
+            <Text style={[styles.text, { fontSize: 20 }]}> Review </Text>
             <View
               style={{
                 width: this.state.width - 100,
@@ -61,18 +62,18 @@ export default class DialogReview extends Component {
             />
 
             <Image
-              style={{width: 45, height: 45, borderRadius: 100, marginTop: 15}}
+              style={{ width: 45, height: 45, borderRadius: 100, marginTop: 15 }}
               source={
-                data.user_details.image
-                  ? {uri: data.user_details.image}
+                data?.user_details?.image
+                  ? { uri: data.user_details.image }
                   : require('../../images/generic_avatar.png')
               }
             />
-            <Text style={{fontSize: 16, fontWeight: 'bold', marginTop: 10}}>
-              {data.user_details.username}
+            <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 10 }}>
+              {data?.user_details?.username}
             </Text>
 
-            <View style={{backgroundColor: colorBg, marginTop: 10}}>
+            <View style={{ backgroundColor: colorBg, marginTop: 10 }}>
               <AirbnbRating
                 type="custom"
                 defaultRating={rating}
@@ -95,7 +96,7 @@ export default class DialogReview extends Component {
                   marginTop: 10,
                   padding: 10,
                 }}
-                value={review.toString()}
+                value={review}
                 multiline={true}
                 placeholder="Additional comments"
                 onChangeText={updateReview}
@@ -106,12 +107,12 @@ export default class DialogReview extends Component {
             <TouchableOpacity
               style={styles.touchableHighlight}
               onPress={() => this.closeReviewDialog('Not now')}>
-              <Text style={[styles.text, {color: themeRed}]}> Not now </Text>
+              <Text style={[styles.text, { color: themeRed }]}> Not now </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.touchableHighlight]}
               onPress={() => this.closeReviewDialog('Submit')}>
-              <Text style={[styles.text, {color: colorGreen}]}> Submit </Text>
+              <Text style={[styles.text, { color: colorGreen }]}> Submit </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -136,7 +137,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -155,7 +156,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginRight: 5,
     shadowColor: black,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,

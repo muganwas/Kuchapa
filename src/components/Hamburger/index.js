@@ -76,7 +76,6 @@ class Hamburger extends React.Component {
   constructor() {
     super();
     this.state = {
-      employeesLocationsFetched: false,
       prevConnectivityStatus: false,
       availabilityChecked: false,
       availabilityObj: {},
@@ -301,7 +300,6 @@ class Hamburger extends React.Component {
               });
             })
             .catch(e => {
-              console.log(e.message);
               fetchCoordinatesError(e.message);
             });
         },
@@ -339,7 +337,6 @@ class Hamburger extends React.Component {
               fetchedCoordinates({ latitude, longitude });
             })
             .catch(e => {
-              console.log(e.message);
               fetchCoordinatesError(e.message);
             });
         },
@@ -442,8 +439,9 @@ class Hamburger extends React.Component {
   componentDidUpdate() {
     const {
       jobsInfo: { jobRequests },
+      generalInfo: { othersCoordinatesFetched }
     } = this.props;
-    if (jobRequests && !this.state.employeesLocationsFetched)
+    if (jobRequests && !othersCoordinatesFetched)
       this.fetchEmployeeLocations();
   }
 
@@ -524,7 +522,6 @@ class Hamburger extends React.Component {
             });
         });
     });
-    this.setState({ employeesLocationsFetched: true });
   };
 
   showToast = message => {

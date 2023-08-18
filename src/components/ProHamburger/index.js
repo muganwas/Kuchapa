@@ -72,7 +72,6 @@ class ProHamburger extends React.Component {
   constructor() {
     super();
     this.state = {
-      fetchedOthersLocations: false,
       currentMessage: null,
       notificationId: null,
       prevConnectivityStatus: false,
@@ -341,6 +340,15 @@ class ProHamburger extends React.Component {
     });
   }
 
+  componentDidUpdate() {
+    const {
+      jobsInfo: { allJobRequestsProviders },
+      generalInfo: { othersCoordinatesFetched }
+    } = this.props;
+    if (allJobRequestsProviders && !othersCoordinatesFetched)
+      this.fetchOthersLocations();
+  }
+
   componentWillUnmount() {
     const {
       userInfo: { providerDetails },
@@ -404,7 +412,7 @@ class ProHamburger extends React.Component {
         .on('child_changed', () => {
           fetchingOthersCoordinates();
           const {
-            generalInfo: { othersCoordinates },
+            generalInfo: { othersCoordinates, },
           } = this.props;
           let newOthersCoordinates = Object.assign({}, othersCoordinates);
           database()
@@ -418,7 +426,6 @@ class ProHamburger extends React.Component {
             });
         });
     });
-    this.setState({ fetchedOthersLocations: true });
   };
 
   render() {

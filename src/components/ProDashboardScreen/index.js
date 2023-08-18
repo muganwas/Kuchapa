@@ -144,7 +144,7 @@ class ProDashboardScreen extends Component {
 
   componentDidUpdate() {
     const {
-      generalInfo: { connectivityAvailable },
+      generalInfo: { connectivityAvailable, othersCoordinates },
       userInfo: { providerDetails },
     } = this.props;
     const { status } = this.state;
@@ -527,7 +527,7 @@ class ProDashboardScreen extends Component {
 
   //Call also from ReviewDialog
   changeDialogVisibility = (bool, text, item, rating, review) => {
-    if (item !== '') {
+    if (item) {
       if (item.employee_rating === '') {
         this.setState({
           isDialogLogoutVisible: bool,
@@ -543,13 +543,15 @@ class ProDashboardScreen extends Component {
           reviewData: item,
         });
       } else if (text === 'Submitted') {
+        if (this.state.reviewData.status == "Completed")
+          this.reviewTaskProvider(this.state.rating, this.state.review, this.state.selectedReviewItem);
+        else SimpleToast.show("Task needs to be completed first");
         this.setState({
           isDialogLogoutVisible: bool,
           reviewData: item,
           rating: rating,
           review: review,
         });
-        this.reviewTaskProvider(rating, review, this.state.selectedReviewItem);
       }
     }
   };
@@ -557,7 +559,7 @@ class ProDashboardScreen extends Component {
   goToProMapDirection = (chat_status, status, jobInfo) => {
     const {
       navigation: { navigate },
-      generalInfo: { usersCoordinates, othersCoordinates },
+      generalInfo: { othersCoordinates },
     } = this.props;
     if (chat_status.toString() === '0') {
       this.setState({
@@ -777,21 +779,25 @@ class ProDashboardScreen extends Component {
       },
     });
 
-  askForReview = async item =>
-    await requestClientForReview({
-      item,
-      fetchJobRequestHistory: this.props?.fetchJobRequestHistory,
-      providerDetails: this.props?.userInfo?.providerDetails,
-      toggleIsLoading: this.changeWaitingDialogVisibility,
-      onSuccess: msg => {
-        this.changeWaitingDialogVisibility(false);
-        msg && this.showToast(msg);
-      },
-      onError: msg => {
-        this.changeWaitingDialogVisibility(false);
-        msg && this.showToast(msg);
-      },
-    });
+  askForReview = async item => {
+    if (item.status == "Completed")
+      await requestClientForReview({
+        item,
+        fetchJobRequestHistory: this.props?.fetchJobRequestHistory,
+        providerDetails: this.props?.userInfo?.providerDetails,
+        toggleIsLoading: this.changeWaitingDialogVisibility,
+        onSuccess: msg => {
+          this.changeWaitingDialogVisibility(false);
+          msg && this.showToast(msg);
+        },
+        onError: msg => {
+          this.changeWaitingDialogVisibility(false);
+          msg && this.showToast(msg);
+        },
+      });
+    SimpleToast.show('Task has to be completed first');
+  }
+
 
   showToast = (message, length) => {
     if (length) {
@@ -832,15 +838,13 @@ class ProDashboardScreen extends Component {
     const {
       jobsInfo: {
         jobRequestsProviders,
-        dataWorkSource,
-        allJobRequestsProviders
+        dataWorkSource
       },
       generalInfo: { online, connectivityAvailable },
       userInfo: { providerDetails },
       messagesInfo: { latestChats },
       navigation,
     } = this.props;
-    console.log('jobs info ', { jobRequestsProviders, allJobRequestsProviders })
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
@@ -1095,7 +1099,11 @@ class ProDashboardScreen extends Component {
                   elevation: 5,
                 }}
                 changeDialogVisibility={this.changeDialogVisibility}
-                data={JSON.stringify(this.state.reviewData) + '//////' + '0'}
+                updateRating={(rating) => this.setState({ rating })}
+                updateReview={(review) => this.setState({ review })}
+                data={this.state.reviewData}
+                review={this.state.review}
+                rating={this.state.rating}
               />
             </Modal>
           </View>
