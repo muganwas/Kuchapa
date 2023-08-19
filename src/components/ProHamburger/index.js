@@ -255,48 +255,56 @@ class ProHamburger extends React.Component {
       }
     });
     socket.open();
-
     const userRef = database().ref(`liveLocation/${receiverId}`);
     locationPermissionRequest(() => {
-      /** get pros current position and upload it to db */
-      geolocation.getCurrentPosition(
-        async info => {
-          const {
-            coords: { latitude, longitude },
-          } = info;
-          const addressInfo = await returnCoordDetails({
-            lat: latitude.toString(),
-            lng: longitude.toString(),
-          });
-          const {
-            fetchingCoordinates,
-            fetchedCoordinates,
-            fetchCoordinatesError,
-          } = this.props;
-          fetchingCoordinates();
-          userRef
-            .update({
-              latitude,
-              longitude,
-              address: addressInfo.msg === 'ok' && addressInfo.address,
-            })
-            .then(() => {
-              fetchedCoordinates({
+      const {
+        fetchingCoordinates,
+        fetchedCoordinates,
+        fetchCoordinatesError,
+      } = this.props;
+      //use db info first
+      fetchingCoordinates();
+      if (providerDetails.lat && providerDetails.lang) {
+        fetchedCoordinates({
+          latitude: providerDetails.lat,
+          longitude: providerDetails.lang,
+        });
+      } else
+        /** get pros current position and upload it to db */
+        geolocation.getCurrentPosition(
+          async info => {
+            const {
+              coords: { latitude, longitude },
+            } = info;
+            const addressInfo = await returnCoordDetails({
+              lat: latitude.toString(),
+              lng: longitude.toString(),
+            });
+            userRef
+              .update({
                 latitude,
                 longitude,
+                address: addressInfo.msg === 'ok' && addressInfo.address,
+              })
+              .then(() => {
+                fetchedCoordinates({
+                  latitude,
+                  longitude,
+                });
+              })
+              .catch(e => {
+                SimpleToast.show('Location could not be uploaded');
+                fetchCoordinatesError(e.message);
               });
-            })
-            .catch(e => {
-              fetchCoordinatesError(e.message);
-            });
-        },
-        error => {
-          console.log(error);
-        },
-        {
-          enableHighAccuracy: true,
-        },
-      );
+          },
+          error => {
+            SimpleToast.show('Location could not be retrieved');
+            console.log(error);
+          },
+          {
+            enableHighAccuracy: true,
+          },
+        );
 
       /** look out for pros changing position */
       geolocation.watchPosition(
@@ -327,10 +335,12 @@ class ProHamburger extends React.Component {
               });
             })
             .catch(e => {
+              SimpleToast.show('Location could not be uploaded');
               fetchCoordinatesError(e.message);
             });
         },
         error => {
+          SimpleToast.show('Location could not be retrieved');
           console.log(error);
         },
         {

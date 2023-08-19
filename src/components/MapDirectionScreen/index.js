@@ -16,7 +16,7 @@ import { connect } from 'react-redux';
 import { isEqual } from 'lodash';
 import SimpleToast from 'react-native-simple-toast';
 import MapView, { Marker, Polyline } from 'react-native-maps';
-import SlidingPanel from 'react-native-sliding-up-down-panels';
+import SlidingPanel from '../SlidingPanel';
 import {
   startFetchingNotification,
   notificationsFetched,
@@ -128,7 +128,7 @@ class MapDirectionScreen extends Component {
     this.rightButtonAction = null;
   }
 
-  reInit = props => {
+  reInit = async props => {
     const {
       userInfo: { userDetails },
       generalInfo: { usersCoordinates, othersCoordinates },
@@ -196,7 +196,7 @@ class MapDirectionScreen extends Component {
     }
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     const {
       generalInfo: { othersCoordinates, usersCoordinates },
       jobsInfo: {
@@ -221,6 +221,8 @@ class MapDirectionScreen extends Component {
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
+    await this.reInit(this.props);
+    this.refetchDirections();
     navigation.addListener('focus', async () => {
       this.reInit(this.props);
       this.refetchDirections();
@@ -267,7 +269,7 @@ class MapDirectionScreen extends Component {
     }
   }
 
-  refetchDirections = () => {
+  refetchDirections = async () => {
     const {
       generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
@@ -293,11 +295,11 @@ class MapDirectionScreen extends Component {
         });
         const destination =
           usersCoordinates.latitude + ',' + usersCoordinates.longitude;
-        this.getDirectionsLocal(latitude + ',' + longitude, destination);
+        await this.getDirectionsLocal(latitude + ',' + longitude, destination);
       }
     }
     if (this.state.coords.length === 0) {
-      this.getDirectionsLocal(
+      await this.getDirectionsLocal(
         latitude + ',' + longitude,
         this.state.destinationLocation,
       );
@@ -457,8 +459,6 @@ class MapDirectionScreen extends Component {
       coords,
       providerName,
       mapKey,
-    } = this.state;
-    const {
       showDialog,
       dialogType,
       dialogTitle,
@@ -607,7 +607,7 @@ class MapDirectionScreen extends Component {
         {jobRequests && jobRequests[currRequestPos] && (
           <SlidingPanel
             headerLayoutHeight={140}
-            headerLayout={() => (
+            headerLayout={(togglePanel, panelStatus) => (
               <View style={styles.headerLayoutStyle}>
                 <View
                   style={{
@@ -615,7 +615,8 @@ class MapDirectionScreen extends Component {
                     flexDirection: 'column',
                     width: screenWidth,
                   }}>
-                  <View
+                  <TouchableOpacity
+                    onPress={togglePanel}
                     style={{
                       flexDirection: 'row',
                       justifyContent: 'center',
@@ -623,10 +624,10 @@ class MapDirectionScreen extends Component {
                       marginTop: 5,
                     }}>
                     <Image
-                      style={{ width: 20, height: 20 }}
+                      style={[{ width: 20, height: 20 }, { transform: [{ rotate: panelStatus === 'open' ? '180deg' : '0deg' }] }]}
                       source={require('../../icons/up_arrow.gif')}
                     />
-                  </View>
+                  </TouchableOpacity>
                   <View style={{ flexDirection: 'row', flex: 1 }}>
                     <Image
                       style={{

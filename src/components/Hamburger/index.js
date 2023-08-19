@@ -272,44 +272,58 @@ class Hamburger extends React.Component {
     await fetchClientMessages(senderId);
     /** fetch users current position and upload it to db */
     locationPermissionRequest(() => {
-      geolocation.getCurrentPosition(
-        async info => {
-          const {
-            coords: { latitude, longitude },
-          } = info;
-          const {
-            fetchingCoordinates,
-            fetchedCoordinates,
-            fetchCoordinatesError,
-          } = this.props;
-          const addressInfo = await returnCoordDetails({
-            lat: latitude.toString(),
-            lng: longitude.toString(),
-          });
-          fetchingCoordinates();
-          locationRef
-            .update({
+      const {
+        fetchingCoordinates,
+        fetchedCoordinates,
+        fetchCoordinatesError,
+      } = this.props;
+      //use db info first
+      fetchingCoordinates();
+      if (userDetails.lat && userDetails.lang) {
+        fetchedCoordinates({
+          latitude: userDetails.lat,
+          longitude: userDetails.lang,
+        });
+      } else
+        geolocation.getCurrentPosition(
+          async info => {
+            const {
+              coords: { latitude, longitude },
+            } = info;
+            fetchingCoordinates();
+            fetchedCoordinates({
               latitude,
               longitude,
-              address: addressInfo.msg === 'ok' && addressInfo.address,
-            })
-            .then(() => {
-              fetchedCoordinates({
+            });
+            const addressInfo = await returnCoordDetails({
+              lat: latitude.toString(),
+              lng: longitude.toString(),
+            });
+            locationRef
+              .update({
                 latitude,
                 longitude,
+                address: addressInfo.msg === 'ok' && addressInfo.address,
+              })
+              .then(() => {
+                fetchedCoordinates({
+                  latitude,
+                  longitude,
+                });
+              })
+              .catch(e => {
+                SimpleToast.show('Location could not be uploaded');
+                fetchCoordinatesError(e.message);
               });
-            })
-            .catch(e => {
-              fetchCoordinatesError(e.message);
-            });
-        },
-        error => {
-          console.log(error);
-        },
-        {
-          enableHighAccuracy: true,
-        },
-      );
+          },
+          error => {
+            SimpleToast.show('Location could not be retrieved');
+            console.log('lat long ', { error });
+          },
+          {
+            enableHighAccuracy: true,
+          },
+        );
 
       /** lookout for users changing position start */
       geolocation.watchPosition(
@@ -337,10 +351,12 @@ class Hamburger extends React.Component {
               fetchedCoordinates({ latitude, longitude });
             })
             .catch(e => {
+              SimpleToast.show('Location could not be uploaded');
               fetchCoordinatesError(e.message);
             });
         },
         error => {
+          SimpleToast.show('Location could not be retrieved');
           console.log(error);
         },
         {

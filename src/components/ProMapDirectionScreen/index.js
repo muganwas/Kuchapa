@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { isEqual } from 'lodash';
 import MapView, { Marker, Polyline } from 'react-native-maps';
-import SlidingPanel from 'react-native-sliding-up-down-panels';
+import SlidingPanel from '../SlidingPanel';
 import SimpleToast from 'react-native-simple-toast';
 import Config from '../Config';
 import WaitingDialog from '../WaitingDialog';
@@ -376,7 +376,8 @@ class ProMapDirectionScreen extends Component {
             paddingBottom: 5,
             borderBottomColor: themeRed,
             borderBottomWidth: 1,
-          }}>
+          }}
+        >
           <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
             <TouchableOpacity
               style={{ width: 35, height: 35, justifyContent: 'center' }}
@@ -476,13 +477,21 @@ class ProMapDirectionScreen extends Component {
         ) : (
           <ActivityIndicator size={30} color={'#000'} />
         )}
+        <View style={{
+          position: 'absolute',
+          bottom: 0,
+          zIndex: 100,
+          elevation: 100,
+        }}>
+        </View>
         <SlidingPanel
           headerLayoutHeight={140}
-          headerLayout={() => (
+          headerLayout={(togglePanel, panelStatus) => (
             <View style={styles.headerLayoutStyle}>
               <View
                 style={{ flex: 1, flexDirection: 'column', width: screenWidth }}>
-                <View
+                <TouchableOpacity
+                  onPress={togglePanel}
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'center',
@@ -490,10 +499,10 @@ class ProMapDirectionScreen extends Component {
                     marginTop: 5,
                   }}>
                   <Image
-                    style={{ width: 20, height: 20 }}
+                    style={[{ width: 20, height: 20 }, { transform: [{ rotate: panelStatus === 'open' ? '180deg' : '0deg' }] }]}
                     source={require('../../icons/up_arrow.gif')}
                   />
-                </View>
+                </TouchableOpacity>
                 <View style={{ flexDirection: 'row', flex: 1 }}>
                   <Image
                     style={{
@@ -653,6 +662,9 @@ const styles = StyleSheet.create({
     flex: 1,
     width: screenWidth,
     height: screenHeight,
+    elevation: 5,
+    zIndex: 5,
+    position: 'relative'
   },
   map: {
     height: screenHeight,
@@ -767,6 +779,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
+    zIndex: 5,
     paddingBottom: 10,
     paddingLeft: 20,
     paddingRight: 20,
