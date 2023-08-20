@@ -190,3 +190,4 @@ config.json
 google-services.json
 .cxx/
 android/app/src/main/res/values/secrets.xml
+src/.DS_Store
