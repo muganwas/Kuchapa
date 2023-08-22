@@ -159,7 +159,6 @@ class SplashScreen extends Component {
                 { userId, userType, fcmToken },
                 () => this.setState({ isLoading: true }),
                 (userId, userType, fcmToken) => {
-                  console.log('going inhouse login', userType)
                   const provider = userType === 'Provider';
                   inhouseLogin({
                     userId,
