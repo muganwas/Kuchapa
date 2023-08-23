@@ -18,6 +18,7 @@ import 'react-native-gesture-handler';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import {
   getAllWorkRequestPro,
+  getPendingJobRequestProvider
 } from '../../Redux/Actions/jobsActions';
 import Config from '../Config';
 import WaitingDialog from '../WaitingDialog';
@@ -427,6 +428,9 @@ const mapDispatchToProps = dispatch => {
   return {
     fetchJobRequestHistory: providerId => {
       dispatch(getAllWorkRequestPro(providerId));
+    },
+    fetchProvidersJobRequests: (props, id, to) => {
+      dispatch(getPendingJobRequestProvider(props, id, to));
     },
     updateProviderDetails: details => {
       dispatch(updateProviderDetails(details));

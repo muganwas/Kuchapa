@@ -515,6 +515,7 @@ export const authenticateTask = async ({
               body: JSON.stringify(data),
             });
             const responseJson = await response.json();
+            console.log('login response json', { responseJson });
             if (responseJson && responseJson.result) {
               const onlineStatus = await synchroniseOnlineStatus(
                 responseJson.data.id,
@@ -572,13 +573,15 @@ export const authenticateTask = async ({
               fetchJobRequestHistory(id);
               fetchAppUserJobRequests(props, id, home);
             } else {
+              console.log('login no result');
               onError(responseJson.message);
             }
           } catch (e) {
-            console.log('error ', e)
+            console.log('login db issue', { e });
             onError('Something went wrong, please try again.');
           }
         } else {
+          console.log('login no user', { user });
           onError('Something went wrong, please try again later.');
         }
       })
@@ -589,6 +592,7 @@ export const authenticateTask = async ({
         } else if (error.code === 'auth/wrong-password') {
           onError('You entered a wrong password!');
         } else {
+          console.log('login firebase issue', { e })
           onError('Something went wrong, please try again later.');
         }
       });
