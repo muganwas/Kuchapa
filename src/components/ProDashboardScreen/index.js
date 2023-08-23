@@ -188,7 +188,7 @@ class ProDashboardScreen extends Component {
       const currentPos = allJobRequestsProviders.findIndex(el => el.user_id === item.id);
       const selectedJobReq = allJobRequestsProviders[currentPos];
 
-      if (selectedJobReq.user_details)
+      if (selectedJobReq && selectedJobReq.user_details)
         return (
           <TouchableOpacity
             key={index}
@@ -250,7 +250,7 @@ class ProDashboardScreen extends Component {
             </View>
           </TouchableOpacity>
         );
-    }
+    } return <></>
   };
 
   renderWorkItem = (item, index) => {
@@ -747,7 +747,7 @@ class ProDashboardScreen extends Component {
       rating,
       review,
       main_id: this.state.mainId,
-      fcm_id: item.user_details.fcm_id,
+      fcm_id: item?.user_details?.fcm_id,
       senderName: this.props?.userInfo?.providerDetails?.name,
       senderId: this.props?.userInfo?.providerDetails?.providerId,
       userType: 'Employee',

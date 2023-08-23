@@ -360,7 +360,7 @@ export default class App extends Component {
           <Stack.Screen name="AfterSplash" component={AfterSplashScreen} options={{ header: () => <></> }} />
           <Stack.Screen name="ContactUs" component={ContactUsScreen} options={{ title: "Contact Us" }} />
 
-          <Stack.Screen name="ProAllMessage" component={ProAllMessageScreen} options={{ title: "Messages" }} />
+          <Stack.Screen name="ProAllMessage" component={ProAllMessageScreen} options={{ header: () => <></>, title: "Messages" }} />
           <Stack.Screen name="ProAcceptRejectJob" component={ProAcceptRejectJobScreen} options={{ header: () => <></>, title: "Respond to Job" }} />
           <Stack.Screen name="ProBooking" component={ProBookingScreen} options={{ header: () => <></>, title: "Bookings" }} />
           <Stack.Screen name="ProBookingDetails" component={ProBookingDetailsScreen} options={{ header: () => <></>, title: "Booking Details" }} />
