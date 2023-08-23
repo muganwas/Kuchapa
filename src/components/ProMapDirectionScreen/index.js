@@ -136,10 +136,6 @@ class ProMapDirectionScreen extends Component {
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
-    BackHandler.removeEventListener(
-      'hardwareBackPress',
-      this.handleBackButtonClick,
-    );
     navigation.addListener('focus', async () => {
       this.onRefresh();
     });
@@ -169,6 +165,13 @@ class ProMapDirectionScreen extends Component {
     ) {
       this.onRefresh();
     }
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
   }
 
   onRefresh = () => {
