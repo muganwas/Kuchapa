@@ -143,7 +143,7 @@ class ProAcceptRejectJobScreen extends Component {
     const currRequestPos = route.params.currentPos || 0;
     this.setState({
       senderId: providerDetails.providerId,
-      senderImage: providerDetails.imageSource,
+      senderImage: providerDetails.image,
       senderName: providerDetails.name,
       senderSurname: providerDetails.surname,
       inputMessage: '',

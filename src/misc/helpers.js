@@ -458,7 +458,7 @@ export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderD
       name: responseJson.data.username,
       email: responseJson.data.email,
       password: responseJson.data.password,
-      imageSource: responseJson.data.image,
+      image: responseJson.data.image,
       surname: responseJson.data.surname,
       mobile: responseJson.data.mobile,
       services: responseJson.data.services,

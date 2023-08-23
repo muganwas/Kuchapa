@@ -31,7 +31,7 @@ const initialState = {
     name: '',
     email: '',
     password: '',
-    imageSource: '',
+    image: '',
     surname: '',
     mobile: '',
     services: [],
@@ -68,12 +68,12 @@ const userReducer = (state = initialState, action) => {
     case UPDATE_PROVIDER_AUTH_TOKEN:
       return {
         ...state,
-        providerDetails: {...state.providerDetails, authToken: action.payload},
+        providerDetails: { ...state.providerDetails, authToken: action.payload },
       };
     case UPDATE_USER_AUTH_TOKEN:
       return {
         ...state,
-        userDetails: {...state.userDetails, authToken: action.payload},
+        userDetails: { ...state.userDetails, authToken: action.payload },
       };
     case RESET_USER_DETAILS:
       return {
@@ -100,7 +100,7 @@ const userReducer = (state = initialState, action) => {
           name: '',
           email: '',
           password: '',
-          imageSource: '',
+          image: '',
           surname: '',
           mobile: '',
           services: [],

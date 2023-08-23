@@ -17,7 +17,7 @@ import {
   emailCheck,
   passwordCheck,
   sanitizeMobileNumber,
-  imageExists,
+  imageExists as imgExists,
   getDistance,
 } from '../misc/helpers';
 
@@ -219,13 +219,15 @@ export const inhouseLogin = async ({
         id,
         responseJson.data.online,
       );
+      const imageAvailable = await imgExists(responseJson.data.image);
       let data = provider
         ? {
           providerId: responseJson.data.id,
           name: responseJson.data.username,
           email: responseJson.data.email,
           password: responseJson.data.password,
-          imageSource: responseJson.data.image,
+          image: responseJson.data.image,
+          imageAvailable,
           surname: responseJson.data.surname,
           mobile: responseJson.data.mobile,
           services: responseJson.data.services,
@@ -246,7 +248,8 @@ export const inhouseLogin = async ({
           email: responseJson.data.email,
           password: responseJson.data.password,
           username: responseJson.data.username,
-          imageSource: responseJson.data.image,
+          image: responseJson.data.image,
+          imageAvailable,
           mobile: responseJson.data.mobile,
           dob: responseJson.data.dob,
           address: responseJson.data.address,
@@ -261,7 +264,6 @@ export const inhouseLogin = async ({
       fetchPendingJobInfo(props, userId, home);
     } else onLoginFailure(responseJson.message);
   } catch (e) {
-    console.log('login error', { e })
     const message = e.message.indexOf('Network') > -1
       ? 'Check your internet connection and try again'
       : 'Something went wrong, try again later';
@@ -357,6 +359,7 @@ export const fbGmailLoginTask = async ({
           });
           const response = await resp.json();
           toggleLoading();
+          const imageAvailable = await imgExists(responseJson.data.image);
           if (response && response.result) {
             const data = provider
               ? {
@@ -364,7 +367,8 @@ export const fbGmailLoginTask = async ({
                 name: response.data.username,
                 email: response.data.email,
                 password: response.data.password,
-                imageSource: response.data.image,
+                image: response.data.image,
+                imageAvailable,
                 surname: response.data.surname,
                 mobile: response.data.mobile,
                 services: response.data.services,
@@ -386,6 +390,7 @@ export const fbGmailLoginTask = async ({
                 password: response.data.password,
                 username: response.data.username,
                 image: response.data.image,
+                imageAvailable,
                 mobile: response.data.mobile,
                 dob: response.data.dob,
                 address: response.data.address,
@@ -410,7 +415,7 @@ export const fbGmailLoginTask = async ({
                 name: responseJson.data.username,
                 email: responseJson.data.email,
                 password: responseJson.data.password,
-                imageSource: responseJson.data.image,
+                image: responseJson.data.image,
                 surname: responseJson.data.surname,
                 mobile: responseJson.data.mobile,
                 services: responseJson.data.services,
@@ -515,7 +520,6 @@ export const authenticateTask = async ({
               body: JSON.stringify(data),
             });
             const responseJson = await response.json();
-            console.log('login response json', { responseJson });
             if (responseJson && responseJson.result) {
               const onlineStatus = await synchroniseOnlineStatus(
                 responseJson.data.id,
@@ -523,13 +527,15 @@ export const authenticateTask = async ({
               );
               toggleLoading();
               const id = responseJson.data.id;
+              const imageAvailable = await imgExists(responseJson.data.image);
               const data = provider
                 ? {
                   providerId: responseJson.data.id,
                   name: responseJson.data.username,
                   email: responseJson.data.email,
                   password: responseJson.data.password,
-                  imageSource: responseJson.data.image,
+                  image: responseJson.data.image,
+                  imageAvailable,
                   surname: responseJson.data.surname,
                   mobile: responseJson.data.mobile,
                   services: responseJson.data.services,
@@ -551,6 +557,7 @@ export const authenticateTask = async ({
                   password: responseJson.data.password,
                   username: responseJson.data.username,
                   image: responseJson.data.image,
+                  imageAvailable,
                   mobile: responseJson.data.mobile,
                   dob: responseJson.data.dob,
                   online: onlineStatus,
@@ -573,15 +580,12 @@ export const authenticateTask = async ({
               fetchJobRequestHistory(id);
               fetchAppUserJobRequests(props, id, home);
             } else {
-              console.log('login no result');
               onError(responseJson.message);
             }
           } catch (e) {
-            console.log('login db issue', { e });
             onError('Something went wrong, please try again.');
           }
         } else {
-          console.log('login no user', { user });
           onError('Something went wrong, please try again later.');
         }
       })
@@ -592,7 +596,6 @@ export const authenticateTask = async ({
         } else if (error.code === 'auth/wrong-password') {
           onError('You entered a wrong password!');
         } else {
-          console.log('login firebase issue', { e })
           onError('Something went wrong, please try again later.');
         }
       });
@@ -681,7 +684,8 @@ export const updateProfileImageTask = async ({
           const res = await response.json();
           let newUserDetails = cloneDeep(userDetails);
           /** cater for different names for user and client */
-          newUserDetails.image = newUserDetails.imageSource = urlResult;
+          newUserDetails.image = newUserDetails.image = urlResult;
+          newUserDetails.imageAvailable = true;
           await updateUserDetails(newUserDetails);
           toggleIsLoading(false);
           if (res && res.data.result) {
@@ -786,6 +790,7 @@ export const phoneLoginTask = async ({
           const response = await resp.json();
           toggleIsLoading(false);
           if (response && response.result) {
+            const imageAvailable = await imgExists(response.data.image);
             const data =
               userType === 'Provider'
                 ? {
@@ -793,7 +798,8 @@ export const phoneLoginTask = async ({
                   name: response.data.username,
                   email: response.data.email,
                   password: response.data.password,
-                  imageSource: response.data.image,
+                  image: response.data.image,
+                  imageAvailable,
                   surname: response.data.surname,
                   mobile: response.data.mobile,
                   services: response.data.services,
@@ -815,6 +821,7 @@ export const phoneLoginTask = async ({
                   password: response.data.password,
                   username: response.data.username,
                   image: response.data.image,
+                  imageAvailable,
                   mobile: response.data.mobile,
                   dob: response.data.dob,
                   address: response.data.address,
@@ -834,52 +841,10 @@ export const phoneLoginTask = async ({
             fetchJobRequestHistory(id);
             fetchJobRequests(props, id, Home);
           } else {
-            const data =
-              userType === 'Provider'
-                ? {
-                  providerId: responseJson.data.id,
-                  name: responseJson.data.username,
-                  email: responseJson.data.email,
-                  password: responseJson.data.password,
-                  imageSource: responseJson.data.image,
-                  surname: responseJson.data.surname,
-                  mobile: responseJson.data.mobile,
-                  services: responseJson.data.services,
-                  description: responseJson.data.description,
-                  address: responseJson.data.address,
-                  lat: responseJson.data.lat,
-                  lang: responseJson.data.lang,
-                  online: onlineStatus,
-                  invoice: responseJson.data.invoice,
-                  status: responseJson.data.status,
-                  fcmId: responseJson.data.fcm_id,
-                  accountType: responseJson.data.account_type,
-                  firebaseId,
-                }
-                : {
-                  userId: responseJson.data.id,
-                  accountType: responseJson.data.acc_type,
-                  email: responseJson.data.email,
-                  password: responseJson.data.password,
-                  username: responseJson.data.username,
-                  image: responseJson.data.image,
-                  mobile: responseJson.data.mobile,
-                  dob: responseJson.data.dob,
-                  online: onlineStatus,
-                  address: responseJson.data.address,
-                  lat: responseJson.data.lat,
-                  lang: responseJson.data.lang,
-                  fcmId: responseJson.data.fcm_id,
-                  firebaseId: this.state.firebaseId,
-                };
-            updateUserDetails(data);
-            //Store data like sharedPreference
-            rNES.setItem('userId', id);
-            rNES.setItem('userType', userType);
-            rNES.setItem('email', data.email);
-            rNES.setItem('firebaseId', firebaseId);
-            fetchJobRequestHistory(id);
-            fetchJobRequests(props, id, Home);
+            toggleIsLoading(false);
+            SimpleToast.show(
+              'Something went wrong, try again later',
+            );
           }
         } catch (e) {
           toggleIsLoading(false);
@@ -1077,7 +1042,7 @@ export const calculateDistance = async ({
       const { _id, image } = obj;
       let imageAvaliable = image && image !== 'no-image.jpg' ? true : false;
       if (image && imageAvaliable) {
-        imageAvaliable = await imageExists(image);
+        imageAvaliable = await imgExists(image);
       }
       tempDatasource[key].imageAvailable = imageAvaliable;
       await database()
@@ -1125,7 +1090,7 @@ export const fetchProfile = async ({
         ? true
         : false;
     if (imageAvailable)
-      imageAvailable = await imageExists(responseJson.data.image);
+      imageAvailable = await imgExists(responseJson.data.image);
     if (responseJson.result) {
       const id = responseJson.data.id;
       onSuccess({

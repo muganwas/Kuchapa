@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,12 +6,10 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  Dimensions
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { DrawerActions } from '@react-navigation/native';
 import ProDialogLogout from '../ProDialogLogout';
-import { imageExists as imgExists } from '../../misc/helpers';
 import { notificationsFetched } from '../../Redux/Actions/notificationActions';
 import { black, lightGray, themeRed, white } from '../../Constants/colors';
 
@@ -20,19 +18,7 @@ function CustomMenuLayout(props) {
   const { providerDetails } = useSelector(state => state.userInfo);
   const dispatch = useDispatch();
 
-  const [imageExists, updateImageExists] = useState(true);
-  const [name] = useState(providerDetails.name + " " + providerDetails.surname);
   const [isDialogLogoutVisible, updateIsDialogLogoutVisible] = useState(false);
-  const [imageSource] = useState(providerDetails.imageSource);
-
-  useEffect(() => {
-    getImageExists(providerDetails);
-  }, [providerDetails]);
-
-  const getImageExists = async (providerDetails) => {
-    const result = await imgExists(providerDetails.imageSource);
-    updateImageExists(result);
-  }
 
   const changeDialogVisibility = bool => {
     props.navigation.dispatch(DrawerActions.closeDrawer());
@@ -45,8 +31,8 @@ function CustomMenuLayout(props) {
           <View style={styles.header}>
             <Image
               source={
-                imageExists
-                  ? { uri: imageSource }
+                providerDetails.imageAvailable
+                  ? { uri: providerDetails.image }
                   : require('../../images/generic_avatar.png')
               }
               style={styles.headerImage}
@@ -62,7 +48,7 @@ function CustomMenuLayout(props) {
               Welcome
             </Text>
             <Text style={[styles.textHeader, { color: black }]}>
-              {name}
+              {providerDetails.name + " " + providerDetails.surname}
             </Text>
           </View>
 

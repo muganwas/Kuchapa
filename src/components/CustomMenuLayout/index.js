@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,13 +6,11 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  Modal,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { notificationsFetched } from '../../Redux/Actions/notificationActions';
 import { DrawerActions } from '@react-navigation/native';
 import DialogLogout from '../DialogLogout';
-import { imageExists as imgExists } from '../../misc/helpers';
 import { black, lightGray, themeRed, white } from '../../Constants/colors';
 
 function CustomMenuLayout(props) {
@@ -20,19 +18,7 @@ function CustomMenuLayout(props) {
   const { userDetails } = useSelector(state => state.userInfo);
   const dispatch = useDispatch();
 
-  const [imageExists, updateImageExists] = useState(true);
-  const [name] = useState(userDetails.username);
   const [isDialogLogoutVisible, updateIsDialogLogoutVisible] = useState(false);
-  const [imageSource] = useState(userDetails.imageSource);
-
-  useEffect(() => {
-    getImageExists(userDetails);
-  }, [userDetails]);
-
-  const getImageExists = async (userDetails) => {
-    const result = await imgExists(userDetails.imageSource);
-    updateImageExists(result);
-  }
 
   const changeDialogVisibility = bool => {
     props.navigation.dispatch(DrawerActions.closeDrawer());
@@ -46,8 +32,8 @@ function CustomMenuLayout(props) {
           <View style={styles.header}>
             <Image
               source={
-                imageExists
-                  ? { uri: imageSource }
+                userDetails.imageAvailable
+                  ? { uri: userDetails.image }
                   : require('../../images/generic_avatar.png')
               }
               style={styles.headerImage}
@@ -63,7 +49,7 @@ function CustomMenuLayout(props) {
               Welcome
             </Text>
             <Text style={[styles.textHeader, { color: black }]}>
-              {name}
+              {userDetails.username}
             </Text>
           </View>
           <TouchableOpacity
@@ -277,20 +263,5 @@ const styles = StyleSheet.create({
     margin: 15,
   },
 });
-
-// const mapStateToProps = state => {
-//   return {
-//     notificationsInfo: state.notificationsInfo,
-//     userInfo: state.userInfo,
-//   };
-// };
-
-// const mapDispatchToProps = dispatch => {
-//   return {
-//     fetchedNotifications: data => {
-//       dispatch(notificationsFetched(data));
-//     },
-//   };
-// };
 
 export default CustomMenuLayout;

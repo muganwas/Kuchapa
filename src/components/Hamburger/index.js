@@ -174,7 +174,7 @@ class Hamburger extends React.Component {
           id: data.mainId,
           order_id: data.orderId,
           employee_id: providerData.ProviderId,
-          image: providerData.imageSource,
+          image: providerData.image,
           fcm_id: providerData.fcmId,
           name: providerData.name,
           surName: providerData.surname,
@@ -191,7 +191,7 @@ class Hamburger extends React.Component {
           delivery_lat: data.delivery_lat,
           delivery_lang: data.delivery_lang,
         };
-        pendingJobData.imageAvailable = await imageExists(providerData.imageSource);
+        pendingJobData.imageAvailable = await imageExists(providerData.image);
         if (pos !== undefined) {
           newJobRequests[pos] = pendingJobData;
           fetchedPendingJobInfo(newJobRequests);
@@ -226,7 +226,7 @@ class Hamburger extends React.Component {
           id: data.mainId,
           order_id: data.orderId,
           employee_id: providerData.ProviderId,
-          image: providerData.imageSource,
+          image: providerData.image,
           fcm_id: providerData.fcmId,
           name: providerData.name,
           surName: providerData.surname,
@@ -243,7 +243,7 @@ class Hamburger extends React.Component {
           delivery_lat: data.delivery_lat,
           delivery_lang: data.delivery_lang,
         };
-        pendingJobData.imageAvailable = await imageExists(providerData.imageSource);
+        pendingJobData.imageAvailable = await imageExists(providerData.image);
         if (pos !== undefined) {
           newJobRequests[pos] = pendingJobData;
           fetchedPendingJobInfo(newJobRequests);

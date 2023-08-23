@@ -685,30 +685,6 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
   },
-  footerView: {
-    alignContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-    borderRadius: 10,
-  },
-  footer: {
-    width: screenWidth / 1.5,
-    flexDirection: 'column',
-    backgroundColor: '#191970',
-    justifyContent: 'center',
-    alignContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.75,
-    shadowRadius: 5,
-    elevation: 5,
-    padding: 15,
-    borderRadius: 2,
-    position: 'absolute', //Footer
-    bottom: 0, //Footer
-    marginBottom: 10,
-  },
   loaderStyle: {
     position: 'absolute',
     left: 0,
@@ -770,7 +746,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flex: 1,
-    //width: 200,
     paddingTop: 10,
     backgroundColor: white,
     shadowColor: black,

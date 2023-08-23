@@ -764,7 +764,6 @@ class MapDirectionScreen extends Component {
                       </Text>
                     </TouchableOpacity>
                   )}
-
                   <TouchableOpacity
                     style={styles.buttonContainer}
                     onPress={this.openCancelConfirmation}>
@@ -790,6 +789,9 @@ const styles = StyleSheet.create({
     flex: 1,
     width: screenWidth,
     height: screenHeight,
+    elevation: 5,
+    zIndex: 5,
+    position: 'relative'
   },
   map: {
     height: screenHeight,

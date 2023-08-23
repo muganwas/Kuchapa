@@ -77,7 +77,7 @@ class ProMyProfileScreen extends Component {
     this.state = {
       providerId: providerDetails.providerId,
       fcmId: providerDetails.fcmId,
-      imageSource: providerDetails.imageSource,
+      image: providerDetails.image,
       email: providerDetails.email,
       emailDisabled: !!providerDetails.email,
       mobileDisabled: !!providerDetails.mobile,
@@ -110,7 +110,7 @@ class ProMyProfileScreen extends Component {
       } else {
         let source = { uri: response.uri };
         this.setState({
-          imageSource: source,
+          image: source,
           error: '',
           galleryCameraImage: 'galleryCamera',
           isLoading: true,
@@ -304,7 +304,7 @@ class ProMyProfileScreen extends Component {
       emailSet,
       mobileDisabled,
       galleryCameraImage,
-      imageSource,
+      image,
     } = this.state;
     const {
       validationInfo: { countryCode },
@@ -349,10 +349,10 @@ class ProMyProfileScreen extends Component {
                 }}
                 source={
                   !galleryCameraImage
-                    ? imageSource
-                      ? { uri: imageSource }
+                    ? image
+                      ? { uri: image }
                       : require('../../images/generic_avatar.png')
-                    : { uri: imageSource.uri }
+                    : { uri: image.uri }
                 }
               />
 

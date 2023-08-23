@@ -162,7 +162,7 @@ class ChatScreen extends Component {
           jobRequests[currRequestPos].employee_details.username),
       receiverImage:
         (jobRequests[currRequestPos] &&
-          jobRequests[currRequestPos].employee_details.imageSource) ||
+          jobRequests[currRequestPos].employee_details.image) ||
         (jobRequests[currRequestPos] &&
           jobRequests[currRequestPos].employee_details.image),
       serviceName:

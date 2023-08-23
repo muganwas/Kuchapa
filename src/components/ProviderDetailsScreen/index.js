@@ -266,7 +266,7 @@ class ProviderDetailsScreen extends Component {
       id: data.mainId,
       order_id: data.orderId,
       employee_id: providerData.providerId,
-      image: providerData.imageSource,
+      image: providerData.image,
       fcm_id: providerData.fcmId,
       name: providerData.name,
       surName: providerData.surname,
