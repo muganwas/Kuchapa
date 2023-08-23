@@ -170,13 +170,13 @@ class ProviderDetailsScreen extends Component {
   }
 
   componentDidMount() {
-    this.initialRender();
+    this.initialRender(this.props);
     const { navigation } = this.props;
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
     navigation.addListener('focus', () => {
-      //this.initialRender();
+      this.initialRender(this.props);
     });
     navigation.addListener('blur', () => {
       this.setState({
@@ -198,11 +198,11 @@ class ProviderDetailsScreen extends Component {
     );
   }
 
-  initialRender = async () => {
+  initialRender = async (props) => {
     const {
       route,
       generalInfo: { OnlineUsers },
-    } = this.props;
+    } = props;
     const liveChatStatus = OnlineUsers[route.params.providerId]
       ? OnlineUsers[route.params.providerId].status
       : '0';

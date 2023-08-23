@@ -103,7 +103,6 @@ class ProChatAfterBookingDetailsScreen extends Component {
     const {
       fetchedNotifications,
       navigation,
-      generalInfo: { OnlineUsers },
       userInfo: { providerDetails },
       jobsInfo: {
         selectedJobRequest: { user_id },
@@ -115,27 +114,16 @@ class ProChatAfterBookingDetailsScreen extends Component {
       socket.connect();
       fetchEmployeeMessages(providerDetails.providerId);
     }
+    this.reInit(this.props);
     fetchedNotifications({ type: 'messages', value: 0 });
-    setOnlineStatusListener({
-      OnlineUsers,
-      userId: user_id,
-      setStatus: (selectedStatus, online) =>
-        this.setState({
-          selectedStatus,
-          online,
-        }),
-    });
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
     navigation.addListener('focus', async () => {
-      this.reInit();
+      this.reInit(this.props);
     });
     navigation.addListener('blur', () => {
       deregisterOnlineStatusListener(user_id);
-    });
-    this.setState({
-      isLoading: false,
     });
   }
 
@@ -146,7 +134,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
     );
   }
 
-  reInit = async () => {
+  reInit = async (props) => {
     const {
       messagesInfo: { dataChatSource, fetched },
       jobsInfo: {
@@ -156,7 +144,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
       route,
       userInfo: { providerDetails },
       fetchEmployeeMessages,
-    } = this.props;
+    } = props;
     if (!socket.connected) {
       socket.close();
       socket.connect();

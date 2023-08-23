@@ -197,7 +197,7 @@ class ProAllMessageScreen extends Component {
           style={[
             styles.header,
             { borderBottomWidth: 1, borderBottomColor: themeRed },
-          ]}><ProHamburger text="Messages" /></View>
+          ]}><ProHamburger fix={true} text="Messages" /></View>
         <View
           style={{
             flexDirection: 'row',

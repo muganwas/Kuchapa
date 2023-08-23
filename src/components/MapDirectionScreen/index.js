@@ -312,13 +312,7 @@ class MapDirectionScreen extends Component {
   };
 
   handleBackButtonClick = () => {
-    if (this.state.titlePage === 'Dashboard')
-      this.props.navigation.navigate('Home');
-    else if (this.state.titlePage === 'ProviderDetails')
-      this.props.navigation.navigate('ProviderDetails');
-    else if (this.state.titlePage === 'Chat')
-      this.props.navigation.navigate('Chat');
-    else this.props.navigation.goBack();
+    this.props.navigation.navigate('Home');
     return true;
   };
 

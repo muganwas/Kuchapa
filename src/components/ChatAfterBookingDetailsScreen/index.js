@@ -105,7 +105,6 @@ class ChatAfterBookingDetailsScreen extends Component {
       fetchedNotifications,
       navigation,
       userInfo: { userDetails },
-      generalInfo: { OnlineUsers },
       jobsInfo: {
         selectedJobRequest: { employee_id },
       },
@@ -116,22 +115,14 @@ class ChatAfterBookingDetailsScreen extends Component {
       socket.connect();
       fetchClientMessages(userDetails.userId);
     }
+    this.reInit(this.props);
     fetchedNotifications({ type: 'messages', value: 0 });
-    setOnlineStatusListener({
-      OnlineUsers,
-      userId: employee_id,
-      setStatus: (selectedStatus, online) =>
-        this.setState({
-          selectedStatus,
-          online,
-        }),
-    });
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
     navigation.addListener('focus', async () => {
-      this.reInit();
+      this.reInit(this.props);
     });
     navigation.addListener('blur', () => {
       deregisterOnlineStatusListener(employee_id);
@@ -145,8 +136,7 @@ class ChatAfterBookingDetailsScreen extends Component {
     );
   }
 
-  reInit = () => {
-    const props = this.props;
+  reInit = (props) => {
     const {
       userInfo: { userDetails },
       jobsInfo: {

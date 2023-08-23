@@ -364,7 +364,7 @@ class ProHamburger extends React.Component {
       userInfo: { providerDetails },
     } = this.props;
     const senderId = providerDetails.providerId;
-    deregisterOnlineStatusListener(senderId);
+    senderId && deregisterOnlineStatusListener(senderId);
   }
 
   getAllNotificationsProvider = () =>
@@ -439,7 +439,7 @@ class ProHamburger extends React.Component {
   };
 
   render() {
-    const { text, navigation, notificationsInfo } = this.props;
+    const { text, navigation, notificationsInfo, fix } = this.props;
     const notificationTotal =
       notificationsInfo.messages +
       notificationsInfo.generic +
@@ -450,7 +450,10 @@ class ProHamburger extends React.Component {
           onDidFocus={async () => await checkForUserType(navigation.navigate)}
         />
         <TouchableOpacity
-          onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+          onPress={() => {
+            if (fix) navigation.navigate('ProHome');
+            navigation.dispatch(DrawerActions.openDrawer())
+          }}
           style={styles.touchableHighlight}>
           <Image
             style={styles.image}

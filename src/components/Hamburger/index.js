@@ -466,7 +466,7 @@ class Hamburger extends React.Component {
       userInfo: { userDetails },
     } = this.props;
     const senderId = userDetails.userId;
-    deregisterOnlineStatusListener(senderId);
+    senderId && deregisterOnlineStatusListener(senderId);
   }
 
   getAllNotificationsCustomer = () =>
@@ -545,7 +545,7 @@ class Hamburger extends React.Component {
   };
 
   render() {
-    const { text, navigation, notificationsInfo } = this.props;
+    const { text, navigation, notificationsInfo, fix } = this.props;
     const notificationTotal =
       notificationsInfo.messages +
       notificationsInfo.generic +
@@ -555,11 +555,10 @@ class Hamburger extends React.Component {
     return (
       <>
         <TouchableOpacity
-          onPress={
-            navigation
-              ? () => navigation.dispatch(DrawerActions.openDrawer())
-              : () => { }
-          }
+          onPress={() => {
+            if (fix) navigation.navigate('Home');
+            navigation.dispatch(DrawerActions.openDrawer())
+          }}
           style={styles.touchableHighlight}>
           <Image
             style={styles.image}

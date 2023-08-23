@@ -235,11 +235,7 @@ class ProMapDirectionScreen extends Component {
   };
 
   handleBackButtonClick = () => {
-    if (this.state.pageTitle == 'ProDashboard')
-      this.props.navigation.navigate('ProHome');
-    else if (this.state.pageTitle == 'ProAcceptRejectJob')
-      this.props.navigation.navigate('ProAcceptRejectJob');
-    else this.props.navigation.goBack();
+    this.props.navigation.navigate('ProHome');
     return true;
   };
 

@@ -210,7 +210,7 @@ class AllMessageScreen extends Component {
             styles.header,
             { borderBottomWidth: 1, borderBottomColor: themeRed },
           ]}>
-          <Hamburger text="Your Messages" />
+          <Hamburger fix={true} text="Your Messages" />
         </View>
         <View
           style={{

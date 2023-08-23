@@ -87,6 +87,7 @@ class ProAcceptRejectJobScreen extends Component {
       receiverName: '',
       receiverImage: '',
       imageAvailable: false,
+      isLoading: true,
       receiverId: '',
       senderId: '',
       showButton: false,
@@ -110,9 +111,6 @@ class ProAcceptRejectJobScreen extends Component {
     });
     navigation.addListener('blur', () => {
       deregisterOnlineStatusListener(user_id);
-    });
-    this.setState({
-      isLoading: false,
     });
   }
 

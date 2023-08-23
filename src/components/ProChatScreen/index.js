@@ -110,7 +110,6 @@ class ProChatScreen extends Component {
         selectedJobRequest: { user_id },
       },
       userInfo: { providerDetails },
-      generalInfo: { OnlineUsers },
       fetchEmployeeMessages,
     } = this.props;
     if (!socket.connected) {
@@ -118,20 +117,12 @@ class ProChatScreen extends Component {
       socket.connect();
       fetchEmployeeMessages(providerDetails.providerId);
     }
-    setOnlineStatusListener({
-      OnlineUsers,
-      userId: user_id,
-      setStatus: (selectedStatus, online) =>
-        this.setState({
-          selectedStatus,
-          online,
-        }),
-    });
+    this.reInit(this.props);
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
     navigation.addListener('focus', async () => {
-      this.reInit();
+      this.reInit(this.props);
     });
     navigation.addListener('blur', () => {
       deregisterOnlineStatusListener(user_id);
@@ -145,14 +136,10 @@ class ProChatScreen extends Component {
     );
   }
 
-  reInit = () => {
+  reInit = (props) => {
     const {
       messagesInfo: { dataChatSource, fetched },
-      navigation: {
-        state: {
-          params: { currentPos },
-        },
-      },
+      route,
       jobsInfo: {
         allJobRequestsProviders,
         selectedJobRequest: { user_id },
@@ -160,12 +147,13 @@ class ProChatScreen extends Component {
       userInfo: { providerDetails },
       generalInfo: { OnlineUsers },
       fetchEmployeeMessages,
-    } = this.props;
+    } = props;
     if (!socket.connected) {
       socket.close();
       socket.connect();
       fetchEmployeeMessages(providerDetails.providerId);
     }
+    const currentPos = route?.params?.currentPos;
     this.setState({
       showButton: false,
       senderId: providerDetails.providerId,
