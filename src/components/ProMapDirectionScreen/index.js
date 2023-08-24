@@ -443,7 +443,7 @@ class ProMapDirectionScreen extends Component {
               title="You"
               description={''}>
               <Image
-                style={{ width: 35, height: 35, backgroundColor: 'transparent' }}
+                style={{ width: 20, height: 20, backgroundColor: 'transparent' }}
                 source={require('../../icons/car_marker.png')}
               />
             </Marker>
@@ -455,7 +455,7 @@ class ProMapDirectionScreen extends Component {
               title="Destination"
               description={userName}>
               <Image
-                style={{ width: 35, height: 35, backgroundColor: 'transparent' }}
+                style={{ width: 20, height: 20, backgroundColor: 'transparent' }}
                 source={require('../../icons/home_marker.png')}
               />
             </Marker>
@@ -471,6 +471,7 @@ class ProMapDirectionScreen extends Component {
                 '#7F0000',
               ]}
               strokeWidth={2}
+              lineCap='round'
             />
           </MapView>
         ) : (

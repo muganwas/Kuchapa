@@ -553,32 +553,31 @@ class MapDirectionScreen extends Component {
                 latitude: sourceLat,
                 longitude: sourceLng,
               }}
-              title={userDetails.username}
-              description="Vous">
+              title={providerName}
+              description="Service Provider">
               <Image
                 style={{
-                  width: 35,
-                  height: 35,
+                  width: 20,
+                  height: 20,
                   backgroundColor: 'transparent',
                 }}
-                source={require('../../icons/home_marker.png')}
+                source={require('../../icons/car_marker.png')}
               />
             </Marker>
-
             <Marker
               coordinate={{
                 latitude: destinationLat,
                 longitude: destinationLng,
               }}
-              title="Fournisseur"
-              description={providerName}>
+              title="You"
+              description={userDetails.username}>
               <Image
                 style={{
-                  width: 35,
-                  height: 35,
+                  width: 20,
+                  height: 20,
                   backgroundColor: 'transparent',
                 }}
-                source={require('../../icons/car_marker.png')}
+                source={require('../../icons/home_marker.png')}
               />
             </Marker>
             <Polyline
@@ -593,6 +592,7 @@ class MapDirectionScreen extends Component {
                 '#7F0000',
               ]}
               strokeWidth={2}
+              lineCap='round'
             />
           </MapView>
         ) : (

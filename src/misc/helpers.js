@@ -293,7 +293,6 @@ export const getDirections = async ({ startLoc, destinationLoc, onSuccess }) => 
             longitude: point[1],
           };
         });
-        console.log('cords cordinates', { coords })
         onSuccess(coords);
       }
     } catch (error) {
