@@ -28,6 +28,7 @@ class ProDialogLogout extends Component {
       await rNES.removeItem('auth');
       await rNES.removeItem('firebaseId');
       await rNES.removeItem('email');
+      await rNES.removeItem('idToken');
       await rNES.removeItem('userType');
       resetUserDetails();
       Config.socket.close();

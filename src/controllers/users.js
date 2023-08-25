@@ -151,26 +151,28 @@ export const autoLogin = async (
 ) => {
   if (userId !== null) {
     setLoading();
-    rNES
-      .getItem('auth')
-      .then(storedInfo => {
-        if (storedInfo) {
-          const { email, password } = JSON.parse(storedInfo);
-          firebaseAuth()
-            .signInWithEmailAndPassword(email, password)
-            .then(() => {
-              inhouseLogin(userId, userType, fcmToken);
-            })
-            .catch(error => {
-              SimpleToast.show(
-                'Something went wrong, try closing and reopening app',
-              );
-            });
-        } else inhouseLogin(userId, userType, fcmToken);
-      })
-      .catch(e => {
-        console.log('storage error', e);
-      });
+    const storedInfo = await rNES
+      .getItem('auth');
+
+    if (storedInfo) {
+      const info = JSON.parse(storedInfo);
+      const { email, password } = info;
+      const currentEmail = firebaseAuth().currentUser.email;
+      const currentFirebaseId = firebaseAuth().currentUser.uid;
+      const firebaseId = await rNES.getItem('firebaseId');
+      if (currentEmail === email && firebaseId === currentFirebaseId)
+        return inhouseLogin(userId, userType, fcmToken);
+      firebaseAuth()
+        .signInWithEmailAndPassword(email, password)
+        .then(() => {
+          inhouseLogin(userId, userType, fcmToken);
+        })
+        .catch(error => {
+          SimpleToast.show(
+            'Something went wrong, try closing and reopening app',
+          );
+        });
+    } else inhouseLogin(userId, userType, fcmToken);
   } else {
     goTo('AfterSplash');
   }
@@ -360,6 +362,7 @@ export const fbGmailLoginTask = async ({
           const response = await resp.json();
           toggleLoading();
           const imageAvailable = await imgExists(responseJson.data.image);
+          const idToken = await firebaseAuth().currentUser.getIdToken(true);
           if (response && response.result) {
             const data = provider
               ? {
@@ -403,6 +406,7 @@ export const fbGmailLoginTask = async ({
             updateAppUserDetails(data);
             //Store data like sharedPreference
             rNES.setItem('userId', id);
+            rNES.setItem('idToken', idToken);
             rNES.setItem('userType', userTypeName);
             rNES.setItem('email', data.email);
             rNES.setItem('firebaseId', firebaseId);
@@ -449,6 +453,7 @@ export const fbGmailLoginTask = async ({
             updateAppUserDetails(data);
             //Store data like sharedPreference
             rNES.setItem('userId', id);
+            rNES.setItem('idToken', idToken);
             rNES.setItem('userType', userTypeName);
             rNES.setItem('email', data.email);
             rNES.setItem('firebaseId', firebaseId);
@@ -528,6 +533,7 @@ export const authenticateTask = async ({
               toggleLoading();
               const id = responseJson.data.id;
               const imageAvailable = await imgExists(responseJson.data.image);
+              const idToken = await firebaseAuth().currentUser.getIdToken(true);
               const data = provider
                 ? {
                   providerId: responseJson.data.id,
@@ -575,6 +581,7 @@ export const authenticateTask = async ({
                 email,
                 password,
               };
+              rNES.setItem('idToken', idToken);
               rNES.setItem('auth', JSON.stringify(auth));
               rNES.setItem('firebaseId', uid);
               fetchJobRequestHistory(id);
@@ -791,6 +798,7 @@ export const phoneLoginTask = async ({
           toggleIsLoading(false);
           if (response && response.result) {
             const imageAvailable = await imgExists(response.data.image);
+            const idToken = await firebaseAuth().currentUser.getIdToken(true);
             const data =
               userType === 'Provider'
                 ? {
@@ -835,6 +843,7 @@ export const phoneLoginTask = async ({
             //Store data like sharedPreference
             rNES.setItem('userId', id);
             rNES.setItem('userType', userType);
+            rNES.setItem('idToken', idToken);
             rNES.setItem('email', data.email);
             rNES.setItem('firebaseId', firebaseId);
             //Check if any Ongoing Request

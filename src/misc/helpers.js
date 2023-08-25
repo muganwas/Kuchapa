@@ -310,11 +310,12 @@ export const fetchEmployeeMessagesFunc = async (receiverId, dispatch, dbMessages
   const res = await fetch(
     FETCH_MESSAGES + '?sender=' + receiverId + '&userType=employee',
   );
-  const data = await res.json();
+  const resJson = await res.json();
+  const { result, data, message } = resJson;
   let messages = {};
   let otherUsers = {};
   // get ids of other users this user has chatted with
-  if (!data.message) {
+  if (result) {
     await data.map(msgObj => {
       const { sender, recipient } = msgObj;
       if (sender !== receiverId) otherUsers[sender] = sender;
@@ -337,9 +338,9 @@ export const fetchEmployeeMessagesFunc = async (receiverId, dispatch, dbMessages
     dispatch(dbMessagesFetched(messages));
     callBack && callBack();
   } else {
-    dispatch(messagesError(data.message));
+    dispatch(messagesError(message));
+    SimpleToast.show(message);
     callBack && callBack();
-    SimpleToast.show('Something went wrong, please reload app');
   }
 }
 
@@ -347,11 +348,12 @@ export const fetchMessagesFunc = async (senderId, dispatch, dbMessagesFetched, c
   const res = await fetch(
     FETCH_MESSAGES + '?sender=' + senderId + '&userType=client',
   );
-  const data = await res.json();
+  const resJosn = await res.json();
+  const { data, result, message } = resJosn;
   let messages = {};
   let otherUsers = {};
   // get ids of other users this user has chatted with
-  if (!data.message) {
+  if (result) {
     await data.map(msgObj => {
       const { sender, recipient } = msgObj;
       if (sender !== senderId) otherUsers[sender] = sender;
@@ -374,9 +376,9 @@ export const fetchMessagesFunc = async (senderId, dispatch, dbMessagesFetched, c
     dispatch(dbMessagesFetched(messages));
     callBack && callBack();
   } else {
-    dispatch(messagesError(e.message));
+    dispatch(messagesError(message));
+    SimpleToast.show(message);
     callBack && callBack();
-    SimpleToast.show('Something went wrong, please reload app');
   }
 }
 

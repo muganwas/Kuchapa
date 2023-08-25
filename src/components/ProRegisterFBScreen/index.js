@@ -127,7 +127,7 @@ class ProRegisterFBScreen extends Component {
         description: this.state.description,
         address: this.state.address,
         lat: this.state.lat,
-        lang: this.state.lng,
+        lang: this.state.lang,
         invoice: this.state.invoice,
         fcm_id: fcmToken,
         type: 'google',
@@ -146,7 +146,6 @@ class ProRegisterFBScreen extends Component {
           body: JSON.stringify({ data: userData })
         });
         const responseJson = await response.json();
-        console.log(responseJson);
         this.setState({
           isLoading: false,
         });

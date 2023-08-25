@@ -113,8 +113,6 @@ class AddAddressScreen extends Component {
       Geolocation.requestAuthorization();
       Geolocation.getCurrentPosition(
         async position => {
-          console.log('Position : ' + JSON.stringify(position));
-
           this.setState({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
@@ -130,11 +128,6 @@ class AddAddressScreen extends Component {
               Config.mapsApiKey
             );
             const responseJson = await resp.json();
-            console.log(
-              'ADDRESS GEOCODE is BACK!! => ' +
-              JSON.stringify(responseJson.results[0].formatted_address),
-            );
-
             this.setState({
               address: responseJson.results[0].formatted_address,
               isLoading: false,
@@ -192,7 +185,6 @@ class AddAddressScreen extends Component {
           }
         },
         error => {
-          console.log('Error: ' + error.code, error);
           this.setState({
             isLoading: false,
             isErrorToast: true,
