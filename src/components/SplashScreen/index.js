@@ -59,6 +59,7 @@ import ProChatScreen from '../ProChatScreen';
 import {
   updateUserDetails,
   updateProviderDetails,
+  resetUserDetails
 } from '../../Redux/Actions/userActions';
 import {
   getPendingJobRequest,
@@ -74,6 +75,7 @@ import {
 } from '../../controllers/users';
 import { fetchCountryCodes } from '../../Redux/Actions/validationActions';
 import { white } from '../../Constants/colors';
+import Config from '../Config';
 
 const screenWidth = Dimensions.get('screen').width;
 const Android = Platform.OS === 'android';
@@ -138,6 +140,19 @@ class SplashScreen extends Component {
       dialogType: null,
     });
 
+  logout = async () => {
+    const { resetUserDetails } = this.props;
+    if (firebaseAuth().currentUser) firebaseAuth().signOut();
+    await rNES.removeItem('userId');
+    await rNES.removeItem('auth');
+    await rNES.removeItem('firebaseId');
+    await rNES.removeItem('email');
+    await rNES.removeItem('idToken');
+    await rNES.removeItem('userType');
+    resetUserDetails();
+    Config.socket.close();
+  }
+
   splashTimeOut = async () => {
     try {
       const {
@@ -183,6 +198,10 @@ class SplashScreen extends Component {
                         },
                         null,
                         () => {
+                          if (message.includes('re-authenticate')) {
+                            this.logout();
+                            return navigation.navigate('AfterSplash');
+                          }
                           if (Android) {
                             BackHandler.exitApp();
                           } else RNExitApp.exitApp();
@@ -314,6 +333,9 @@ const mapDispatchToProps = dispatch => {
     },
     updateUserDetails: details => {
       dispatch(updateUserDetails(details));
+    },
+    resetUserDetails: () => {
+      dispatch(resetUserDetails());
     },
     updateProviderDetails: details => {
       dispatch(updateProviderDetails(details));

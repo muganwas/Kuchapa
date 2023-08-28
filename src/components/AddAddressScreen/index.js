@@ -15,12 +15,12 @@ import {
 import { connect } from 'react-redux';
 import Geolocation from 'react-native-geolocation-service';
 import Toast from 'react-native-simple-toast';
+import rNES from 'react-native-encrypted-storage';
 import WaitingDialog from '../WaitingDialog';
 import { updateUserDetails } from '../../Redux/Actions/userActions';
 import {
   colorPrimary,
   colorBg,
-  lightGray,
   themeRed,
   white,
   black,
@@ -139,9 +139,11 @@ class AddAddressScreen extends Component {
               lang: this.state.longitude,
             };
             try {
+              const idToken = await rNES.getItem('idToken');
               const res = await fetch(USER_INFO_UPDATE + userDetails.userId, {
                 method: 'POST',
                 headers: {
+                  Authorization: 'Bearer ' + idToken,
                   Accept: 'application/json',
                   'Content-Type': 'application/json',
                 },

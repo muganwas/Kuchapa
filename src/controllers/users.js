@@ -212,8 +212,14 @@ export const inhouseLogin = async ({
   const provider = userType === 'Provider';
   const fetchProfileUrl = provider ? PRO_GET_PROFILE : USER_GET_PROFILE;
   try {
-    const response = await fetch(fetchProfileUrl + userId + '?fcm_id=' + fcmToken);
+    const idToken = await rNES.getItem('idToken');
+    const response = await fetch(fetchProfileUrl + userId + '?fcm_id=' + fcmToken, {
+      headers: {
+        Authorization: 'Bearer ' + idToken
+      }
+    });
     const responseJson = await response.json();
+    console.log('auth info', { responseJson });
     let onlineStatus;
     if (responseJson && responseJson.result) {
       const id = responseJson.data.id;
@@ -590,7 +596,10 @@ export const authenticateTask = async ({
               onError(responseJson.message);
             }
           } catch (e) {
-            onError('Something went wrong, please try again.');
+            if (e && e.message.includes('Network'))
+              onError('App could not connect to server.');
+            else
+              onError('Something went wrong, please try again.');
           }
         } else {
           onError('Something went wrong, please try again later.');
