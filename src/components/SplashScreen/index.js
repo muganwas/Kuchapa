@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import firebaseAuth from '@react-native-firebase/auth';
 import rNES from 'react-native-encrypted-storage';
 import RNExitApp from 'react-native-exit-app';
 import HomeScreen from '../HomeScreen';
@@ -200,6 +201,7 @@ class SplashScreen extends Component {
                         () => {
                           if (message.includes('re-authenticate')) {
                             this.logout();
+                            this.clearDialog();
                             return navigation.navigate('AfterSplash');
                           }
                           if (Android) {
@@ -211,6 +213,7 @@ class SplashScreen extends Component {
                   });
                 },
                 () => navigation.navigate('AfterSplash'),
+                this.logout
               ),
             () =>
               this.showDialogAction(

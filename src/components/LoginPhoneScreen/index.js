@@ -47,7 +47,7 @@ import {
 import { phoneLoginTask } from '../../controllers/users';
 
 const screenWidth = Dimensions.get('window').width;
-const REGISTER_URL = Config.baseURL + 'users/register/create';
+const REGISTER_URL = Config.baseURL + 'users/register';
 const USER_GET_PROFILE = Config.baseURL + 'users/';
 const Android = Platform.OS === 'android';
 

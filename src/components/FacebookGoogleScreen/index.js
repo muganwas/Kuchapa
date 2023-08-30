@@ -40,7 +40,7 @@ import {
 } from '../../controllers/users';
 
 const screenWidth = Dimensions.get('window').width;
-const REGISTER_URL = Config.baseURL + 'users/register/create';
+const REGISTER_URL = Config.baseURL + 'users/register';
 const USER_GET_PROFILE = Config.baseURL + 'users/';
 const AUTHENTICATE_URL = Config.baseURL + 'users/authenticate';
 const Android = Platform.OS === 'android';
@@ -136,13 +136,14 @@ class FacebookGoogleScreen extends Component {
       this.fbGoogleLoginTaskCustomer,
     );
 
-  fbGoogleLoginTaskCustomer = async (name, email, image, loginType) =>
+  fbGoogleLoginTaskCustomer = async (name, email, image, loginType, idToken) =>
     await fbGmailLoginTask({
       name,
       email,
       image,
       userType: 'User',
       firebaseId: this.state.firebaseId,
+      idToken,
       accountType: this.state.accountType,
       registerUrl: REGISTER_URL,
       fetchProfileUrl: USER_GET_PROFILE,
@@ -163,7 +164,7 @@ class FacebookGoogleScreen extends Component {
           this.toggleDialogVisibility,
           () => {
             this.toggleDialogVisibility();
-            this.fbGoogleLoginTaskCustomer(name, email, image, loginType);
+            this.fbGoogleLoginTaskCustomer(name, email, image, loginType, idToken);
           },
         ),
       props: this.props,

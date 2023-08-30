@@ -108,7 +108,7 @@ class AddAddressScreen extends Component {
       updateUserDetails,
       userInfo: { userDetails },
     } = this.props;
-
+    const idToken = await rNES.getItem('idToken');
     if (Platform.OS === 'ios') {
       Geolocation.requestAuthorization();
       Geolocation.getCurrentPosition(
@@ -139,7 +139,6 @@ class AddAddressScreen extends Component {
               lang: this.state.longitude,
             };
             try {
-              const idToken = await rNES.getItem('idToken');
               const res = await fetch(USER_INFO_UPDATE + userDetails.userId, {
                 method: 'POST',
                 headers: {
@@ -236,6 +235,7 @@ class AddAddressScreen extends Component {
                 const resp = await fetch(USER_INFO_UPDATE + userDetails.userId, {
                   method: 'POST',
                   headers: {
+                    Authorization: 'Bearer ' + idToken,
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                   },
@@ -359,10 +359,12 @@ class AddAddressScreen extends Component {
       userInfo: { userDetails },
       updateUserDetails,
     } = this.props;
+    const idToken = await rNES.getItem('idToken');
     try {
       const resp = await fetch(USER_INFO_UPDATE + userDetails.userId, {
         method: 'POST',
         headers: {
+          Authorization: 'Bearer ' + idToken,
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },

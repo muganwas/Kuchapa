@@ -40,7 +40,7 @@ import {
 import { withNavigation } from '@react-navigation/compat';
 
 const screenWidth = Dimensions.get('window').width;
-const REGISTER_URL = Config.baseURL + 'employee/register/create';
+const REGISTER_URL = Config.baseURL + 'employee/register';
 const PRO_GET_PROFILE = Config.baseURL + 'employee/';
 const AUTHENTICATE_URL = Config.baseURL + 'employee/authenticate';
 const Android = Platform.OS === 'android';
@@ -136,13 +136,14 @@ class FacebookGoogleScreen extends Component {
       this.fbGmailLoginTaskPro,
     );
 
-  fbGmailLoginTaskPro = async (name, email, image, loginType) =>
+  fbGmailLoginTaskPro = async (name, email, image, loginType, idToken) =>
     await fbGmailLoginTask({
       name,
       email,
       image,
       userType: 'Provider',
       firebaseId: this.state.firebaseId,
+      idToken,
       accountType: this.state.accountType,
       registerUrl: REGISTER_URL,
       fetchProfileUrl: PRO_GET_PROFILE,
@@ -163,7 +164,7 @@ class FacebookGoogleScreen extends Component {
           this.toggleDialogVisibility,
           () => {
             this.toggleDialogVisibility();
-            this.fbGmailLoginTaskPro(name, email, image, loginType);
+            this.fbGmailLoginTaskPro(name, email, image, loginType, idToken);
           },
         ),
       props: this.props,

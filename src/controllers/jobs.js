@@ -2,6 +2,7 @@ import { cloneDeep } from 'lodash';
 import database from '@react-native-firebase/database';
 import Geolocation from 'react-native-geolocation-service';
 import SimpleToast from 'react-native-simple-toast';
+import rNES from 'react-native-encrypted-storage';
 
 import Config from '../components/Config';
 
@@ -40,9 +41,11 @@ export const requestClientForReview = async ({
       },
     };
     try {
+      const idToken = await rNES.getItem('idToken');
       const resp = await fetch(ASK_FOR_REVIEW, {
         method: 'POST',
         headers: {
+          Authorization: 'Bearer ' + idToken,
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
@@ -79,6 +82,7 @@ export const jobCancelTask = async ({
   const dash = userType === 'Provider' ? 'ProDashboard' : 'Dashboard';
   try {
     let newJobRequests = cloneDeep(jobRequests);
+    const idToken = await rNES.getItem('idToken');
     const data =
       userType === 'Provider'
         ? {
@@ -132,6 +136,7 @@ export const jobCancelTask = async ({
     const response = await fetch(REJECT_ACCEPT_REQUEST, {
       method: 'POST',
       headers: {
+        Authorization: 'Bearer ' + idToken,
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
@@ -204,9 +209,11 @@ export const acceptJobTask = async ({
     },
   };
   try {
+    const idToken = await rNES.getItem('idToken');
     const response = await fetch(REJECT_ACCEPT_REQUEST, {
       method: 'POST',
       headers: {
+        Authorization: 'Bearer ' + idToken,
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
@@ -298,9 +305,11 @@ export const rejectJobTask = async ({
     },
   };
   try {
+    const idToken = await rNES.getItem('idToken');
     const response = await fetch(REJECT_ACCEPT_REQUEST, {
       method: 'POST',
       headers: {
+        Authorization: 'Bearer ' + idToken,
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
@@ -344,6 +353,7 @@ export const jobCompleteTask = async ({
   const dash = userType === 'Provider' ? 'ProDashboard' : 'Dashboard';
   try {
     let newJobRequests = cloneDeep(jobRequests);
+    const idToken = await rNES.getItem('idToken');
     if (jobRequests[currRequestPos]) {
       const data =
         userType === 'Provider'
@@ -398,6 +408,7 @@ export const jobCompleteTask = async ({
       const response = await fetch(rejectAcceptURL, {
         method: 'POST',
         headers: {
+          Authorization: 'Bearer ' + idToken,
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },

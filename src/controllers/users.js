@@ -98,16 +98,22 @@ export const getUserType = async (
 
 export const googleLoginTask = async (
   setStateVars = (firebaseId, loginType) => { },
-  callback = (name, email, image, loginType) => { },
+  callback = (name, email, image, loginType, idToken) => { },
 ) => {
   try {
     await GoogleSignin.hasPlayServices();
-    var result = await GoogleSignin.signIn();
+    GoogleSignin.configure({
+      webClientId: Config.clientId
+    });
     const {
       user: { name, email, photo, id },
-    } = result;
+      idToken
+    } = await GoogleSignin.signIn();
+    // linking google account to firebase 
+    const googleCredential = firebaseAuth.GoogleAuthProvider.credential(idToken);
+    await firebaseAuth().signInWithCredential(googleCredential);
     setStateVars(id, 'google');
-    callback(name, email, photo, 'google');
+    callback(name, email, photo, 'google', idToken);
   } catch (error) {
     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
       SimpleToast.show('You cancelled sign in.');
@@ -123,11 +129,11 @@ export const googleLoginTask = async (
   }
 };
 
-export const responseFbCallback = (
+export const responseFbCallback = async (
   error,
   result,
   setStateVars,
-  callback = (name, email, imageURL, loginType) => { },
+  callback = (name, email, imageURL, loginType, idToken) => { },
 ) => {
   if (!error) {
     const {
@@ -139,7 +145,8 @@ export const responseFbCallback = (
       },
     } = result;
     setStateVars(id, 'facebook');
-    callback(name, email, url, 'facebook');
+    const idToken = await rNES.getItem('idToken');
+    callback(name, email, url, 'facebook', idToken);
   }
 };
 
@@ -148,17 +155,16 @@ export const autoLogin = async (
   setLoading,
   inhouseLogin,
   goTo,
+  logout
 ) => {
   if (userId !== null) {
     setLoading();
-    const storedInfo = await rNES
-      .getItem('auth');
-
+    const storedInfo = await rNES.getItem('auth');
     if (storedInfo) {
       const info = JSON.parse(storedInfo);
       const { email, password } = info;
-      const currentEmail = firebaseAuth().currentUser.email;
-      const currentFirebaseId = firebaseAuth().currentUser.uid;
+      const currentEmail = firebaseAuth().currentUser?.email;
+      const currentFirebaseId = firebaseAuth().currentUser?.uid;
       const firebaseId = await rNES.getItem('firebaseId');
       if (currentEmail === email && firebaseId === currentFirebaseId)
         return inhouseLogin(userId, userType, fcmToken);
@@ -168,8 +174,9 @@ export const autoLogin = async (
           inhouseLogin(userId, userType, fcmToken);
         })
         .catch(error => {
+          if (error.message.includes('no user record')) logout();
           SimpleToast.show(
-            'Something went wrong, try closing and reopening app',
+            'Something went wrong, try closing and reopening app.',
           );
         });
     } else inhouseLogin(userId, userType, fcmToken);
@@ -188,10 +195,10 @@ export const synchroniseOnlineStatus = async (id, savedStatus) => {
       usersRef
         .set({ status })
         .then(() => {
-          console.log('status set');
+          SimpleToast.show('Status set.', SimpleToast.SHORT);
         })
         .catch(e => {
-          console.log(e.message);
+          SimpleToast.show('Could not set status.', SimpleToast.SHORT);
         });
     }
   });
@@ -212,14 +219,13 @@ export const inhouseLogin = async ({
   const provider = userType === 'Provider';
   const fetchProfileUrl = provider ? PRO_GET_PROFILE : USER_GET_PROFILE;
   try {
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     const response = await fetch(fetchProfileUrl + userId + '?fcm_id=' + fcmToken, {
       headers: {
         Authorization: 'Bearer ' + idToken
       }
     });
     const responseJson = await response.json();
-    console.log('auth info', { responseJson });
     let onlineStatus;
     if (responseJson && responseJson.result) {
       const id = responseJson.data.id;
@@ -281,24 +287,25 @@ export const inhouseLogin = async ({
 
 export const facebookLoginTask = async (updateAuthToken, responseCallback) => {
   LoginManager.logInWithPermissions(['public_profile', 'email']).then(
-    result => {
+    async result => {
       if (result.isCancelled) {
-        console.log('Login cancelled');
+        SimpleToast.show('You canceled login');
       } else {
-        AccessToken.getCurrentAccessToken()
-          .then(data => {
-            updateAuthToken(data.accessToken);
-            const infoRequest = new GraphRequest(
-              '/me?fields=email,name,picture',
-              null,
-              responseCallback,
-            );
-            // Start the graph request.
-            new GraphRequestManager().addRequest(infoRequest).start();
-          })
-          .catch(e => {
-            SimpleToast.show('Something went wrong, try again later');
-          });
+        const data = await AccessToken.getCurrentAccessToken();
+        if (!data) return SimpleToast.show('Something went wrong, try again later');
+        updateAuthToken(data.accessToken);
+        const infoRequest = new GraphRequest(
+          '/me?fields=email,name,picture',
+          null,
+          responseCallback,
+        );
+        // linking facebook account to firebase 
+        const facebookCredential = firebaseAuth.FacebookAuthProvider.credential(data.accessToken);
+        const authResponse = await firebaseAuth().signInWithCredential(facebookCredential);
+        const idToken = await authResponse.user.getIdToken();
+        await rNES.setItem('idToken', idToken);
+        // Start the graph request.
+        new GraphRequestManager().addRequest(infoRequest).start();
       }
     },
     error => {
@@ -313,6 +320,7 @@ export const fbGmailLoginTask = async ({
   image,
   userType,
   firebaseId,
+  idToken,
   accountType,
   loginType,
   updateAppUserDetails,
@@ -350,7 +358,7 @@ export const fbGmailLoginTask = async ({
         body: JSON.stringify({ data: userData })
       });
       const responseJson = await response.json();
-      if (responseJson.status === 200 && responseJson.data.createdDate) {
+      if (responseJson.result && responseJson.data.createdDate) {
         const id = responseJson.data.id;
         const onlineStatus = await synchroniseOnlineStatus(
           id,
@@ -361,6 +369,7 @@ export const fbGmailLoginTask = async ({
           const resp = await fetch(fetchProfileUrl + id + '?fcm_id=' + fcmToken, {
             method: 'GET',
             headers: {
+              Authorization: 'Bearer ' + idToken,
               Accept: 'application/json',
               'Content-Type': 'application/json',
             },
@@ -368,7 +377,6 @@ export const fbGmailLoginTask = async ({
           const response = await resp.json();
           toggleLoading();
           const imageAvailable = await imgExists(responseJson.data.image);
-          const idToken = await firebaseAuth().currentUser.getIdToken(true);
           if (response && response.result) {
             const data = provider
               ? {
@@ -514,7 +522,9 @@ export const authenticateTask = async ({
         if (user && typeof user === 'object') {
           const {
             _user: { uid },
+            getIdToken
           } = user;
+          const idToken = await getIdToken();
           const data = {
             email,
             password,
@@ -525,6 +535,7 @@ export const authenticateTask = async ({
             const response = await fetch(authURL, {
               method: 'POST',
               headers: {
+                Authorization: 'Bearer ' + idToken,
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
               },
@@ -539,7 +550,6 @@ export const authenticateTask = async ({
               toggleLoading();
               const id = responseJson.data.id;
               const imageAvailable = await imgExists(responseJson.data.image);
-              const idToken = await firebaseAuth().currentUser.getIdToken(true);
               const data = provider
                 ? {
                   providerId: responseJson.data.id,
@@ -679,6 +689,7 @@ export const updateProfileImageTask = async ({
   toggleIsLoading(true);
   const { fileName, path } = imageObject;
   const userDataRef = storageRef.child(`/${firebaseId}/${fileName}`);
+  const idToken = await rNES.getItem('idToken');
   userDataRef
     .putFile(path)
     .then(uploadRes => {
@@ -688,6 +699,7 @@ export const updateProfileImageTask = async ({
           const response = await fetch(updateURL, {
             method: 'PUT',
             headers: {
+              Authorization: 'Bearer ' + idToken,
               Accept: 'application/json',
               'Content-Type': 'application/json'
             },
@@ -727,9 +739,11 @@ export const updateProfileInfo = async ({
   toggleIsLoading,
 }) => {
   try {
+    const idToken = await rNES.getItem('idToken');
     const resp = await fetch(updateURL + userId, {
       method: 'POST',
       headers: {
+        Authorization: 'Bearer ' + idToken,
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
@@ -768,6 +782,7 @@ export const phoneLoginTask = async ({
   toggleIsLoading(true);
   const fcmToken = await messaging().getToken();
   const Home = userType === 'Provider' ? 'ProHome' : 'Home';
+  const idToken = await firebaseAuth().currentUser.getIdToken();
   if (fcmToken) {
     try {
       const { mobile, countryCode } = validationInfo;
@@ -782,6 +797,7 @@ export const phoneLoginTask = async ({
       const response = await fetch(registerURL, {
         method: 'POST',
         headers: {
+          Authorization: 'Bearer ' + idToken,
           Accept: 'application/json',
           'Content-Type': 'application/json'
         },
@@ -799,6 +815,7 @@ export const phoneLoginTask = async ({
           const resp = await fetch(getProfileURL + id + '?fcm_id=' + fcmToken, {
             method: 'GET',
             headers: {
+              Authorization: 'Bearer ' + idToken,
               Accept: 'application/json',
               'Content-Type': 'application/json',
             },
@@ -807,7 +824,6 @@ export const phoneLoginTask = async ({
           toggleIsLoading(false);
           if (response && response.result) {
             const imageAvailable = await imgExists(response.data.image);
-            const idToken = await firebaseAuth().currentUser.getIdToken(true);
             const data =
               userType === 'Provider'
                 ? {
@@ -1018,9 +1034,11 @@ export const getAllProviders = async ({
     lang: userDetails.lang,
   };
   try {
+    const idToken = await rNES.getItem('idToken');
     const response = await fetch(GET_ALL_PROVIDER_URL + serviceId, {
       method: 'POST',
       headers: {
+        Authorization: 'Bearer ' + idToken,
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
@@ -1080,7 +1098,7 @@ export const calculateDistance = async ({
           setDistInfo(distInfo);
         })
         .catch(e => {
-          console.log('dist cal error ', e.message);
+          SimpleToast.show('Could not calculate distance');
         });
     });
     onSuccess(tempDatasource);
@@ -1095,9 +1113,11 @@ export const fetchProfile = async ({
   userGetProfileURL,
 }) => {
   try {
+    const idToken = await rNES.getItem('idToken');
     const response = await fetch(userGetProfileURL + userId, {
       method: 'GET',
       headers: {
+        Authorization: 'Bearer ' + idToken,
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
@@ -1151,11 +1171,16 @@ export const fetchProfile = async ({
 export const getRating = async ({ id, ratingsURL }) => {
   let avg = 0;
   try {
-    const response = await fetch(ratingsURL + id);
+    const idToken = await rNES.getItem('idToken');
+    const response = await fetch(ratingsURL + id, {
+      headers: {
+        Authorization: 'Bearer ' + idToken
+      }
+    });
     const res = await response.json();
     if (res.data.rating > 0) avg = res.data.rating;
   } catch (e) {
-    console.log(e);
+    SimpleToast.show('Could not retrieve rating');
   }
   return avg;
 };

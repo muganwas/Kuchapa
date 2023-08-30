@@ -1,6 +1,7 @@
 import { imageExists } from '../misc/helpers';
 import { cloneDeep } from 'lodash';
 import SimpleToast from 'react-native-simple-toast';
+import rNES from 'react-native-encrypted-storage';
 import Config from '../components/Config';
 
 const BOOKING_REQUEST = Config.baseURL + 'jobrequest/addjobrequest';
@@ -16,7 +17,12 @@ export const getAllBookings = async ({
   try {
     let bookingCompleteData = [];
     let bookingRejectData = [];
-    const response = await fetch(bookingHistoryURL + userId + '/bookings');
+    const idToken = await rNES.getItem('idToken');
+    const response = await fetch(bookingHistoryURL + userId + '/bookings', {
+      headers: {
+        Authorization: 'Bearer ' + idToken
+      }
+    });
     const responseJson = await response.json();
     if (responseJson.result && responseJson.data) {
       let newData = cloneDeep(responseJson.data);
@@ -81,9 +87,11 @@ export const reviewTask = async ({
     },
   };
   try {
+    const idToken = rNES.getItem('idToken');
     const resp = await fetch(reviewURL, {
       method: 'POST',
       headers: {
+        Authorization: 'Bearer ' + idToken,
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
@@ -160,9 +168,11 @@ export const requestForBooking = async ({
       );
     }
     try {
+      const idToken = await rNES.getItem('idToken');
       const response = await fetch(BOOKING_REQUEST, {
         method: 'POST',
         headers: {
+          Authorization: 'Bearer ' + idToken,
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },

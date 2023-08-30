@@ -9,6 +9,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { cloneDeep } from 'lodash';
 import SimpleToast from 'react-native-simple-toast';
 import moment from 'moment';
+import rNES from 'react-native-encrypted-storage';
 import Config from '../components/Config';
 
 const phoneUtil = PhoneNumberUtil.getInstance();
@@ -307,8 +308,13 @@ export const getDirections = async ({ startLoc, destinationLoc, onSuccess }) => 
 };
 
 export const fetchEmployeeMessagesFunc = async (receiverId, dispatch, dbMessagesFetched, callBack) => {
+  const idToken = await rNES.getItem('idToken');
   const res = await fetch(
-    FETCH_MESSAGES + '?sender=' + receiverId + '&userType=employee',
+    FETCH_MESSAGES + '?sender=' + receiverId + '&userType=employee', {
+    headers: {
+      Authorization: 'Bearer ' + idToken
+    }
+  }
   );
   const resJson = await res.json();
   const { result, data, message } = resJson;
@@ -345,8 +351,13 @@ export const fetchEmployeeMessagesFunc = async (receiverId, dispatch, dbMessages
 }
 
 export const fetchMessagesFunc = async (senderId, dispatch, dbMessagesFetched, callBack) => {
+  const idToken = await rNES.getItem('idToken');
   const res = await fetch(
-    FETCH_MESSAGES + '?sender=' + senderId + '&userType=client',
+    FETCH_MESSAGES + '?sender=' + senderId + '&userType=client', {
+    headers: {
+      Authorization: 'Bearer ' + idToken
+    }
+  }
   );
   const resJosn = await res.json();
   const { data, result, message } = resJosn;
@@ -383,9 +394,11 @@ export const fetchMessagesFunc = async (senderId, dispatch, dbMessagesFetched, c
 }
 
 export const fetchUserProfileFunc = async (userId, fcmToken, updateUserDetails, dispatch) => {
+  const idToken = await rNES.getItem('idToken');
   const response = await fetch(USER_GET_PROFILE + userId + '?fcm_id=' + fcmToken, {
     method: 'GET',
     headers: {
+      Authorization: 'Bearer ' + idToken,
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
@@ -428,9 +441,11 @@ export const fetchUserProfileFunc = async (userId, fcmToken, updateUserDetails, 
 };
 
 export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderDetails, dispatch) => {
+  const idToken = await rNES.getItem('idToken');
   const response = await fetch(PRO_GET_PROFILE + userId + '?fcm_id=' + fcmToken, {
     method: 'GET',
     headers: {
+      Authorization: 'Bearer ' + idToken,
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
@@ -479,9 +494,11 @@ export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderD
 
 export const getPendingJobRequestProviderFunc = async (providerId, navigation, navTo, fetchedJobProviderInfo, dispatch) => {
   const newJobRequestsProviders = [];
+  const idToken = await rNES.getItem('idToken');
   const response = await fetch(PENDING_JOB_PROVIDER + providerId + '/pending', {
     method: 'GET',
     headers: {
+      Authorization: 'Bearer ' + idToken,
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
@@ -525,7 +542,12 @@ export const getPendingJobRequestProviderFunc = async (providerId, navigation, n
 };
 
 export const getAllWorkRequestProFunc = async (providerId, fetchedDataWorkSource, fetchedAllJobRequestsPro, dispatch) => {
-  const response = await fetch(BOOKING_HISTORY + providerId + '/Cancelled');
+  const idToken = await rNES.getItem('idToken');
+  const response = await fetch(BOOKING_HISTORY + providerId + '/Cancelled', {
+    headers: {
+      Authorization: 'Bearer ' + idToken
+    }
+  });
   const responseJson = await response.json();
   let newAllProvidersDetails = responseJson.data
     ? cloneDeep(responseJson.data)
@@ -548,7 +570,12 @@ export const getAllWorkRequestProFunc = async (providerId, fetchedDataWorkSource
 };
 
 export const getAllWorkRequestClientFunc = async (clientId, fetchedDataWorkSource, fetchedAllJobRequestsClient, dispatch) => {
-  const response = await fetch(CUSTOMER_BOOKING_HISTORY + clientId + '/null');
+  const idToken = await rNES.getItem('idToken');
+  const response = await fetch(CUSTOMER_BOOKING_HISTORY + clientId + '/null', {
+    headers: {
+      Authorization: 'Bearer ' + idToken
+    }
+  });
   const responseJson = await response.json();
   let newAllClientDetails = responseJson.data
     ? cloneDeep(responseJson.data)
@@ -574,9 +601,11 @@ export const getAllWorkRequestClientFunc = async (clientId, fetchedDataWorkSourc
 };
 
 export const getPendingJobRequestFunc = async (userId, navigation, navTo, fetchedJobCustomerInfo, dispatch) => {
+  const idToken = await rNES.getItem('idTokne');
   const response = await fetch(PENDING_JOB_CUSTOMER + userId + '/pending', {
     method: 'GET',
     headers: {
+      Authorization: 'Bearer ' + idToken,
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },

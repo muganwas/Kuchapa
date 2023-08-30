@@ -1,6 +1,8 @@
 import SimpleToast from 'react-native-simple-toast';
 import { cloneDeep } from 'lodash';
+import rNES from 'react-native-encrypted-storage';
 import { imageExists } from '../misc/helpers';
+
 
 export const getAllNotifications = async ({
   userId,
@@ -12,7 +14,12 @@ export const getAllNotifications = async ({
 }) => {
   toggleIsLoading(true);
   try {
-    const response = await fetch(notificationsURL + userId);
+    const idToken = await rNES.getItem('idToken');
+    const response = await fetch(notificationsURL + userId, {
+      headers: {
+        Authorization: 'Bearer ' + idToken
+      }
+    });
     const responseJson = await response.json();
     if (responseJson.result) {
       let dataSource = cloneDeep(responseJson.data);
@@ -43,9 +50,11 @@ export const deleteNotification = async ({
 }) => {
   let altDataSource = cloneDeep(dataSource);
   try {
+    const idToken = await rNES.getItem('idToken');
     const response = await fetch(deleteNotificationURL + userId, {
       method: 'POST',
       headers: {
+        Authorization: 'Bearer ' + idToken,
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
@@ -61,7 +70,6 @@ export const deleteNotification = async ({
       onSuccess(altDataSource);
     }
   } catch (e) {
-    console.log('notification del err', e);
     SimpleToast.show(
       "Notification couldn't be deleted, try again later",
       SimpleToast.SHORT,
@@ -77,9 +85,11 @@ export const readNotification = async ({
 }) => {
   let altDataSource = cloneDeep(dataSource);
   try {
+    const idToken = await rNES.getItem('idToken');
     const response = await fetch(readNotificationURL + userId, {
       method: 'POST',
       headers: {
+        Authorization: 'Bearer ' + idToken,
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },

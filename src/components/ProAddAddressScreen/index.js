@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {
   View,
   TouchableOpacity,
-  Image,
   Text,
   StyleSheet,
   Dimensions,
@@ -13,6 +12,7 @@ import {
   Modal,
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
+import rNES from 'react-native-encrypted-storage';
 import Toast from 'react-native-simple-toast';
 import { connect } from 'react-redux';
 import { updateProviderDetails } from '../../Redux/Actions/userActions';
@@ -24,7 +24,6 @@ import {
   themeRed,
   white,
   black,
-  colorGray,
 } from '../../Constants/colors';
 
 const screenWidth = Dimensions.get('window').width;
@@ -104,8 +103,12 @@ class ProAddAddressScreen extends Component {
   };
 
   getCurrentLocation = async () => {
+    const {
+      userInfo: { providerDetails },
+      updateProviderDetails,
+    } = this.props;
+    const idToken = await rNES.getItem('idToken');
     if (Platform.OS == 'ios') {
-      const { updateProviderDetails } = this.props;
       await Geolocation.requestAuthorization();
       Geolocation.getCurrentPosition(
         async position => {
@@ -140,6 +143,7 @@ class ProAddAddressScreen extends Component {
               const resp = await fetch(USER_INFO_UPDATE + providerDetails.providerId, {
                 method: 'POST',
                 headers: {
+                  Authorization: 'Bearer ' + idToken,
                   Accept: 'application/json',
                   'Content-Type': 'application/json',
                 },
@@ -215,10 +219,6 @@ class ProAddAddressScreen extends Component {
                 address: responseJson.results[0].formatted_address,
                 isLoading: false,
               });
-              const {
-                userInfo: { providerDetails },
-                updateProviderDetails,
-              } = this.props;
               const userData = {
                 address: responseJson.results[0].formatted_address,
                 lat: this.state.latitude,
@@ -228,6 +228,7 @@ class ProAddAddressScreen extends Component {
                 const resp = await fetch(USER_INFO_UPDATE + providerDetails.providerId, {
                   method: 'POST',
                   headers: {
+                    Authorization: 'Bearer ' + idToken,
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                   },
@@ -355,10 +356,12 @@ class ProAddAddressScreen extends Component {
       lat: latitude,
       lang: longitude,
     };
+    const idToken = await rNES.getItem('idToken');
     try {
       const resp = await fetch(USER_INFO_UPDATE + providerDetails.providerId, {
         method: 'POST',
         headers: {
+          Authorization: 'Bearer ' + idToken,
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },

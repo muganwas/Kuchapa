@@ -34,7 +34,7 @@ import {
 import { black, white, themeRed } from '../../Constants/colors';
 
 const screenWidth = Dimensions.get('window').width;
-const REGISTER_URL = Config.baseURL + 'users/register/create';
+const REGISTER_URL = Config.baseURL + 'users/register';
 
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
 
