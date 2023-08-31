@@ -12,7 +12,7 @@ import {
   Modal,
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import rNES from 'react-native-encrypted-storage';
+import firebaseAuth from '@react-native-firebase/auth';
 import Toast from 'react-native-simple-toast';
 import { connect } from 'react-redux';
 import { updateProviderDetails } from '../../Redux/Actions/userActions';
@@ -107,7 +107,7 @@ class ProAddAddressScreen extends Component {
       userInfo: { providerDetails },
       updateProviderDetails,
     } = this.props;
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     if (Platform.OS == 'ios') {
       await Geolocation.requestAuthorization();
       Geolocation.getCurrentPosition(
@@ -356,7 +356,7 @@ class ProAddAddressScreen extends Component {
       lat: latitude,
       lang: longitude,
     };
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     try {
       const resp = await fetch(USER_INFO_UPDATE + providerDetails.providerId, {
         method: 'POST',

@@ -2,8 +2,8 @@ import { cloneDeep } from 'lodash';
 import moment from 'moment';
 import SimpleToast from 'react-native-simple-toast';
 import database from '@react-native-firebase/database';
+import firebaseAuth from '@react-native-firebase/auth';
 import FilePickerManager from 'react-native-file-picker';
-import rNES from 'react-native-encrypted-storage';
 import Config from '../components/Config';
 import { imageExists } from '../misc/helpers';
 import { uploadAttachment } from './storage';
@@ -78,7 +78,7 @@ export const acceptChatRequest = async (
     },
   };
   try {
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     const response = await fetch(REJECT_ACCEPT_REQUEST, {
       method: 'POST',
       headers: {
@@ -168,7 +168,7 @@ export const rejectChatRequest = async (
     },
   };
   try {
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     const response = await fetch(REJECT_ACCEPT_REQUEST, {
       method: 'POST',
       headers: {
@@ -205,7 +205,7 @@ export const updateAvailabilityInMongoDB = async ({
 }) => {
   try {
     let newProDits = cloneDeep(providerDetails);
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     const resp = await fetch(PRO_INFO_UPDATE + providerDetails.providerId, {
       method: 'POST',
       headers: {

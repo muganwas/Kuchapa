@@ -13,9 +13,9 @@ import {
   Modal,
 } from 'react-native';
 import { connect } from 'react-redux';
+import firebaseAuth from '@react-native-firebase/auth';
 import Geolocation from 'react-native-geolocation-service';
 import Toast from 'react-native-simple-toast';
-import rNES from 'react-native-encrypted-storage';
 import WaitingDialog from '../WaitingDialog';
 import { updateUserDetails } from '../../Redux/Actions/userActions';
 import {
@@ -108,7 +108,7 @@ class AddAddressScreen extends Component {
       updateUserDetails,
       userInfo: { userDetails },
     } = this.props;
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     if (Platform.OS === 'ios') {
       Geolocation.requestAuthorization();
       Geolocation.getCurrentPosition(
@@ -359,7 +359,7 @@ class AddAddressScreen extends Component {
       userInfo: { userDetails },
       updateUserDetails,
     } = this.props;
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     try {
       const resp = await fetch(USER_INFO_UPDATE + userDetails.userId, {
         method: 'POST',

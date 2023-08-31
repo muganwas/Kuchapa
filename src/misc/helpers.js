@@ -2,6 +2,7 @@ import { PermissionsAndroid, Platform } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import Polyline from '@mapbox/polyline';
 import database from '@react-native-firebase/database';
+import firebaseAuth from '@react-native-firebase/auth';
 import messaging from '@react-native-firebase/messaging';
 import { exitApp } from 'react-native-exit-app';
 import { PhoneNumberUtil } from 'google-libphonenumber';
@@ -308,7 +309,7 @@ export const getDirections = async ({ startLoc, destinationLoc, onSuccess }) => 
 };
 
 export const fetchEmployeeMessagesFunc = async (receiverId, dispatch, dbMessagesFetched, callBack) => {
-  const idToken = await rNES.getItem('idToken');
+  const idToken = await firebaseAuth().currentUser.getIdToken();
   const res = await fetch(
     FETCH_MESSAGES + '?sender=' + receiverId + '&userType=employee', {
     headers: {
@@ -351,7 +352,7 @@ export const fetchEmployeeMessagesFunc = async (receiverId, dispatch, dbMessages
 }
 
 export const fetchMessagesFunc = async (senderId, dispatch, dbMessagesFetched, callBack) => {
-  const idToken = await rNES.getItem('idToken');
+  const idToken = await firebaseAuth().currentUser.getIdToken();
   const res = await fetch(
     FETCH_MESSAGES + '?sender=' + senderId + '&userType=client', {
     headers: {
@@ -394,7 +395,7 @@ export const fetchMessagesFunc = async (senderId, dispatch, dbMessagesFetched, c
 }
 
 export const fetchUserProfileFunc = async (userId, fcmToken, updateUserDetails, dispatch) => {
-  const idToken = await rNES.getItem('idToken');
+  const idToken = await firebaseAuth().currentUser.getIdToken();
   const response = await fetch(USER_GET_PROFILE + userId + '?fcm_id=' + fcmToken, {
     method: 'GET',
     headers: {
@@ -494,7 +495,7 @@ export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderD
 
 export const getPendingJobRequestProviderFunc = async (providerId, navigation, navTo, fetchedJobProviderInfo, dispatch) => {
   const newJobRequestsProviders = [];
-  const idToken = await rNES.getItem('idToken');
+  const idToken = await firebaseAuth().currentUser.getIdToken();
   const response = await fetch(PENDING_JOB_PROVIDER + providerId + '/pending', {
     method: 'GET',
     headers: {
@@ -542,7 +543,7 @@ export const getPendingJobRequestProviderFunc = async (providerId, navigation, n
 };
 
 export const getAllWorkRequestProFunc = async (providerId, fetchedDataWorkSource, fetchedAllJobRequestsPro, dispatch) => {
-  const idToken = await rNES.getItem('idToken');
+  const idToken = await firebaseAuth().currentUser.getIdToken();
   const response = await fetch(BOOKING_HISTORY + providerId + '/Cancelled', {
     headers: {
       Authorization: 'Bearer ' + idToken
@@ -570,7 +571,7 @@ export const getAllWorkRequestProFunc = async (providerId, fetchedDataWorkSource
 };
 
 export const getAllWorkRequestClientFunc = async (clientId, fetchedDataWorkSource, fetchedAllJobRequestsClient, dispatch) => {
-  const idToken = await rNES.getItem('idToken');
+  const idToken = await firebaseAuth().currentUser.getIdToken();
   const response = await fetch(CUSTOMER_BOOKING_HISTORY + clientId + '/null', {
     headers: {
       Authorization: 'Bearer ' + idToken

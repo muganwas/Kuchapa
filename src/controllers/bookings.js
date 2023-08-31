@@ -1,7 +1,7 @@
 import { imageExists } from '../misc/helpers';
 import { cloneDeep } from 'lodash';
+import firebaseAuth from '@react-native-firebase/auth';
 import SimpleToast from 'react-native-simple-toast';
-import rNES from 'react-native-encrypted-storage';
 import Config from '../components/Config';
 
 const BOOKING_REQUEST = Config.baseURL + 'jobrequest/addjobrequest';
@@ -17,7 +17,7 @@ export const getAllBookings = async ({
   try {
     let bookingCompleteData = [];
     let bookingRejectData = [];
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     const response = await fetch(bookingHistoryURL + userId + '/bookings', {
       headers: {
         Authorization: 'Bearer ' + idToken
@@ -87,7 +87,7 @@ export const reviewTask = async ({
     },
   };
   try {
-    const idToken = rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     const resp = await fetch(reviewURL, {
       method: 'POST',
       headers: {
@@ -168,7 +168,7 @@ export const requestForBooking = async ({
       );
     }
     try {
-      const idToken = await rNES.getItem('idToken');
+      const idToken = await firebaseAuth().currentUser.getIdToken();
       const response = await fetch(BOOKING_REQUEST, {
         method: 'POST',
         headers: {

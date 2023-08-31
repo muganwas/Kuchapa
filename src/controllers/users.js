@@ -515,116 +515,111 @@ export const authenticateTask = async ({
   const provider = userType === 'Provider';
   const home = userType === 'Provider' ? 'ProHome' : 'Home';
   if (fcmToken) {
-    firebaseAuth()
-      .signInWithEmailAndPassword(email, password)
-      .then(async result => {
-        const { user } = result;
-        if (user && typeof user === 'object') {
-          const {
-            _user: { uid },
-            getIdToken
-          } = user;
-          const idToken = await getIdToken();
-          const data = {
-            email,
-            password,
-            loginType: 'Firebase',
-            fcm_id: fcmToken,
-          };
-          try {
-            const response = await fetch(authURL, {
-              method: 'POST',
-              headers: {
-                Authorization: 'Bearer ' + idToken,
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(data),
-            });
-            const responseJson = await response.json();
-            if (responseJson && responseJson.result) {
-              const onlineStatus = await synchroniseOnlineStatus(
-                responseJson.data.id,
-                responseJson.data.online,
-              );
-              toggleLoading();
-              const id = responseJson.data.id;
-              const imageAvailable = await imgExists(responseJson.data.image);
-              const data = provider
-                ? {
-                  providerId: responseJson.data.id,
-                  name: responseJson.data.username,
-                  email: responseJson.data.email,
-                  password: responseJson.data.password,
-                  image: responseJson.data.image,
-                  imageAvailable,
-                  surname: responseJson.data.surname,
-                  mobile: responseJson.data.mobile,
-                  services: responseJson.data.services,
-                  description: responseJson.data.description,
-                  address: responseJson.data.address,
-                  lat: responseJson.data.lat,
-                  lang: responseJson.data.lang,
-                  invoice: responseJson.data.invoice,
-                  online: onlineStatus,
-                  status: responseJson.data.status,
-                  fcmId: responseJson.data.fcm_id,
-                  accountType: responseJson.data.account_type,
-                  firebaseId: uid,
-                }
-                : {
-                  userId: responseJson.data.id,
-                  accountType: responseJson.data.acc_type,
-                  email: responseJson.data.email,
-                  password: responseJson.data.password,
-                  username: responseJson.data.username,
-                  image: responseJson.data.image,
-                  imageAvailable,
-                  mobile: responseJson.data.mobile,
-                  dob: responseJson.data.dob,
-                  online: onlineStatus,
-                  address: responseJson.data.address,
-                  lat: responseJson.data.lat,
-                  lang: responseJson.data.lang,
-                  fcmId: responseJson.data.fcm_id,
-                  firebaseId: uid,
-                };
-              updateAppUserDetails(data);
-              //Store data like sharedPreference
-              rNES.setItem('userId', id);
-              rNES.setItem('userType', userType);
-              const auth = {
-                email,
-                password,
+    try {
+      const result = await firebaseAuth().signInWithEmailAndPassword(email, password);
+      const { user } = result;
+      if (user && typeof user === 'object') {
+        const { uid } = user;
+        const idToken = await firebaseAuth().currentUser.getIdToken();
+        const data = {
+          email,
+          password,
+          loginType: 'Firebase',
+          fcm_id: fcmToken,
+        };
+        try {
+          const response = await fetch(authURL, {
+            method: 'POST',
+            headers: {
+              Authorization: 'Bearer ' + idToken,
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          });
+          const responseJson = await response.json();
+          if (responseJson && responseJson.result) {
+            const onlineStatus = await synchroniseOnlineStatus(
+              responseJson.data.id,
+              responseJson.data.online,
+            );
+            toggleLoading();
+            const id = responseJson.data.id;
+            const imageAvailable = await imgExists(responseJson.data.image);
+            const data = provider
+              ? {
+                providerId: responseJson.data.id,
+                name: responseJson.data.username,
+                email: responseJson.data.email,
+                password: responseJson.data.password,
+                image: responseJson.data.image,
+                imageAvailable,
+                surname: responseJson.data.surname,
+                mobile: responseJson.data.mobile,
+                services: responseJson.data.services,
+                description: responseJson.data.description,
+                address: responseJson.data.address,
+                lat: responseJson.data.lat,
+                lang: responseJson.data.lang,
+                invoice: responseJson.data.invoice,
+                online: onlineStatus,
+                status: responseJson.data.status,
+                fcmId: responseJson.data.fcm_id,
+                accountType: responseJson.data.account_type,
+                firebaseId: uid,
+              }
+              : {
+                userId: responseJson.data.id,
+                accountType: responseJson.data.acc_type,
+                email: responseJson.data.email,
+                password: responseJson.data.password,
+                username: responseJson.data.username,
+                image: responseJson.data.image,
+                imageAvailable,
+                mobile: responseJson.data.mobile,
+                dob: responseJson.data.dob,
+                online: onlineStatus,
+                address: responseJson.data.address,
+                lat: responseJson.data.lat,
+                lang: responseJson.data.lang,
+                fcmId: responseJson.data.fcm_id,
+                firebaseId: uid,
               };
-              rNES.setItem('idToken', idToken);
-              rNES.setItem('auth', JSON.stringify(auth));
-              rNES.setItem('firebaseId', uid);
-              fetchJobRequestHistory(id);
-              fetchAppUserJobRequests(props, id, home);
-            } else {
-              onError(responseJson.message);
-            }
-          } catch (e) {
-            if (e && e.message.includes('Network'))
-              onError('App could not connect to server.');
-            else
-              onError('Something went wrong, please try again.');
+            updateAppUserDetails(data);
+            //Store data like sharedPreference
+            rNES.setItem('userId', id);
+            rNES.setItem('userType', userType);
+            const auth = {
+              email,
+              password,
+            };
+            rNES.setItem('idToken', idToken);
+            rNES.setItem('auth', JSON.stringify(auth));
+            rNES.setItem('firebaseId', uid);
+            fetchJobRequestHistory(id);
+            fetchAppUserJobRequests(props, id, home);
+          } else {
+            onError(responseJson.message);
           }
-        } else {
-          onError('Something went wrong, please try again later.');
+        } catch (e) {
+          if (e && e.message.includes('Network'))
+            onError('App could not connect to server.');
+          else
+            onError('Something went wrong, please try again.');
         }
-      })
-      .catch(error => {
-        toggleLoading();
-        if (error.code === 'auth/user-not-found') {
-          onError("You've not registered yet, please register first");
-        } else if (error.code === 'auth/wrong-password') {
-          onError('You entered a wrong password!');
-        } else {
-          onError('Something went wrong, please try again later.');
-        }
-      });
+      } else {
+        onError('Something went wrong, please try again later.');
+      }
+    } catch (error) {
+      toggleLoading();
+      if (error.code === 'auth/user-not-found') {
+        onError("You've not registered yet, please register first");
+      } else if (error.code === 'auth/wrong-password') {
+        onError('You entered a wrong password!');
+      } else {
+        onError('Something went wrong, please try again later.');
+      }
+    };
   } else {
     onError(
       'Your device has no fcm token, check your internet connection and try again.',
@@ -689,7 +684,7 @@ export const updateProfileImageTask = async ({
   toggleIsLoading(true);
   const { fileName, path } = imageObject;
   const userDataRef = storageRef.child(`/${firebaseId}/${fileName}`);
-  const idToken = await rNES.getItem('idToken');
+  const idToken = await firebaseAuth().currentUser.getIdToken();
   userDataRef
     .putFile(path)
     .then(uploadRes => {
@@ -739,7 +734,7 @@ export const updateProfileInfo = async ({
   toggleIsLoading,
 }) => {
   try {
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     const resp = await fetch(updateURL + userId, {
       method: 'POST',
       headers: {
@@ -1034,7 +1029,7 @@ export const getAllProviders = async ({
     lang: userDetails.lang,
   };
   try {
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     const response = await fetch(GET_ALL_PROVIDER_URL + serviceId, {
       method: 'POST',
       headers: {
@@ -1171,7 +1166,7 @@ export const fetchProfile = async ({
 export const getRating = async ({ id, ratingsURL }) => {
   let avg = 0;
   try {
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     const response = await fetch(ratingsURL + id, {
       headers: {
         Authorization: 'Bearer ' + idToken

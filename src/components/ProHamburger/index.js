@@ -8,7 +8,6 @@ import {
   StyleSheet,
   Platform,
 } from 'react-native';
-import rNES from 'react-native-encrypted-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { cloneDeep } from 'lodash';
 import { DrawerActions } from '@react-navigation/native';
@@ -113,8 +112,6 @@ class ProHamburger extends React.Component {
       getPendingJobRequests,
     } = this.props;
     const receiverId = providerDetails.providerId;
-    const idToken = await rNES.getItem('idToken');
-    console.log('id toke', idToken);
     messaging().setBackgroundMessageHandler(message => {
       if (message && message.data) {
         const data = JSON.parse(message.data.data);

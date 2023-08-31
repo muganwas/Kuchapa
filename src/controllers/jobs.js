@@ -1,8 +1,8 @@
 import { cloneDeep } from 'lodash';
 import database from '@react-native-firebase/database';
+import firebaseAuth from '@react-native-firebase/auth';
 import Geolocation from 'react-native-geolocation-service';
 import SimpleToast from 'react-native-simple-toast';
-import rNES from 'react-native-encrypted-storage';
 
 import Config from '../components/Config';
 
@@ -41,7 +41,7 @@ export const requestClientForReview = async ({
       },
     };
     try {
-      const idToken = await rNES.getItem('idToken');
+      const idToken = await firebaseAuth().currentUser.getIdToken();
       const resp = await fetch(ASK_FOR_REVIEW, {
         method: 'POST',
         headers: {
@@ -82,7 +82,7 @@ export const jobCancelTask = async ({
   const dash = userType === 'Provider' ? 'ProDashboard' : 'Dashboard';
   try {
     let newJobRequests = cloneDeep(jobRequests);
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     const data =
       userType === 'Provider'
         ? {
@@ -209,7 +209,7 @@ export const acceptJobTask = async ({
     },
   };
   try {
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     const response = await fetch(REJECT_ACCEPT_REQUEST, {
       method: 'POST',
       headers: {
@@ -305,7 +305,7 @@ export const rejectJobTask = async ({
     },
   };
   try {
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     const response = await fetch(REJECT_ACCEPT_REQUEST, {
       method: 'POST',
       headers: {
@@ -353,7 +353,7 @@ export const jobCompleteTask = async ({
   const dash = userType === 'Provider' ? 'ProDashboard' : 'Dashboard';
   try {
     let newJobRequests = cloneDeep(jobRequests);
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     if (jobRequests[currRequestPos]) {
       const data =
         userType === 'Provider'

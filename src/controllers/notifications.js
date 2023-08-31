@@ -1,6 +1,6 @@
 import SimpleToast from 'react-native-simple-toast';
 import { cloneDeep } from 'lodash';
-import rNES from 'react-native-encrypted-storage';
+import firebaseAuth from '@react-native-firebase/auth';
 import { imageExists } from '../misc/helpers';
 
 
@@ -14,7 +14,7 @@ export const getAllNotifications = async ({
 }) => {
   toggleIsLoading(true);
   try {
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     const response = await fetch(notificationsURL + userId, {
       headers: {
         Authorization: 'Bearer ' + idToken
@@ -50,7 +50,7 @@ export const deleteNotification = async ({
 }) => {
   let altDataSource = cloneDeep(dataSource);
   try {
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     const response = await fetch(deleteNotificationURL + userId, {
       method: 'POST',
       headers: {
@@ -85,7 +85,7 @@ export const readNotification = async ({
 }) => {
   let altDataSource = cloneDeep(dataSource);
   try {
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     const response = await fetch(readNotificationURL + userId, {
       method: 'POST',
       headers: {
