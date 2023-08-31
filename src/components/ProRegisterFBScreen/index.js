@@ -149,7 +149,7 @@ class ProRegisterFBScreen extends Component {
         this.setState({
           isLoading: false,
         });
-        if (responseJson.status === 200 && responseJson.data.createdDate) {
+        if (responseJson.result && responseJson.data.createdDate) {
           const id = responseJson.data.id;
           var providerData = {
             providerId: responseJson.data.id,

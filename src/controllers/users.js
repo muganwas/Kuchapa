@@ -804,7 +804,7 @@ export const phoneLoginTask = async ({
         body: JSON.stringify({ data: userData })
       });
       const responseJson = await response.json();
-      if (responseJson.status === 200 && responseJson.data.createdDate) {
+      if (responseJson.result && responseJson.data.createdDate) {
         const id = responseJson.data.id;
         const onlineStatus = await synchroniseOnlineStatus(
           id,
@@ -984,7 +984,7 @@ export const registerTask = async ({
                 })
                 const responseJson = await response.json();
                 if (
-                  responseJson.status === 200 &&
+                  responseJson.result &&
                   responseJson.data.createdDate
                 ) {
                   onSuccess(
