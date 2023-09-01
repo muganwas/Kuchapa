@@ -517,6 +517,7 @@ class ProRegisterScreen extends Component {
                   onPress={() =>
                     this.props.navigation.navigate('ProServiceSelect', {
                       onGoBack: this.getDataFromServiceScreen,
+                      from: 'ProRegister'
                     })
                   }>
                   {this.state.serviceName}

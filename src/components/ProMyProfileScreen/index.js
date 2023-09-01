@@ -186,6 +186,9 @@ class ProMyProfileScreen extends Component {
   };
 
   getDataFromServiceScreen = data => {
+    this.props.navigation.navigate('ProMyProfile', {
+      from: 'service-select'
+    });
     var data = data.split('/');
     this.setState({
       serviceIds: data[0],
@@ -507,7 +510,7 @@ class ProMyProfileScreen extends Component {
                   onPress={() =>
                     this.props.navigation.navigate('ProServiceSelect', {
                       onGoBack: this.getDataFromServiceScreen,
-                      from: 'profile-screen',
+                      from: 'ProMyProfile',
                     })
                   }>
                   {this.state.services}
@@ -555,7 +558,7 @@ class ProMyProfileScreen extends Component {
                   onPress={() =>
                     this.props.navigation.navigate('SelectAddress', {
                       onGoBack: this.getDataFromAddAddressScreen,
-                      from: 'profile-screen',
+                      from: 'ProMyProfile',
                     })
                   }>
                   {this.state.address}
@@ -586,7 +589,7 @@ class ProMyProfileScreen extends Component {
                         ? styles.invoiceBorder
                         : styles.invoice
                     }
-                    onPress={() => this.setState({ invoice: '1' })}>
+                    onPress={() => this.setState({ invoice: 1 })}>
                     <Text
                       style={{
                         color: black,
@@ -603,7 +606,7 @@ class ProMyProfileScreen extends Component {
                         : styles.invoice,
                       { marginLeft: 20 },
                     ]}
-                    onPress={() => this.setState({ invoice: '0' })}>
+                    onPress={() => this.setState({ invoice: 0 })}>
                     <Text
                       style={{
                         color: black,

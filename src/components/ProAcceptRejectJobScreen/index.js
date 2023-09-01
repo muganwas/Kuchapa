@@ -30,6 +30,7 @@ import {
 import {
   startFetchingJobProvider,
   fetchProviderJobInfoError,
+  fetchedJobProviderInfo,
   setSelectedJobRequest,
   getAllWorkRequestPro,
   fetchedDataWorkSource,
@@ -712,6 +713,9 @@ const mapDispatchToProps = dispatch => {
     },
     fetchingPendingJobInfoError: error => {
       dispatch(fetchProviderJobInfoError(error));
+    },
+    fetchedPendingJobInfo: info => {
+      dispatch(fetchedJobProviderInfo(info));
     },
     dispatchSelectedJobRequest: job => {
       dispatch(setSelectedJobRequest(job));

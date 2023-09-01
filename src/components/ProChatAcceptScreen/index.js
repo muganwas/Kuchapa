@@ -24,6 +24,7 @@ import {
 import {
   startFetchingJobProvider,
   fetchProviderJobInfoError,
+  fetchedJobProviderInfo,
   setSelectedJobRequest,
   getPendingJobRequestProvider,
 } from '../../Redux/Actions/jobsActions';
@@ -90,7 +91,7 @@ class ProChatAcceptScreen extends Component {
 
   //get UserData
   componentDidMount() {
-    const { navigation } = this.props;
+    const { navigation, route } = this.props;
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
@@ -560,6 +561,9 @@ const mapDispatchToProps = dispatch => {
     },
     fetchingNotificationsError: error => {
       dispatch(notificationError(error));
+    },
+    fetchedPendingJobInfo: info => {
+      dispatch(fetchedJobProviderInfo(info));
     },
     fetchingPendingJobInfo: () => {
       dispatch(startFetchingJobProvider());

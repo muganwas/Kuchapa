@@ -90,17 +90,17 @@ export default class ProServiceSelectScreen extends Component {
     const { navigation, route } = this.props;
     const origin = route.params.from;
     const onGoBack = route.params.onGoBack;
-    console.log("selected services ", this.state.selectedServiceId)
     if (this.state.selectedServiceId.length > 0) {
-      route.params.onGoBack(
-        this.state.selectedServiceId + '/' + this.state.selectedServiceName,
-      );
-      if (origin === 'profile-screen') {
-        navigation.navigate('ProMyProfile', {
-          onGoBack,
-          from: 'service-select',
-        });
-      } else navigation.goBack();
+      if (origin === 'ProMyProfile') {
+        onGoBack(
+          this.state.selectedServiceId + '/' + this.state.selectedServiceName,
+        );
+      } else {
+        onGoBack && onGoBack(
+          this.state.selectedServiceId + '/' + this.state.selectedServiceName,
+        );
+        navigation.goBack();
+      }
     } else {
       SimpleToast.show('Select atleast one services', SimpleToast.SHORT);
     }
