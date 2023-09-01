@@ -135,15 +135,45 @@ class ProChatAcceptScreen extends Component {
     return true;
   };
 
-  acceptJob = async () =>
-    await acceptChatRequest(
-      {
-        pos: this.props?.jobsInfo?.jobRequestsProviders.length,
+  acceptJob = async () => {
+    try {
+      await acceptChatRequest(
+        {
+          pos: this.props?.jobsInfo?.jobRequestsProviders.length - 1,
+          fetchedPendingJobInfo: this.props.fetchedPendingJobInfo,
+          providerDetails: this.props.userInfo?.providerDetails,
+          jobRequests: this.props?.jobsInfo?.jobRequestsProviders,
+          setSelectedJobRequest: this.props.dispatchSelectedJobRequest,
+          toggleLoading: this.changeWaitingDialogVisibility,
+          onError: msg => {
+            SimpleToast.show(msg);
+            this.setState({
+              isErrorToast: true,
+              isLoading: false,
+            });
+          },
+          navigate: () => this.props.navigation.navigate('ProHome', { from: 'ProChatAccept' }),
+        },
+        true,
+      );
+    } catch (e) {
+      SimpleToast.show(e.message);
+      this.setState({
+        isErrorToast: true,
+        isLoading: false,
+      });
+    }
+  }
+
+  rejectJob = async () => {
+    try {
+      await rejectChatRequest({
+        pos: this.props?.jobsInfo?.jobRequestsProviders.length - 1,
         fetchedPendingJobInfo: this.props.fetchedPendingJobInfo,
-        providerDetails: this.props.jobsInfo.providerDetails,
-        jobRequests: this.props?.jobsInfo?.jobRequestsProviders,
-        setSelectedJobRequest: this.props.dispatchSelectedJobRequest,
+        providerDetails: this.props?.userInfo?.providerDetails,
+        jobRequestsProviders: this.props?.jobsInfo?.jobRequestsProviders,
         toggleLoading: this.changeWaitingDialogVisibility,
+        onSuccess: () => this.changeWaitingDialogVisibility(false),
         onError: msg => {
           SimpleToast.show(msg);
           this.setState({
@@ -151,54 +181,42 @@ class ProChatAcceptScreen extends Component {
             isLoading: false,
           });
         },
-        navigate: this.props.navigation.navigate,
-      },
-      true,
-    );
-
-  rejectJob = async () =>
-    await rejectChatRequest({
-      pos: this.props?.jobsInfo?.jobRequestsProviders.length,
-      fetchedPendingJobInfo: this.props.fetchedPendingJobInfo,
-      providerDetails: this.props?.userInfo?.providerDetails,
-      jobRequestsProviders: this.props?.jobsInfo?.jobRequestsProviders,
-      toggleLoading: this.changeWaitingDialogVisibility,
-      onSuccess: () => this.changeWaitingDialogVisibility(false),
-      onError: msg => {
-        SimpleToast.show(msg);
-        this.setState({
-          isErrorToast: true,
-          isLoading: false,
-        });
-      },
-      rejectionData: {
-        main_id: this.props.route.params.mainId,
-        chat_status: '0',
-        status: 'Rejected',
-        notification: {
-          fcm_id: this.state.userFcmId,
-          title: 'Chat Request Rejected',
-          type: 'JobRejection',
-          notification_by: 'Employee',
-          save_notification: true,
-          user_id: userId,
-          employee_id: this.props?.userInfo?.providerDetails?.providerId,
-          order_id: orderId,
-          body:
-            'Your request has been rejected by ' +
-            this.props?.userInfo?.providerDetails?.name +
-            ' Request Id : ' +
-            this.props.route.params.orderId,
-          data: {
-            ProviderId: this.props?.userInfo?.providerDetails?.providerId,
-            serviceName: this.state.serviceName,
-            orderId: this.props.route.params.orderId,
-            mainId: this.props.route.params.mainId,
+        rejectionData: {
+          main_id: this.props?.route?.params?.mainId,
+          chat_status: '0',
+          status: 'Rejected',
+          notification: {
+            fcm_id: this.state.userFcmId,
+            title: 'Chat Request Rejected',
+            type: 'JobRejection',
+            notification_by: 'Employee',
+            save_notification: true,
+            user_id: this.state.userId,
+            employee_id: this.props?.userInfo?.providerDetails?.providerId,
+            order_id: this.state.orderId,
+            body:
+              'Your request has been rejected by ' +
+              this.state.userName +
+              ' Request Id : ' +
+              this.state.orderId,
+            data: {
+              ProviderId: this.props?.userInfo?.providerDetails?.providerId,
+              serviceName: this.state.serviceName,
+              orderId: this.state.orderId,
+              mainId: this.state.mainId,
+            },
           },
         },
-      },
-      navigate: this.props.navigation.navigate,
-    });
+        navigate: () => this.props.navigation.navigate('ProHome', { from: 'ProChatAccept' }),
+      });
+    } catch (e) {
+      SimpleToast.show(e.message);
+      this.setState({
+        isErrorToast: true,
+        isLoading: false,
+      });
+    }
+  }
 
   getBackFromProAcceptRejectJob = () => {
     this.props.navigation.goBack();
@@ -373,26 +391,6 @@ class ProChatAcceptScreen extends Component {
                       }}>
                       {this.state.userAddress}
                     </Text>
-
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        marginTop: 10,
-                      }}>
-                      <Image
-                        style={{ width: 15, height: 15, tintColor: white }}
-                        source={require('../../icons/mobile.png')}
-                      />
-                      <Text
-                        style={{
-                          fontSize: 14,
-                          marginLeft: 10,
-                          color: white,
-                        }}>
-                        {this.state.userMobile}
-                      </Text>
-                    </View>
 
                     <View
                       style={{

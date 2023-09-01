@@ -25,59 +25,59 @@ export const acceptChatRequest = async (
   },
   redirect = true,
 ) => {
-  let newjobRequests = cloneDeep(jobRequests);
-  const {
-    id,
-    user_id,
-    fcm_id,
-    name,
-    service_name,
-    order_id,
-    image,
-    mobile,
-    dob,
-    address,
-    lat,
-    lang,
-    status,
-    delivery_address,
-    delivery_lat,
-    delivery_lang,
-  } = jobRequests[pos];
-
-  setSelectedJobRequest(jobRequests[pos]);
-  toggleLoading();
-  const data = {
-    main_id: id,
-    chat_status: '1',
-    status: 'Pending',
-    notification: {
-      fcm_id,
-      title: 'Chat Request Accepted',
-      type: 'ChatAcceptance',
-      notification_by: 'Employee',
-      save_notification: true,
-      user_id,
-      employee_id: providerDetails.providerId,
-      order_id,
-      body:
-        'Chat request has been accepted by ' +
-        providerDetails.name +
-        ' Request Id : ' +
-        order_id,
-      data: {
-        user_id,
-        providerId: providerDetails.id,
-        ProviderData: JSON.stringify(providerDetails),
-        serviceName: service_name,
-        orderId: order_id,
-        mainId: id,
-        chat_status: '1',
-        status: 'Pending',
-      },
-    },
-  };
   try {
+    let newjobRequests = cloneDeep(jobRequests);
+    const {
+      id,
+      user_id,
+      fcm_id,
+      name,
+      service_name,
+      order_id,
+      image,
+      mobile,
+      dob,
+      address,
+      lat,
+      lang,
+      status,
+      delivery_address,
+      delivery_lat,
+      delivery_lang,
+    } = jobRequests[pos];
+
+    setSelectedJobRequest(jobRequests[pos]);
+    toggleLoading();
+    const data = {
+      main_id: id,
+      chat_status: '1',
+      status: 'Pending',
+      notification: {
+        fcm_id,
+        title: 'Chat Request Accepted',
+        type: 'ChatAcceptance',
+        notification_by: 'Employee',
+        save_notification: true,
+        user_id,
+        employee_id: providerDetails.providerId,
+        order_id,
+        body:
+          'Chat request has been accepted by ' +
+          providerDetails.name +
+          ' Request Id : ' +
+          order_id,
+        data: {
+          user_id,
+          providerId: providerDetails.providerId,
+          ProviderData: JSON.stringify(providerDetails),
+          serviceName: service_name,
+          orderId: order_id,
+          mainId: id,
+          chat_status: '1',
+          status: 'Pending',
+        },
+      },
+    };
     const idToken = await firebaseAuth().currentUser.getIdToken();
     const response = await fetch(REJECT_ACCEPT_REQUEST, {
       method: 'POST',
@@ -88,8 +88,8 @@ export const acceptChatRequest = async (
       },
       body: JSON.stringify(data),
     });
-    const responseJson = response.json();
-    if (responseJson.result) {
+    const responseJson = await response.json();
+    if (responseJson.result && responseJson.data) {
       toggleLoading();
       let jobData = {
         id: responseJson.data.id,
@@ -115,7 +115,7 @@ export const acceptChatRequest = async (
       fetchedPendingJobInfo(newjobRequests);
       if (redirect) navigate();
     } else {
-      onError('Something went wrong');
+      onError('Something went wrong, no data returned.');
     }
   } catch (e) {
     onError(e.message);
@@ -136,38 +136,39 @@ export const rejectChatRequest = async (
   },
   redirect = true,
 ) => {
-  toggleLoading(true);
-  let newjobRequestsProviders = cloneDeep(jobRequestsProviders);
-  const { id, user_id, fcm_id, service_name, order_id } = jobRequestsProviders[
-    pos
-  ];
-  const data = rejectionData || {
-    main_id: id,
-    chat_status: '0',
-    status: 'Rejected',
-    notification: {
-      fcm_id,
-      title: 'Chat Request Rejected',
-      type: 'JobRejection',
-      notification_by: 'Employee',
-      save_notification: true,
-      user_id,
-      employee_id: providerDetails.providerId,
-      order_id,
-      body:
-        'Chat request has been accepted by ' +
-        providerDetails.name +
-        ' Request Id : ' +
-        order_id,
-      data: {
-        providerId: providerDetails.id,
-        serviceName: service_name,
-        orderId: order_id,
-        mainId: id,
-      },
-    },
-  };
+  console.log('rejecting ...')
   try {
+    toggleLoading(true);
+    let newjobRequestsProviders = cloneDeep(jobRequestsProviders);
+    const { id, user_id, fcm_id, service_name, order_id } = jobRequestsProviders[
+      pos
+    ];
+    const data = rejectionData || {
+      main_id: id,
+      chat_status: '0',
+      status: 'Rejected',
+      notification: {
+        fcm_id,
+        title: 'Chat Request Rejected',
+        type: 'JobRejection',
+        notification_by: 'Employee',
+        save_notification: true,
+        user_id,
+        employee_id: providerDetails.providerId,
+        order_id,
+        body:
+          'Chat request has been accepted by ' +
+          providerDetails.name +
+          ' Request Id : ' +
+          order_id,
+        data: {
+          providerId: providerDetails.id,
+          serviceName: service_name,
+          orderId: order_id,
+          mainId: id,
+        },
+      },
+    };
     const idToken = await firebaseAuth().currentUser.getIdToken();
     const response = await fetch(REJECT_ACCEPT_REQUEST, {
       method: 'POST',

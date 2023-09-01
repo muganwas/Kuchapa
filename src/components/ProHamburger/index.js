@@ -146,6 +146,13 @@ class ProHamburger extends React.Component {
         if (orderId === obj.order_id) pos = key;
       });
       let newJobRequestsProviders = cloneDeep(jobRequestsProviders);
+      if (pos !== undefined) {
+        newJobRequestsProviders.splice(pos, 1);
+        dispatchFetchedProJobRequests(newJobRequestsProviders);
+        navigation.navigate('ProHome');
+      } else getPendingJobRequests(this.props, receiverId);
+      getAllWorkRequestPro(receiverId);
+      this.getAllBookingsProvider();
       title !== 'Message Recieved' && this.getAllNotificationsProvider();
       if (title.toLowerCase() === 'booking request') {
         navigation.navigate('ProChatAccept', {
@@ -166,13 +173,7 @@ class ProHamburger extends React.Component {
             ? 'Job was cancelled by client'
             : 'Job was completed by client',
         );
-        if (pos !== undefined) {
-          newJobRequestsProviders.splice(pos, 1);
-          dispatchFetchedProJobRequests(newJobRequestsProviders);
-          navigation.navigate('ProHome');
-        } else getPendingJobRequests(this.props, receiverId, 'ProDashboard');
-        getAllWorkRequestPro(receiverId);
-        this.getAllBookingsProvider();
+
       }
     });
     await getAllWorkRequestPro(receiverId);

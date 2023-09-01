@@ -494,6 +494,7 @@ export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderD
 };
 
 export const getPendingJobRequestProviderFunc = async (providerId, navigation, navTo, fetchedJobProviderInfo, dispatch) => {
+  console.log('accptiong go to', navTo)
   const newJobRequestsProviders = [];
   const idToken = await firebaseAuth().currentUser.getIdToken();
   const response = await fetch(PENDING_JOB_PROVIDER + providerId + '/pending', {

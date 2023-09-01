@@ -1108,7 +1108,7 @@ export const fetchProfile = async ({
   userGetProfileURL,
 }) => {
   try {
-    const idToken = await rNES.getItem('idToken');
+    const idToken = await firebaseAuth().currentUser.getIdToken();
     const response = await fetch(userGetProfileURL + userId, {
       method: 'GET',
       headers: {
