@@ -380,7 +380,7 @@ class ProRegisterScreen extends Component {
 
               <View
                 style={{
-                  width: screenWidth - 50,
+                  width: screenWidth,
                   height: 50,
                   justifyContent: 'center',
                   marginBottom: 15,
@@ -688,7 +688,7 @@ const styles = StyleSheet.create({
   },
   buttonGreen: {
     flex: 1,
-    height: 40,
+    height: 50,
     paddingTop: 10,
     backgroundColor: white,
     paddingBottom: 10,
@@ -704,7 +704,7 @@ const styles = StyleSheet.create({
   },
   buttonRed: {
     flex: 1,
-    height: 40,
+    height: 50,
     paddingTop: 10,
     backgroundColor: themeRed,
     paddingBottom: 10,
@@ -720,7 +720,7 @@ const styles = StyleSheet.create({
   },
   buttonPrimaryDark: {
     flex: 1,
-    height: 40,
+    height: 50,
     paddingTop: 10,
     backgroundColor: themeRed,
     paddingBottom: 10,
@@ -737,7 +737,7 @@ const styles = StyleSheet.create({
   textInputView: {
     flexDirection: 'row',
     width: screenWidth - 40,
-    height: 45,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
@@ -811,7 +811,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: 175,
-    height: 40,
+    height: 50,
     backgroundColor: themeRed,
     shadowColor: black,
     shadowOffset: { width: 0, height: 3 },

@@ -372,10 +372,9 @@ class MyProfileScreen extends Component {
 
               <View
                 style={{
-                  width: screenWidth - 50,
+                  width: screenWidth,
                   height: 50,
                   justifyContent: 'center',
-                  borderRadius: 5,
                   marginBottom: 15,
                   backgroundColor: themeRed,
                   alignItems: 'center',

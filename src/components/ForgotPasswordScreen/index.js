@@ -17,7 +17,7 @@ import WaitingDialog from '../WaitingDialog';
 import DialogComponent from '../DialogComponent';
 import { emailCheck } from '../../misc/helpers';
 import { forgotPasswordTask } from '../../controllers/users';
-import { font_size } from '../../Constants/metrics';
+import { font_size, spacing } from '../../Constants/metrics';
 import { black, white, themeRed, lightGray } from '../../Constants/colors';
 
 const screenWidth = Dimensions.get('window').width;
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   textInputView: {
     flexDirection: 'row',
     width: screenWidth - 40,
-    height: 45,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: 175,
-    height: 40,
+    height: 50,
     backgroundColor: themeRed,
     shadowColor: black,
     shadowOffset: { width: 0, height: 3 },
@@ -307,6 +307,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     textAlign: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 10,
   },
   text: {

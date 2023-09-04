@@ -19,7 +19,7 @@ import Toast from 'react-native-simple-toast';
 import Config from '../Config';
 import WaitingDialog from '../WaitingDialog';
 import ProHamburger from '../ProHamburger';
-import { font_size } from '../../Constants/metrics';
+import { font_size, spacing } from '../../Constants/metrics';
 import {
   updateCompletedBookingData,
   updateFailedBookingData,
@@ -295,7 +295,6 @@ class ProBookingScreen extends Component {
         <View
           style={{
             width: screenWidth,
-            height: 50,
             justifyContent: 'center',
             backgroundColor: themeRed,
             alignItems: 'center',
@@ -305,9 +304,10 @@ class ProBookingScreen extends Component {
               flexDirection: 'row',
               justifyContent: 'center',
               alignContent: 'center',
-              marginTop: 10,
-              marginBottom: 10,
-            }}>
+              marginTop: spacing.small,
+              marginBottom: spacing.small,
+            }}
+          >
             <TouchableOpacity
               style={
                 this.state.currentPage === 0

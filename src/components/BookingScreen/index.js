@@ -25,7 +25,7 @@ import {
   updateFailedBookingData,
 } from '../../Redux/Actions/jobsActions';
 import { getAllBookings } from '../../controllers/bookings';
-import { font_size } from '../../Constants/metrics';
+import { font_size, spacing } from '../../Constants/metrics';
 import {
   colorPrimaryDark,
   white,
@@ -302,7 +302,6 @@ class BookingScreen extends Component {
         <View
           style={{
             width: screenWidth,
-            height: 50,
             justifyContent: 'center',
             backgroundColor: themeRed,
             alignItems: 'center',
@@ -311,9 +310,9 @@ class BookingScreen extends Component {
             style={{
               flexDirection: 'row',
               justifyContent: 'center',
-              alignContent: 'center',
-              marginTop: 10,
-              marginBottom: 10,
+              alignItems: 'center',
+              marginTop: spacing.small,
+              marginBottom: spacing.small,
             }}>
             <TouchableOpacity
               style={
@@ -454,7 +453,7 @@ const styles = StyleSheet.create({
   },
   buttonGreen: {
     flex: 1,
-    height: 40,
+    height: 50,
     paddingTop: 10,
     backgroundColor: white,
     paddingBottom: 10,
@@ -470,7 +469,7 @@ const styles = StyleSheet.create({
   },
   buttonRed: {
     flex: 1,
-    height: 40,
+    height: 50,
     paddingTop: 10,
     backgroundColor: white,
     paddingBottom: 10,
@@ -486,7 +485,7 @@ const styles = StyleSheet.create({
   },
   buttonPrimaryDark: {
     flex: 1,
-    height: 40,
+    height: 50,
     paddingTop: 10,
     backgroundColor: themeRed,
     paddingBottom: 10,

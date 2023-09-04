@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
   textInputView: {
     flexDirection: 'row',
     width: screenWidth - 40,
-    height: 45,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: 175,
-    height: 40,
+    height: 50,
     backgroundColor: themeRed,
     shadowColor: black,
     shadowOffset: { width: 0, height: 3 },
@@ -312,6 +312,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     textAlign: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 10,
   },
   text: {

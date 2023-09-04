@@ -363,7 +363,7 @@ class RegisterScreen extends Component {
               </Text>}
               <View
                 style={{
-                  width: screenWidth - 50,
+                  width: screenWidth,
                   height: 50,
                   justifyContent: 'center',
                   marginBottom: 15,
@@ -569,7 +569,7 @@ const styles = StyleSheet.create({
   textInputView: {
     flexDirection: 'row',
     width: screenWidth - 40,
-    height: 40,
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
@@ -589,7 +589,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: 175,
-    height: 40,
+    height: 50,
     backgroundColor: themeRed,
     shadowColor: black,
     shadowOffset: { width: 0, height: 3 },
@@ -614,7 +614,7 @@ const styles = StyleSheet.create({
   },
   buttonGreen: {
     flex: 1,
-    height: 40,
+    height: 50,
     paddingTop: 10,
     backgroundColor: white,
     paddingBottom: 10,
@@ -625,12 +625,11 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     textAlign: 'center',
     justifyContent: 'center',
-    marginLeft: 5,
-    marginRight: 5,
+    marginLeft: 5
   },
   buttonRed: {
     flex: 1,
-    height: 40,
+    height: 50,
     paddingTop: 10,
     backgroundColor: 'red',
     paddingBottom: 10,

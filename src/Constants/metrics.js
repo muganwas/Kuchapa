@@ -4,5 +4,12 @@ module.exports = {
         normal: 12,
         sub_header: 14,
         header: 16
+    },
+    spacing: {
+        small: 5,
+        medium: 10,
+        large: 15,
+        extra_large: 20,
+        jumbo: 40
     }
 }

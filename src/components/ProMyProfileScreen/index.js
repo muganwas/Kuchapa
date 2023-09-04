@@ -395,13 +395,12 @@ class ProMyProfileScreen extends Component {
 
               <View
                 style={{
-                  width: screenWidth - 50,
+                  width: screenWidth,
                   height: 50,
                   justifyContent: 'center',
                   marginBottom: 15,
                   backgroundColor: themeRed,
                   alignItems: 'center',
-                  borderRadius: 5,
                 }}>
                 <View
                   style={{
