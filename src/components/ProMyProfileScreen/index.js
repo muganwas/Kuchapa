@@ -32,6 +32,7 @@ import {
 } from '../../controllers/users';
 import { white, themeRed, black, colorBg } from '../../Constants/colors';
 import {
+  selectPhoto,
   phoneNumberCheck,
   sanitizeMobileNumber,
   emailCheck,
@@ -496,7 +497,7 @@ class ProMyProfileScreen extends Component {
                   style={{
                     width: screenWidth - 85,
                     color: 'black',
-                    fontSize: 16,
+                    fontSize: 14,
                     textAlignVertical: 'center',
                     marginLeft: 10,
                   }}
@@ -520,7 +521,7 @@ class ProMyProfileScreen extends Component {
                   style={{
                     width: screenWidth - 85,
                     color: 'black',
-                    fontSize: 16,
+                    fontSize: 14,
                     marginLeft: 10,
                   }}
                   placeholder="Description"
@@ -544,7 +545,7 @@ class ProMyProfileScreen extends Component {
                   style={{
                     width: screenWidth - 85,
                     color: 'black',
-                    fontSize: 16,
+                    fontSize: 14,
                     marginLeft: 10,
                   }}
                   value={this.state.address}
@@ -563,7 +564,7 @@ class ProMyProfileScreen extends Component {
                 <Text
                   style={{
                     color: 'black',
-                    fontSize: 16,
+                    fontSize: 14,
                     textAlign: 'center',
                     textAlignVertical: 'center',
                     marginTop: 5,
@@ -691,7 +692,7 @@ const styles = StyleSheet.create({
   },
   buttonGreen: {
     flex: 1,
-    height: 40,
+    height: 50,
     paddingTop: 10,
     backgroundColor: white,
     paddingBottom: 10,
@@ -703,11 +704,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     justifyContent: 'center',
     marginLeft: 5,
-    marginRight: 5,
   },
   buttonPrimaryDark: {
-    flex: 1,
-    height: 40,
+    flex: 1.5,
+    height: 50,
     paddingTop: 10,
     backgroundColor: themeRed,
     paddingBottom: 10,
@@ -780,7 +780,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   text: {
-    fontSize: 16,
+    fontSize: 14,
     color: 'white',
     textAlign: 'center',
     justifyContent: 'center',

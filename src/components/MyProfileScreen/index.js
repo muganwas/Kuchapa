@@ -46,13 +46,6 @@ import {
   updateProfileInfo,
 } from '../../controllers/users';
 
-const options = {
-  title: 'Select a photo',
-  takePhotoButtonTitle: 'Take a photo',
-  chooseFromLibraryButtonTitle: 'Choose from gallery',
-  quality: 1,
-};
-
 const screenWidth = Dimensions.get('window').width;
 
 const USER_IMAGE_UPDATE = Config.baseURL + 'users/upload/';
@@ -617,7 +610,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   text: {
-    fontSize: 16,
+    fontSize: 14,
     color: 'white',
     textAlign: 'center',
     justifyContent: 'center',
@@ -657,7 +650,7 @@ const styles = StyleSheet.create({
   },
   buttonGreen: {
     flex: 1,
-    height: 40,
+    height: 50,
     paddingTop: 10,
     backgroundColor: white,
     paddingBottom: 10,
@@ -669,7 +662,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     justifyContent: 'center',
     marginLeft: 5,
-    marginRight: 5,
   },
   header: {
     width: '100%',
@@ -684,7 +676,7 @@ const styles = StyleSheet.create({
   },
   buttonRed: {
     flex: 1,
-    height: 40,
+    height: 50,
     paddingTop: 10,
     backgroundColor: 'red',
     paddingBottom: 10,
@@ -700,7 +692,7 @@ const styles = StyleSheet.create({
   },
   buttonPrimaryDark: {
     flex: 1.5,
-    height: 40,
+    height: 50,
     paddingTop: 10,
     backgroundColor: themeRed,
     paddingBottom: 10,
