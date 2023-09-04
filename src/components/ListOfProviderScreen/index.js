@@ -18,6 +18,7 @@ import { AirbnbRating } from 'react-native-ratings';
 import Toast from 'react-native-simple-toast';
 import WaitingDialog from '../WaitingDialog';
 import images from '../../Constants/images';
+import { font_size } from '../../Constants/metrics';
 import { colorBg, white, themeRed } from '../../Constants/colors';
 import { calculateDistance, getAllProviders } from '../../controllers/users';
 
@@ -228,7 +229,7 @@ class ListOfProviderScreen extends Component {
                 style={{
                   fontWeight: 'bold',
                   color: 'black',
-                  fontSize: 16,
+                  fontSize: font_size.sub_header,
                 }}>
                 {item.username + ' ' + item.surname}
               </Text>
@@ -443,7 +444,7 @@ class ListOfProviderScreen extends Component {
                 />
               )}
             </View>
-            <Text style={{ fontSize: 18, marginTop: 10 }}>No provider found</Text>
+            <Text style={{ fontSize: font_size.header, marginTop: 10 }}>No provider found</Text>
           </View>
         )}
         <Modal

@@ -1,8 +1,8 @@
 module.exports = {
     font_size: {
         small: 10,
-        normal: 14,
-        sub_header: 16,
-        header: 18
+        normal: 12,
+        sub_header: 14,
+        header: 16
     }
 }

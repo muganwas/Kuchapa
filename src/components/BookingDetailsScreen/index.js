@@ -24,6 +24,7 @@ import {
   setSelectedJobRequest,
   updateCompletedBookingData,
 } from '../../Redux/Actions/jobsActions';
+import { font_size } from '../../Constants/metrics';
 import {
   black,
   colorBg,
@@ -598,7 +599,7 @@ class BookingDetailsScreen extends Component {
                 style={{
                   color: white,
                   fontWeight: 'bold',
-                  fontSize: 16,
+                  fontSize: font_size.sub_header,
                   textAlign: 'center',
                   marginLeft: 10,
                 }}>

@@ -8,7 +8,8 @@ import {
     StyleSheet,
     ActivityIndicator
 } from 'react-native';
-import { white, themeRed, colorGreen, black, colorBg } from '../../Constants/colors'
+import { white, themeRed, colorGreen, black, colorBg } from '../../Constants/colors';
+import { font_size } from '../../Constants/metrics';
 
 const screenWidth = Dimensions.get('screen').width;
 const defaultWidth = screenWidth - 80;
@@ -34,7 +35,7 @@ const DialogComponent = ({
             <TouchableOpacity activeOpacity={0} disabled={true} style={styles.contentContainer}>
                 <View style={[styles.modal, { width }]}>
                     <View style={styles.textView}>
-                        <Text style={[styles.text, { fontSize: 16, color: white }]}>{titleText}</Text>
+                        <Text style={[styles.text, { fontSize: font_size.sub_header, color: white }]}>{titleText}</Text>
                         <Text style={[styles.text, { color: white, fontSize: 14, textAlign: 'center' }]}>{descText}</Text>
                     </View>
                     <View style={styles.buttonView}>
@@ -86,7 +87,7 @@ const localStyles = StyleSheet.create({
     },
     text: {
         margin: 5,
-        fontSize: 16,
+        fontSize: font_size.sub_header,
         fontWeight: 'bold',
     },
     touchableHighlight: {

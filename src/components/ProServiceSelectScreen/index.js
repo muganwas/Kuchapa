@@ -14,6 +14,7 @@ import CheckBox from 'react-native-check-box';
 import SimpleToast from 'react-native-simple-toast';
 import images from '../../Constants/images';
 import { fetchServices } from '../../controllers/jobs';
+import { font_size } from '../../Constants/metrics';
 import {
   colorBg,
   colorPrimary,
@@ -272,7 +273,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   text: {
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     color: black,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -283,8 +284,8 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   open: {
-    color: 'white',
-    fontSize: 16,
+    color: white,
+    fontSize: font_size.sub_header,
     fontWeight: 'bold',
   },
   menuIcon: {

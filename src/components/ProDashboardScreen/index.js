@@ -51,6 +51,7 @@ import {
 } from '../../controllers/chats';
 import { requestClientForReview } from '../../controllers/jobs';
 import { reviewTask } from '../../controllers/bookings';
+import { font_size } from '../../Constants/metrics';
 import {
   colorBg,
   colorYellow,
@@ -939,7 +940,7 @@ class ProDashboardScreen extends Component {
                       flex: 1,
                       textAlignVertical: 'center',
                       alignItems: 'flex-start',
-                      fontSize: 18,
+                      fontSize: font_size.header,
                       alignContent: 'flex-start',
                       justifyContent: 'flex-start',
                       marginLeft: 15,
@@ -968,7 +969,7 @@ class ProDashboardScreen extends Component {
                       flex: 1,
                       textAlignVertical: 'center',
                       alignItems: 'flex-start',
-                      fontSize: 18,
+                      fontSize: font_size.header,
                       alignContent: 'flex-start',
                       justifyContent: 'flex-start',
                       marginLeft: 15,
@@ -1131,7 +1132,7 @@ class ProDashboardScreen extends Component {
                 />
                 <Text
                   style={{
-                    fontSize: 18,
+                    fontSize: font_size.header,
                     alignItems: 'center',
                     alignSelf: 'center',
                   }}>
@@ -1502,7 +1503,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   buttonText: {
-    fontSize: 18,
+    fontSize: font_size.header,
     fontFamily: 'Gill Sans',
     textAlign: 'center',
     margin: 10,
@@ -1541,29 +1542,29 @@ const styles = StyleSheet.create({
     backgroundColor: colorBg,
     borderRadius: 10,
     padding: 20,
-    shadowColor: '#000',
+    shadowColor: black,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
   },
   text: {
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     fontWeight: 'bold',
   },
   touchableHighlight: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: white,
     paddingVertical: 5,
     alignSelf: 'stretch',
     alignItems: 'center',
     borderRadius: 5,
-    borderColor: 'black',
+    borderColor: black,
     borderWidth: 1,
     borderRadius: 5,
     marginLeft: 5,
     marginRight: 5,
-    shadowColor: '#000',
+    shadowColor: black,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import Availability from '../AvailabilityComponent';
+import { font_size } from '../../Constants/metrics';
 import { colorPrimary, black } from '../../Constants/colors';
 
 const MessagesHeader = ({
@@ -54,7 +55,7 @@ const MessagesHeader = ({
         <Text
           style={{
             color: black,
-            fontSize: 16,
+            fontSize: font_size.sub_header,
             fontWeight: 'bold',
             alignSelf: 'center',
             marginLeft: 15,

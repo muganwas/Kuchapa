@@ -36,6 +36,7 @@ import {
   getAllWorkRequestClient,
   getPendingJobRequest,
 } from '../../Redux/Actions/jobsActions';
+import { font_size } from '../../Constants/metrics';
 import {
   colorPrimary,
   colorBg,
@@ -718,7 +719,7 @@ const styles = StyleSheet.create({
   },
   open: {
     color: 'white',
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     fontWeight: 'bold',
   },
   menuIcon: {
@@ -796,7 +797,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   buttonText: {
-    fontSize: 18,
+    fontSize: font_size.header,
     fontFamily: 'Gill Sans',
     textAlign: 'center',
     margin: 10,

@@ -364,7 +364,7 @@ class BookingScreen extends Component {
                   <Text
                     style={{
                       color: darkGray,
-                      fontSize: 16,
+                      fontSize: font_size.sub_header,
                       fontStyle: 'italic',
                     }}>
                     No completed bookings found!
@@ -381,7 +381,7 @@ class BookingScreen extends Component {
                   <Text
                     style={{
                       color: darkGray,
-                      fontSize: 16,
+                      fontSize: font_size.sub_header,
                       fontStyle: 'italic',
                     }}>
                     No rejected bookings found!

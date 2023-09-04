@@ -28,6 +28,7 @@ import {
 } from '../../Redux/Actions/userActions';
 import WaitingDialog from '../WaitingDialog';
 import DialogComponent from '../DialogComponent';
+import { font_size } from '../../Constants/metrics';
 import { themeRed, black, white, lightGray } from '../../Constants/colors';
 import { emailCheck, passwordCheck } from '../../misc/helpers';
 import {
@@ -524,7 +525,7 @@ const styles = StyleSheet.create({
   },
   text: {
     flex: 1,
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     fontWeight: 'bold',
     color: white,
     textAlign: 'center',

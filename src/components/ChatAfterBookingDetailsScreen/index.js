@@ -25,6 +25,7 @@ import {
   notificationError,
 } from '../../Redux/Actions/notificationActions';
 import Config from '../Config';
+import { font_size } from '../../Constants/metrics';
 import { lightGray, colorBg, white } from '../../Constants/colors';
 import {
   MessagesFooter,
@@ -401,7 +402,7 @@ class ChatAfterBookingDetailsScreen extends Component {
                     style={{
                       color: 'black',
                       fontWeight: 'bold',
-                      fontSize: 16,
+                      fontSize: font_size.sub_header,
                       textAlign: 'center',
                       marginLeft: 10,
                     }}>

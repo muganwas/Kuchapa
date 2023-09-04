@@ -352,7 +352,7 @@ class ProBookingScreen extends Component {
                   <Text
                     style={{
                       color: darkGray,
-                      fontSize: 16,
+                      fontSize: font_size.sub_header,
                       fontStyle: 'italic',
                     }}>
                     No complete bookings found!
@@ -369,7 +369,7 @@ class ProBookingScreen extends Component {
                     <Text
                       style={{
                         color: darkGray,
-                        fontSize: 16,
+                        fontSize: font_size.sub_header,
                         fontStyle: 'italic',
                       }}>
                       No rejected bookings found!
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
   },
   buttonGreen: {
     flex: 1,
-    height: 40,
+    height: 50,
     paddingTop: 10,
     backgroundColor: white,
     paddingBottom: 10,
@@ -457,7 +457,7 @@ const styles = StyleSheet.create({
   },
   buttonRed: {
     flex: 1,
-    height: 40,
+    height: 50,
     paddingTop: 10,
     backgroundColor: white,
     paddingBottom: 10,
@@ -473,7 +473,7 @@ const styles = StyleSheet.create({
   },
   buttonPrimaryDark: {
     flex: 1,
-    height: 40,
+    height: 50,
     paddingTop: 10,
     backgroundColor: themeRed,
     paddingBottom: 10,

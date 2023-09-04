@@ -1,5 +1,6 @@
-import {StyleSheet, Dimensions} from 'react-native';
-import {colorYellow, lightGray, darkGray} from '../../Constants/colors';
+import { StyleSheet, Dimensions } from 'react-native';
+import { font_size } from '../../Constants/metrics';
+import { colorYellow, lightGray, darkGray } from '../../Constants/colors';
 const screenWidth = Dimensions.get('window').width;
 
 const style = StyleSheet.create({
@@ -29,7 +30,7 @@ const style = StyleSheet.create({
     borderRadius: 25,
     height: 50,
     paddingHorizontal: 10,
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     marginHorizontal: 5,
   },
   textInputContainer: {
@@ -50,7 +51,7 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: lightGray,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 7},
+    shadowOffset: { width: 0, height: 7 },
     shadowOpacity: 1,
     shadowRadius: 5,
     elevation: 10,
@@ -68,7 +69,7 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: lightGray,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 7},
+    shadowOffset: { width: 0, height: 7 },
     shadowOpacity: 1,
     shadowRadius: 5,
     elevation: 10,

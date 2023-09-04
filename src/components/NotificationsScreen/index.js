@@ -30,6 +30,7 @@ import {
   deleteNotification,
   readNotification,
 } from '../../controllers/notifications';
+import { font_size } from '../../Constants/metrics';
 import {
   lightGray,
   white,
@@ -300,7 +301,7 @@ class NotificationsScreen extends Component {
                 source={require('../../icons/ic_notification.png')}
               />
             </View>
-            <Text style={{ fontSize: 18, marginTop: 10 }}>
+            <Text style={{ fontSize: font_size.header, marginTop: 10 }}>
               You have no notifications
             </Text>
           </View>

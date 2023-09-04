@@ -9,6 +9,7 @@ import {
   TextInput,
 } from 'react-native';
 import { AirbnbRating } from 'react-native-ratings';
+import { font_size } from '../../Constants/metrics';
 import {
   lightGray,
   white,
@@ -69,7 +70,7 @@ export default class DialogReview extends Component {
                   : require('../../images/generic_avatar.png')
               }
             />
-            <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 10 }}>
+            <Text style={{ fontSize: font_size.sub_header, fontWeight: 'bold', marginTop: 10 }}>
               {data?.user_details?.username}
             </Text>
 

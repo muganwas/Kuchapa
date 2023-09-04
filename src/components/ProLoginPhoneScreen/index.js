@@ -40,6 +40,7 @@ import firebaseAuth from '@react-native-firebase/auth';
 import TextInputMask from 'react-native-text-input-mask';
 import { phoneNumberCheck, sanitizeMobileNumber } from '../../misc/helpers';
 import DialogComponent from '../DialogComponent';
+import { font_size } from '../../Constants/metrics';
 import {
   themeRed,
   inactiveBackground,
@@ -578,7 +579,7 @@ const styles = StyleSheet.create({
   },
   text: {
     flex: 1,
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     fontWeight: 'bold',
     color: white,
     textAlign: 'center',

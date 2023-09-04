@@ -31,6 +31,7 @@ import {
   passwordCheck,
   phoneNumberCheck,
 } from '../../misc/helpers';
+import { font_size } from '../../Constants/metrics';
 import { black, white, themeRed } from '../../Constants/colors';
 
 const screenWidth = Dimensions.get('window').width;
@@ -605,7 +606,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   text: {
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     color: white,
     fontWeight: 'bold',
     textAlign: 'center',

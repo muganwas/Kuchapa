@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { DrawerActions } from '@react-navigation/native';
 import ProDialogLogout from '../ProDialogLogout';
 import { notificationsFetched } from '../../Redux/Actions/notificationActions';
+import { font_size } from '../../Constants/metrics';
 import { black, lightGray, themeRed, white } from '../../Constants/colors';
 
 function CustomMenuLayout(props) {
@@ -221,7 +222,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   textHeader: {
-    fontSize: 18,
+    fontSize: font_size.header,
     color: '#111',
     fontWeight: 'bold',
     alignItems: 'center',
@@ -239,14 +240,14 @@ const styles = StyleSheet.create({
   menuButton: {
     backgroundColor: themeRed,
     marginVertical: 2,
-    shadowColor: '#000',
+    shadowColor: black,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
   },
   textMenu: {
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     color: white,
     alignItems: 'center',
     justifyContent: 'center',

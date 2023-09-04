@@ -21,6 +21,7 @@ import Config from '../Config';
 import WaitingDialog from '../WaitingDialog';
 import DialogComponent from '../DialogComponent';
 import { updateProviderDetails } from '../../Redux/Actions/userActions';
+import { font_size } from '../../Constants/metrics';
 import { black, white, lightGray, themeRed } from '../../Constants/colors';
 
 const screenWidth = Dimensions.get('window').width;
@@ -419,7 +420,7 @@ class ProRegisterFBScreen extends Component {
                   style={{
                     width: screenWidth - 85,
                     color: 'black',
-                    fontSize: 16,
+                    fontSize: font_size.sub_header,
                     textAlignVertical: 'center',
                     marginLeft: 10,
                   }}
@@ -440,7 +441,7 @@ class ProRegisterFBScreen extends Component {
                 <TextInput
                   style={{
                     width: screenWidth - 85,
-                    fontSize: 16,
+                    fontSize: font_size.sub_header,
                     marginLeft: 10,
                     color: black,
                   }}
@@ -462,7 +463,7 @@ class ProRegisterFBScreen extends Component {
                     width: screenWidth - 85,
                     height: '100%',
                     color: 'black',
-                    fontSize: 16,
+                    fontSize: font_size.sub_header,
                     textAlignVertical: 'center',
                     marginLeft: 10,
                   }}
@@ -479,7 +480,7 @@ class ProRegisterFBScreen extends Component {
                 <Text
                   style={{
                     color: 'black',
-                    fontSize: 16,
+                    fontSize: font_size.sub_header,
                     textAlign: 'center',
                     textAlignVertical: 'center',
                     marginTop: 5,
@@ -720,7 +721,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   text: {
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     color: white,
     textAlign: 'center',
     justifyContent: 'center',

@@ -18,6 +18,7 @@ import { connect } from 'react-redux';
 import { updateProviderDetails } from '../../Redux/Actions/userActions';
 import WaitingDialog from '../WaitingDialog';
 import Config from '../Config';
+import { font_size } from '../../Constants/metrics';
 import {
   colorPrimary,
   colorBg,
@@ -432,7 +433,7 @@ class ProAddAddressScreen extends Component {
               elevation: 5,
               marginTop: 15,
             }}>
-            <Text style={{ color: white, fontWeight: 'bold', fontSize: 16 }}>
+            <Text style={{ color: white, fontWeight: 'bold', fontSize: font_size.sub_header }}>
               {this.state.address}
             </Text>
           </View>
@@ -519,7 +520,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   text: {
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     fontWeight: 'bold',
     color: black,
     textAlign: 'center',

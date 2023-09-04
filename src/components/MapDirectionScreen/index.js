@@ -30,6 +30,7 @@ import {
 } from '../../Redux/Actions/jobsActions';
 import DialogComponent from '../DialogComponent';
 import Config from '../Config';
+import { font_size } from '../../Constants/metrics';
 import {
   white,
   colorBg,
@@ -649,7 +650,7 @@ class MapDirectionScreen extends Component {
                         style={{
                           marginRight: 200,
                           color: white,
-                          fontSize: 18,
+                          fontSize: font_size.header,
                           marginLeft: 10,
                           fontWeight: 'bold',
                           textAlignVertical: 'center',
@@ -869,7 +870,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   text: {
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     textAlign: 'center',
     justifyContent: 'center',
   },

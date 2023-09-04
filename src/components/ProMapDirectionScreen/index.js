@@ -32,6 +32,7 @@ import {
   setSelectedJobRequest,
   fetchedDataWorkSource,
 } from '../../Redux/Actions/jobsActions';
+import { font_size } from '../../Constants/metrics';
 import {
   colorBg,
   white,
@@ -526,7 +527,7 @@ class ProMapDirectionScreen extends Component {
                       style={{
                         marginRight: 200,
                         color: white,
-                        fontSize: 18,
+                        fontSize: font_size.header,
                         marginLeft: 10,
                         fontWeight: 'bold',
                         textAlignVertical: 'center',
@@ -765,7 +766,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   text: {
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     textAlign: 'center',
     justifyContent: 'center',
   },

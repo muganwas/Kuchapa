@@ -14,6 +14,7 @@ import {
   Platform,
 } from 'react-native';
 import Config from '../Config';
+import { font_size } from '../../Constants/metrics';
 import {
   colorPrimary,
   colorBg,
@@ -211,7 +212,7 @@ export default class SelectAddressScreen extends Component {
               style={{
                 width: screenWidth - 60,
                 height: 45,
-                fontSize: 16,
+                fontSize: font_size.sub_header,
                 fontWeight: 'bold',
                 marginLeft: 10,
               }}

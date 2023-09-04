@@ -40,6 +40,7 @@ import {
   deregisterOnlineStatusListener,
 } from '../../controllers/chats';
 import { requestForBooking } from '../../controllers/bookings';
+import { font_size } from '../../Constants/metrics';
 import {
   lightGray,
   themeRed,
@@ -393,7 +394,7 @@ class ProviderDetailsScreen extends Component {
           <View style={styles.textView}>
             <Text
               style={{
-                fontSize: 16,
+                fontSize: font_size.sub_header,
                 fontWeight: 'bold',
                 color: black,
                 textAlignVertical: 'center',
@@ -535,7 +536,7 @@ class ProviderDetailsScreen extends Component {
                       style={{
                         color: 'black',
                         fontWeight: 'bold',
-                        fontSize: 16,
+                        fontSize: font_size.sub_header,
                         textAlign: 'center',
                         marginLeft: 10,
                       }}>
@@ -684,7 +685,7 @@ const styles = StyleSheet.create({
     height: 20,
   },
   text: {
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     fontWeight: '600',
     textAlign: 'center',
     justifyContent: 'center',

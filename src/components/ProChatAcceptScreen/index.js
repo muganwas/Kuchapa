@@ -28,6 +28,7 @@ import {
   setSelectedJobRequest,
   getPendingJobRequestProvider,
 } from '../../Redux/Actions/jobsActions';
+import { font_size } from '../../Constants/metrics';
 import {
   colorPrimary,
   black,
@@ -293,13 +294,13 @@ class ProChatAcceptScreen extends Component {
                   }}>
                   <Text
                     style={{
-                      color: 'black',
+                      color: black,
                       fontWeight: 'bold',
-                      fontSize: 18,
+                      fontSize: font_size.header,
                     }}>
                     Hello,
                   </Text>
-                  <Text style={{ color: 'black', fontSize: 16, marginLeft: 5 }}>
+                  <Text style={{ color: black, fontSize: font_size.sub_header, marginLeft: 5 }}>
                     {providerDetails.name + ' ' + providerDetails.surname}
                   </Text>
                 </View>
@@ -329,7 +330,7 @@ class ProChatAcceptScreen extends Component {
                     marginTop: 15,
                   }}>
                   <Text
-                    style={{ color: 'black', fontSize: 16, marginLeft: 5 }}
+                    style={{ color: 'black', fontSize: font_size.sub_header, marginLeft: 5 }}
                     numberOfLines={2}>
                     {this.state.userName +
                       ' is looking for a ' +
@@ -373,7 +374,7 @@ class ProChatAcceptScreen extends Component {
                   <View style={styles.mainContainerSlide}>
                     <Text
                       style={{
-                        fontSize: 18,
+                        fontSize: font_size.header,
                         fontWeight: 'bold',
                         marginTop: 15,
                         color: white,
@@ -518,8 +519,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   commonTextStyle: {
-    color: 'white',
-    fontSize: 18,
+    color: white,
+    fontSize: font_size.header,
   },
   containerSlide: {
     flex: 1,

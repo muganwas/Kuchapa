@@ -1,5 +1,6 @@
 import { StyleSheet, Dimensions } from 'react-native';
 import { colorBg, themeRed, black, white } from '../../Constants/colors';
+import { font_size } from '../../Constants/metrics';
 const screenWidth = Dimensions.get('screen').width;
 const styles = StyleSheet.create({
   container: {
@@ -29,7 +30,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   text: {
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     color: white,
     textAlign: 'center',
     justifyContent: 'center',

@@ -17,6 +17,7 @@ import WaitingDialog from '../WaitingDialog';
 import DialogComponent from '../DialogComponent';
 import { emailCheck } from '../../misc/helpers';
 import { forgotPasswordTask } from '../../controllers/users';
+import { font_size } from '../../Constants/metrics';
 import { black, white, themeRed, lightGray } from '../../Constants/colors';
 
 const screenWidth = Dimensions.get('window').width;
@@ -309,7 +310,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   text: {
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     color: white,
     fontWeight: 'bold',
     textAlign: 'center',

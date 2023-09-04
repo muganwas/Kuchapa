@@ -32,6 +32,7 @@ import WaitingDialog from '../WaitingDialog';
 import DialogComponent from '../DialogComponent';
 import { registerTask, checkValidation } from '../../controllers/users';
 import Config from '../Config';
+import { font_size } from '../../Constants/metrics';
 import { black, white, themeRed, lightGray } from '../../Constants/colors';
 
 const screenWidth = Dimensions.get('window').width;
@@ -510,7 +511,7 @@ class ProRegisterScreen extends Component {
                   style={{
                     width: screenWidth - 85,
                     color: 'black',
-                    fontSize: 16,
+                    fontSize: font_size.sub_header,
                     textAlignVertical: 'center',
                     marginLeft: 10,
                   }}
@@ -533,7 +534,7 @@ class ProRegisterScreen extends Component {
                   style={{
                     width: screenWidth - 85,
                     color: black,
-                    fontSize: 16,
+                    fontSize: font_size.sub_header,
                     marginLeft: 10,
                   }}
                   placeholder="Description"
@@ -557,7 +558,7 @@ class ProRegisterScreen extends Component {
                     width: screenWidth - 85,
                     height: '100%',
                     color: 'black',
-                    fontSize: 16,
+                    fontSize: font_size.sub_header,
                     textAlignVertical: 'center',
                     marginLeft: 10,
                   }}
@@ -574,7 +575,7 @@ class ProRegisterScreen extends Component {
                 <Text
                   style={{
                     color: 'black',
-                    fontSize: 16,
+                    fontSize: font_size.sub_header,
                     textAlign: 'center',
                     textAlignVertical: 'center',
                     marginTop: 5,
@@ -827,7 +828,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   text: {
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     color: white,
     fontWeight: 'bold',
     textAlign: 'center',

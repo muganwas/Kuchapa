@@ -49,6 +49,7 @@ import {
 import { acceptJobTask, rejectJobTask } from '../../controllers/jobs';
 import WaitingDialog from '../WaitingDialog';
 import Config from '../Config';
+import { font_size } from '../../Constants/metrics';
 import {
   lightGray,
   colorBg,
@@ -497,7 +498,7 @@ class ProAcceptRejectJobScreen extends Component {
                     style={{
                       color: 'black',
                       fontWeight: 'bold',
-                      fontSize: 16,
+                      fontSize: font_size.sub_header,
                       textAlign: 'center',
                       marginLeft: 10,
                     }}>
@@ -618,7 +619,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     height: 50,
     paddingHorizontal: 10,
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     marginHorizontal: 5,
   },
   textInputContainer: {

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,7 +8,8 @@ import {
   Image,
   TextInput,
 } from 'react-native';
-import {AirbnbRating} from 'react-native-ratings';
+import { AirbnbRating } from 'react-native-ratings';
+import { font_size } from '../../Constants/metrics';
 import {
   lightGray,
   black,
@@ -38,7 +39,7 @@ export default class DialogReviewCustomer extends Component {
   };
 
   closeReviewDialog = action => {
-    const {changeDialogVisibility} = this.props;
+    const { changeDialogVisibility } = this.props;
     if (action === 'Submit') {
       changeDialogVisibility(false, 'Submit');
     } else if (action === 'Not now') {
@@ -48,15 +49,15 @@ export default class DialogReviewCustomer extends Component {
   };
 
   render() {
-    const {data, review, rating, updateRating, updateReview} = this.props;
+    const { data, review, rating, updateRating, updateReview } = this.props;
     return (
       <TouchableOpacity
         activeOpacity={1}
         disabled={true}
         style={styles.contentContainer}>
-        <View style={[styles.modal, {width: this.state.width - 80}]}>
+        <View style={[styles.modal, { width: this.state.width - 80 }]}>
           <View style={styles.textView}>
-            <Text style={[styles.text, {fontSize: 20}]}> Review </Text>
+            <Text style={[styles.text, { fontSize: 20 }]}> Review </Text>
             <View
               style={{
                 width: this.state.width - 100,
@@ -66,20 +67,20 @@ export default class DialogReviewCustomer extends Component {
             />
 
             <Image
-              style={{width: 45, height: 45, borderRadius: 100, marginTop: 15}}
+              style={{ width: 45, height: 45, borderRadius: 100, marginTop: 15 }}
               source={
                 data.employee_details.image
-                  ? {uri: data.employee_details.image}
+                  ? { uri: data.employee_details.image }
                   : require('../../images/generic_avatar.png')
               }
             />
-            <Text style={{fontSize: 16, fontWeight: 'bold', marginTop: 10}}>
+            <Text style={{ fontSize: font_size.sub_header, fontWeight: 'bold', marginTop: 10 }}>
               {data.employee_details.username +
                 ' ' +
                 data.employee_details.surname}
             </Text>
 
-            <View style={{backgroundColor: colorBg, marginTop: 10}}>
+            <View style={{ backgroundColor: colorBg, marginTop: 10 }}>
               <AirbnbRating
                 type="custom"
                 defaultRating={rating}
@@ -113,12 +114,12 @@ export default class DialogReviewCustomer extends Component {
             <TouchableOpacity
               style={styles.touchableHighlight}
               onPress={() => this.closeReviewDialog('Not now')}>
-              <Text style={[styles.text, {color: themeRed}]}> Not now </Text>
+              <Text style={[styles.text, { color: themeRed }]}> Not now </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.touchableHighlight]}
               onPress={() => this.closeReviewDialog('Submit')}>
-              <Text style={[styles.text, {color: colorGreen}]}> Submit </Text>
+              <Text style={[styles.text, { color: colorGreen }]}> Submit </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
@@ -162,7 +163,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginRight: 5,
     shadowColor: black,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,

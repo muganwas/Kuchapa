@@ -18,6 +18,7 @@ import Geolocation from 'react-native-geolocation-service';
 import Toast from 'react-native-simple-toast';
 import WaitingDialog from '../WaitingDialog';
 import { updateUserDetails } from '../../Redux/Actions/userActions';
+import { font_size } from '../../Constants/metrics';
 import {
   colorPrimary,
   colorBg,
@@ -481,7 +482,7 @@ class AddAddressScreen extends Component {
               elevation: 5,
               marginTop: 15,
             }}>
-            <Text style={{ color: white, fontWeight: 'bold', fontSize: 16 }}>
+            <Text style={{ color: white, fontWeight: 'bold', fontSize: font_size.sub_header }}>
               {this.state.address}
             </Text>
           </View>
@@ -577,7 +578,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   text: {
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     fontWeight: 'bold',
     color: black,
     textAlign: 'center',

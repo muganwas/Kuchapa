@@ -44,6 +44,7 @@ import {
   MessagesHeader,
   MessagesView,
 } from '../MessagesComponents';
+import { font_size } from '../../Constants/metrics';
 import {
   colorBg,
   lightGray,
@@ -534,7 +535,7 @@ class ChatScreen extends Component {
                     style={{
                       color: 'black',
                       fontWeight: 'bold',
-                      fontSize: 16,
+                      fontSize: font_size.sub_header,
                       textAlign: 'center',
                       marginLeft: 10,
                     }}>
@@ -668,7 +669,7 @@ const styles = StyleSheet.create({
     backgroundColor: lightGray,
     borderRadius: 25,
     paddingHorizontal: 10,
-    fontSize: 16,
+    fontSize: font_size.sub_header,
     height: 50,
     marginHorizontal: 5,
   },
