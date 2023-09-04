@@ -18,7 +18,6 @@ import RNExitApp from 'react-native-exit-app';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 import rNES from 'react-native-encrypted-storage';
 import TextInputMask from 'react-native-text-input-mask';
-import ImagePicker from 'react-native-image-picker';
 import Toast from 'react-native-simple-toast';
 import Config from '../Config';
 import WaitingDialog from '../WaitingDialog';
@@ -39,13 +38,6 @@ import {
 } from '../../misc/helpers';
 
 const screenWidth = Dimensions.get('window').width;
-
-const options = {
-  title: 'Select a photo',
-  takePhotoButtonTitle: 'Take a photo',
-  chooseFromLibraryButtonTitle: 'Choose from gallery',
-  quality: 1,
-};
 
 const PRO_IMAGE_UPDATE = Config.baseURL + 'employee/upload/';
 const PRO_INFO_UPDATE = Config.baseURL + 'employee/';
@@ -101,25 +93,27 @@ class ProMyProfileScreen extends Component {
     this.springValue = new Animated.Value(100);
   }
 
-  selectPhoto = () => {
-    ImagePicker.showImagePicker(options, response => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else {
-        let source = { uri: response.uri };
+  selectPhoto = async () => {
+    try {
+      const resp = await selectPhoto();
+      if (resp) {
+        const {
+          imageURI,
+          imageDataObject
+        } = resp;
         this.setState({
-          image: source,
+          image: imageURI,
           error: '',
           galleryCameraImage: 'galleryCamera',
           isLoading: true,
         });
-        rNES
-          .getItem('userId')
-          .then(providerId => this.updateImageTask(providerId, response));
+        const providerId = await rNES
+          .getItem('userId');
+        this.updateImageTask(providerId, imageDataObject);
       }
-    });
+    } catch (e) {
+      Toast.show(e.message, Toast.SHORT);
+    }
   };
 
   componentDidMount = async () => {

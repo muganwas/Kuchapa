@@ -124,11 +124,10 @@ class RegisterScreen extends Component {
     await selectPhoto(obj => {
       this.setState({
         imageURI: obj.imageURI,
-        imageDataObject: obj.imageDataObject.assets[0],
+        imageDataObject: obj.imageDataObject,
         error: obj.error,
       });
-    },
-    );
+    });
 
   checkValidation = async () => {
     const { mobile, imageURI, username, dob, email, password } = this.state;

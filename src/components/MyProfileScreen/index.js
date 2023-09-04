@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import RNExitApp from 'react-native-exit-app';
-import ImagePicker from 'react-native-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 import rNES from 'react-native-encrypted-storage';
 import DateTimePicker from 'react-native-modal-datetime-picker';
@@ -25,6 +24,7 @@ import {
   phoneNumberCheck,
   sanitizeMobileNumber,
   emailCheck,
+  selectPhoto
 } from '../../misc/helpers';
 import Toast from 'react-native-simple-toast';
 import WaitingDialog from '../WaitingDialog';
@@ -151,30 +151,26 @@ class MyProfileScreen extends Component {
     });
   };
 
-  selectPhoto = () => {
+  selectPhoto = async () => {
     try {
-      ImagePicker.showImagePicker(options, response => {
-        if (response.didCancel) {
-          console.log('User cancelled image picker');
-        } else if (response.error) {
-          console.log('ImagePicker Error: ', response.error);
-        } else {
-          let source = { uri: response.uri };
-          this.setState({
-            image: source,
-            error: '',
-            galleryCameraImage: 'galleryCamera',
-            isLoading: true,
-          });
-          rNES
-            .getItem('userId')
-            .then(providerId =>
-              this.updateImageTaskCustomer(providerId, response),
-            );
-        }
-      });
-    } catch (error) {
-      console.log('image selection error --', error);
+      const resp = await selectPhoto();
+      if (resp) {
+        const {
+          imageDataObject,
+          imageURI
+        } = resp;
+        this.setState({
+          image: imageURI,
+          error: '',
+          galleryCameraImage: 'galleryCamera',
+          isLoading: true,
+        });
+        const customerId = await rNES
+          .getItem('userId');
+        this.updateImageTaskCustomer(customerId, imageDataObject);
+      }
+    } catch (e) {
+      Toast.show(e.message, Toast.SHORT);
     }
   };
 

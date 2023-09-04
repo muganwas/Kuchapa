@@ -682,11 +682,11 @@ export const updateProfileImageTask = async ({
   updateURL,
 }) => {
   toggleIsLoading(true);
-  const { fileName, path } = imageObject;
+  const { fileName, uri } = imageObject;
   const userDataRef = storageRef.child(`/${firebaseId}/${fileName}`);
   const idToken = await firebaseAuth().currentUser.getIdToken();
   userDataRef
-    .putFile(path)
+    .putFile(uri)
     .then(uploadRes => {
       const { state } = uploadRes;
       if (state === 'success') {

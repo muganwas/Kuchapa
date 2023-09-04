@@ -262,20 +262,24 @@ export const selectPhoto = async callback => {
     chooseFromLibraryButtonTitle: 'Choose from gallery',
     quality: 1,
   };
-  launchImageLibrary(options, response => {
-    if (response.didCancel) {
-      SimpleToast.show('You cancelled image selection', SimpleToast.SHORT);
-    } else if (response.error) {
-      SimpleToast.show('Something went wrong, try again.');
-    } else {
-      const source = { uri: response.assets[0].uri };
-      callback({
+  const response = await launchImageLibrary(options);
+  if (response.didCancel) {
+    return SimpleToast.show('You cancelled image selection', SimpleToast.SHORT);
+  } else if (response.error) {
+    return SimpleToast.show('Something went wrong, try again.');
+  } else {
+    const source = { uri: response.assets[0].uri };
+    if (callback)
+      return callback({
         imageURI: source,
-        imageDataObject: response,
+        imageDataObject: response.assets[0],
         error: '',
       });
+    return {
+      imageURI: source,
+      imageDataObject: response.assets[0]
     }
-  });
+  };
 };
 
 export const getDirections = async ({ startLoc, destinationLoc, onSuccess }) => {
