@@ -346,8 +346,13 @@ class ProBookingScreen extends Component {
 
         <View style={{ flex: 1, display: 'flex', flexDirection: 'row' }}>
           {this.state.currentPage === 0 ?
-            <ScrollView contentContainerStyle={{ display: 'flex', flex: 1, backgroundColor: white }}>
-              {bookingCompleteData.length === 0 && !this.state.isLoading ? (
+            <>
+              <ScrollView>
+                <View style={styles.listView}>
+                  {bookingCompleteData.map(this.renderBookingHistoryItem)}
+                </View>
+              </ScrollView>
+              {bookingCompleteData.length === 0 && !this.state.isLoading && (
                 <View style={styles.loaderStyle}>
                   <Text
                     style={{
@@ -358,13 +363,15 @@ class ProBookingScreen extends Component {
                     No complete bookings found!
                   </Text>
                 </View>
-              ) :
-                <View style={styles.listView}>
-                  {bookingCompleteData.map(this.renderBookingHistoryItem)}
-                </View>}
-            </ScrollView> : this.state.currentPage === 1 ?
-              <ScrollView contentContainerStyle={{ display: 'flex', flex: 1, backgroundColor: white }}>
-                {bookingRejectData.length === 0 && !this.state.isLoading ? (
+              )}
+            </> : this.state.currentPage === 1 ?
+              <>
+                <ScrollView>
+                  <View style={styles.listView}>
+                    {bookingRejectData.map(this.renderBookingHistoryItem)}
+                  </View>
+                </ScrollView>
+                {bookingRejectData.length === 0 && !this.state.isLoading && (
                   <View style={styles.loaderStyle}>
                     <Text
                       style={{
@@ -375,11 +382,8 @@ class ProBookingScreen extends Component {
                       No rejected bookings found!
                     </Text>
                   </View>
-                ) :
-                  <View style={styles.listView}>
-                    {bookingRejectData.map(this.renderBookingHistoryItem)}
-                  </View>}
-              </ScrollView> : <></>}
+                )}
+              </> : <></>}
         </View>
         <Animated.View
           style={[

@@ -354,10 +354,12 @@ class BookingScreen extends Component {
         </View>
         <View style={{ flex: 1, display: 'flex', flexDirection: 'row' }}>
           {this.state.currentPage === 0 ?
-            <ScrollView contentContainerStyle={{ display: 'flex', flex: 1, backgroundColor: white }}>
-              <View style={styles.listView}>
-                {bookingCompleteData.map(this.renderBookingHistoryItem)}
-              </View>
+            <>
+              <ScrollView>
+                <View style={styles.listView}>
+                  {bookingCompleteData.map(this.renderBookingHistoryItem)}
+                </View>
+              </ScrollView>
               {bookingCompleteData.length === 0 && !this.state.isLoading && (
                 <View style={styles.loaderStyle}>
                   <Text
@@ -370,24 +372,27 @@ class BookingScreen extends Component {
                   </Text>
                 </View>
               )}
-            </ScrollView> :
-            this.state.currentPage === 1 ? <ScrollView contentContainerStyle={{ display: 'flex', flex: 1, backgroundColor: white }}>
-              <View style={styles.listView}>
-                {bookingRejectData.map(this.renderBookingHistoryItem)}
-              </View>
-              {bookingRejectData.length === 0 && !this.state.isLoading && (
-                <View style={styles.loaderStyle}>
-                  <Text
-                    style={{
-                      color: darkGray,
-                      fontSize: font_size.sub_header,
-                      fontStyle: 'italic',
-                    }}>
-                    No rejected bookings found!
-                  </Text>
-                </View>
-              )}
-            </ScrollView> : <></>}
+            </> :
+            this.state.currentPage === 1 ?
+              <>
+                <ScrollView>
+                  <View style={styles.listView}>
+                    {bookingRejectData.map(this.renderBookingHistoryItem)}
+                  </View>
+                </ScrollView>
+                {bookingRejectData.length === 0 && !this.state.isLoading && (
+                  <View style={styles.loaderStyle}>
+                    <Text
+                      style={{
+                        color: darkGray,
+                        fontSize: font_size.sub_header,
+                        fontStyle: 'italic',
+                      }}>
+                      No rejected bookings found!
+                    </Text>
+                  </View>
+                )}
+              </> : <></>}
         </View>
         <Animated.View
           style={[

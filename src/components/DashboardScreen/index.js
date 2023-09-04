@@ -34,7 +34,6 @@ import {
   setSelectedJobRequest,
   updateActiveRequest,
   getAllWorkRequestClient,
-  getPendingJobRequest,
 } from '../../Redux/Actions/jobsActions';
 import { font_size } from '../../Constants/metrics';
 import {
@@ -260,9 +259,7 @@ class DashboardScreen extends Component {
     });
   };
 
-  renderSeparator = () => {
-    return <View style={{ height: 1, width: '100%', backgroundColor: black }} />;
-  };
+  renderSeparator = () => <View style={{ height: 1, width: '100%', backgroundColor: black }} />;
 
   onRefresh = async () => {
     /** Has to be called on mount because service have to be populated */
@@ -300,7 +297,6 @@ class DashboardScreen extends Component {
       });
     }
     await getAllWorkRequestClient(userDetails.userId);
-    //await getPendingJobRequest(this.props, userDetails.userId);
     await this.getAllRecentChatsCustomer();
     this.setState({ isLoading: false });
   };
@@ -531,11 +527,9 @@ class DashboardScreen extends Component {
             />
           </TouchableOpacity>
         </View>
-
         <View
           style={{ width: screenWidth, height: 1, backgroundColor: '#D95E5E' }}
         />
-
         <View
           style={{
             flexDirection: 'row',
@@ -658,10 +652,7 @@ const mapDispatchToProps = dispatch => {
     },
     updateLatestChats: data => {
       dispatch(updateLatestChats(data));
-    },
-    getPendingJobRequest: (props, userId, navTo) => {
-      dispatch(getPendingJobRequest(props, userId, navTo));
-    },
+    }
   };
 };
 

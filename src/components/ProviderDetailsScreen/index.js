@@ -302,7 +302,7 @@ class ProviderDetailsScreen extends Component {
   };
 
   showToast = message => {
-    Toast.show(message);
+    Toast.show(message, Toast.LONG);
   };
 
   changeWaitingDialogVisibility = bool => {

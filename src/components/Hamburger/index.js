@@ -41,7 +41,7 @@ import {
   updateActiveRequest,
   updateCompletedBookingData,
   updateFailedBookingData,
-  getPendingJobRequestProvider,
+  getPendingJobRequest
 } from '../../Redux/Actions/jobsActions';
 import {
   updatingCoordinates,
@@ -112,7 +112,6 @@ class Hamburger extends React.Component {
       updateLiveChatUsers,
       userInfo: { userDetails },
       fetchClientMessages,
-      getPendingJobRequestProvider,
       navigation,
     } = this.props;
     const senderId = userDetails.userId;
@@ -135,6 +134,7 @@ class Hamburger extends React.Component {
         notificationsInfo,
         fetchedPendingJobInfo,
         getAllWorkRequestClient,
+        getPendingJobRequest,
         jobsInfo: { jobRequests },
         userInfo: { userDetails },
       } = this.props;
@@ -160,7 +160,7 @@ class Hamburger extends React.Component {
           newJobRequests.splice(pos, 1);
           fetchedPendingJobInfo(newJobRequests);
           navigation.navigate('Home');
-        } else getPendingJobRequestProvider(this.props, senderId, 'Home');
+        } else getPendingJobRequest(this.props, senderId, 'Home');
         getAllWorkRequestClient(senderId);
         this.showToast(
           'The service provider rejected your request. please try again later',
@@ -196,7 +196,7 @@ class Hamburger extends React.Component {
           newJobRequests[pos] = pendingJobData;
           fetchedPendingJobInfo(newJobRequests);
           navigation.navigate('Home');
-        } else getPendingJobRequestProvider(this.props, senderId, 'Home');
+        } else getPendingJobRequest(this.props, senderId, 'Home');
         getAllWorkRequestClient(senderId);
         this.getAllBookingsCustomer();
         this.showToast('Your job has been accepted.');
@@ -205,7 +205,7 @@ class Hamburger extends React.Component {
           newJobRequests.splice(pos, 1);
           fetchedPendingJobInfo(newJobRequests);
           navigation.navigate('Home');
-        } else getPendingJobRequestProvider(this.props, senderId, 'Home');
+        } else getPendingJobRequest(this.props, senderId, 'Home');
         this.getAllBookingsCustomer();
         this.showToast('Your job has been rejected. please try again later');
       } else if (title.toLowerCase() === 'job completed') {
@@ -213,7 +213,7 @@ class Hamburger extends React.Component {
           newJobRequests.splice(pos, 1);
           fetchedPendingJobInfo(newJobRequests);
           navigation.navigate('Home');
-        } else getPendingJobRequestProvider(this.props, senderId, 'Home');
+        } else getPendingJobRequest(this.props, senderId, 'Home');
         getAllWorkRequestClient(senderId);
         this.getAllBookingsCustomer();
         this.showToast('Your job is complete..');
@@ -248,7 +248,7 @@ class Hamburger extends React.Component {
           newJobRequests[pos] = pendingJobData;
           fetchedPendingJobInfo(newJobRequests);
           navigation.navigate('Home');
-        } else getPendingJobRequestProvider(this.props, senderId, 'Home');
+        } else getPendingJobRequest(this.props, senderId, 'Home');
         getAllWorkRequestClient(senderId);
         this.showToast('Chat request accepted');
         updateActiveRequest(false);
@@ -261,7 +261,7 @@ class Hamburger extends React.Component {
           newJobRequests.splice(pos, 1);
           fetchedPendingJobInfo(newJobRequests);
           navigation.navigate('Home');
-        } else getPendingJobRequestProvider(this.props, senderId, 'Home');
+        } else getPendingJobRequest(this.props, senderId, 'Home');
         this.showToast(
           'The service provider is nolonger available. please try again later',
         );
@@ -378,7 +378,7 @@ class Hamburger extends React.Component {
       if (status.isConnected && !this.state.prevConnectivityStatus) {
         setTimeout(() => {
           getAllWorkRequestClient(senderId);
-          getPendingJobRequestProvider(this.props, senderId);
+          getPendingJobRequest(this.props, senderId);
         }, 1000);
         this.setState({ prevConnectivityStatus: status.isConnected });
       }
@@ -667,9 +667,9 @@ const mapDispatchToProps = dispatch => {
     updateFailedBookingData: data => {
       dispatch(updateFailedBookingData(data));
     },
-    getPendingJobRequestProvider: (props, proId, navTo) => {
-      dispatch(getPendingJobRequestProvider(props, proId, navTo));
-    },
+    getPendingJobRequest: (props, proId, navTo) => {
+      dispatch(getPendingJobRequest(props, proId, navTo));
+    }
   };
 };
 

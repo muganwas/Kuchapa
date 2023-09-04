@@ -8,7 +8,7 @@ const BOOKING_REQUEST = Config.baseURL + 'jobrequest/addjobrequest';
 
 export const getAllBookings = async ({
   userId,
-  userType,
+  userType, /** TODO: Refactor userType */
   toggleIsLoading,
   bookingHistoryURL,
   onSuccess,
@@ -27,12 +27,10 @@ export const getAllBookings = async ({
     if (responseJson.result && responseJson.data) {
       let newData = cloneDeep(responseJson.data);
       for (let i = 0; i < newData.length; i++) {
-        if (userType === 'Provider')
-          if (newData[i]?.user_details)
-            newData[i].user_details.imageAvailable = await imageExists(newData[i]?.user_details?.image);
-          else
-            if (newData[i]?.employee_details)
-              newData[i].employee_details.imageAvailable = await imageExists(newData[i]?.employee_details?.image);
+        if (newData[i]?.user_details)
+          newData[i].user_details.imageAvailable = await imageExists(newData[i]?.user_details?.image);
+        if (newData[i]?.employee_details)
+          newData[i].employee_details.imageAvailable = await imageExists(newData[i]?.employee_details?.image);
         if (newData[i].chat_status === '1') {
           if (newData[i].status === 'Completed') {
             bookingCompleteData.push(newData[i]);

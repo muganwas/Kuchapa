@@ -35,7 +35,6 @@ import {
   fetchProviderJobInfoError,
   setSelectedJobRequest,
   getAllWorkRequestPro,
-  getPendingJobRequestProvider,
   fetchedDataWorkSource,
 } from '../../Redux/Actions/jobsActions';
 import { updateProviderDetails } from '../../Redux/Actions/userActions';
@@ -121,12 +120,12 @@ class ProDashboardScreen extends Component {
 
   //Get All Bookings
   componentDidMount = () => {
+    this.initiateProps();
+    this.onRefresh();
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    this.initiateProps();
-    this.onRefresh();
     this.props.navigation.addListener('focus', () => {
       this.initiateProps();
       this.onRefresh();
@@ -1225,10 +1224,7 @@ const mapDispatchToProps = dispatch => {
     },
     fetchedDataWorkSource: dws => {
       dispatch(fetchedDataWorkSource(dws));
-    },
-    getPendingJobRequestProvider: (props, providerId, navTo) => {
-      dispatch(getPendingJobRequestProvider(props, providerId, navTo));
-    },
+    }
   };
 };
 

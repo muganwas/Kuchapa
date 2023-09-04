@@ -442,11 +442,13 @@ export const fetchUserProfileFunc = async (userId, fcmToken, updateUserDetails, 
       }
     });
     dispatch(updateUserDetails(userData));
+  } else {
+    SimpleToast.show('Could not fetch profile information');
   }
 };
 
 export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderDetails, dispatch) => {
-  const idToken = await rNES.getItem('idToken');
+  const idToken = await firebaseAuth().currentUser.getIdToken();
   const response = await fetch(PRO_GET_PROFILE + userId + '?fcm_id=' + fcmToken, {
     method: 'GET',
     headers: {
@@ -494,6 +496,8 @@ export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderD
       accountType: responseJson.data.account_type,
     };
     dispatch(updateProviderDetails(providerData));
+  } else {
+    SimpleToast.show('Could not fetch profile information');
   }
 };
 
@@ -542,7 +546,7 @@ export const getPendingJobRequestProviderFunc = async (providerId, navigation, n
     dispatch(fetchedJobProviderInfo(newJobRequestsProviders));
     if (navigation && navTo) navigation.navigate(navTo);
   } else {
-    dispatch(fetchedJobProviderInfo(newJobRequestsProviders));
+    SimpleToast.show('Could not fetch pending jobs');
     if (navigation && navTo) navigation.navigate(navTo);
   }
 };
@@ -572,6 +576,8 @@ export const getAllWorkRequestProFunc = async (providerId, fetchedDataWorkSource
       dispatch(fetchedDataWorkSource(dataWorkSource));
       dispatch(fetchedAllJobRequestsPro(newAllProvidersDetails));
     }
+  } else {
+    SimpleToast.show('Could not fetch all work requests.');
   }
 };
 
@@ -603,11 +609,13 @@ export const getAllWorkRequestClientFunc = async (clientId, fetchedDataWorkSourc
       dispatch(fetchedDataWorkSource(dataWorkSource));
       dispatch(fetchedAllJobRequestsClient(newAllClientDetails));
     }
+  } else {
+    SimpleToast.show('Could not fetch all work requests');
   }
 };
 
 export const getPendingJobRequestFunc = async (userId, navigation, navTo, fetchedJobCustomerInfo, dispatch) => {
-  const idToken = await rNES.getItem('idTokne');
+  const idToken = await firebaseAuth().currentUser.getIdToken();
   const response = await fetch(PENDING_JOB_CUSTOMER + userId + '/pending', {
     method: 'GET',
     headers: {
@@ -651,8 +659,7 @@ export const getPendingJobRequestFunc = async (userId, navigation, navTo, fetche
     /** navigate away */
     if (navigation && navTo) navigation.navigate(navTo);
   } else {
-    /** navigate away */
-    dispatch(fetchedJobCustomerInfo(newJobRequest));
+    SimpleToast.show('Could not fetch pending jobs');
     if (navigation && navTo) navigation.navigate(navTo);
   }
 };
