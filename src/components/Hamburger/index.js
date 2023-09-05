@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { DrawerActions } from '@react-navigation/native';
 import { withNavigation } from '@react-navigation/compat';
+import rNES from 'react-native-encrypted-storage';
+import firebaseAuth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import SimpleToast from 'react-native-simple-toast';
 import NetInfo from '@react-native-community/netinfo';
@@ -54,6 +56,7 @@ import {
   updateConnectivityStatus,
   updateLiveChatUsers,
 } from '../../Redux/Actions/generalActions';
+import { resetUserDetails } from '../../Redux/Actions/userActions';
 import {
   locationPermissionRequest,
   returnCoordDetails,
@@ -106,6 +109,20 @@ class Hamburger extends React.Component {
     }
   };
 
+  logout = async () => {
+    const { resetUserDetails, navigation: { navigate } } = this.props;
+    if (firebaseAuth().currentUser) firebaseAuth().signOut();
+    await rNES.removeItem('userId');
+    await rNES.removeItem('auth');
+    await rNES.removeItem('firebaseId');
+    await rNES.removeItem('email');
+    await rNES.removeItem('idToken');
+    await rNES.removeItem('userType');
+    resetUserDetails();
+    Config.socket.close();
+    navigate('AfterSplash');
+  }
+
   async componentDidMount() {
     const {
       fetchedNotifications,
@@ -114,6 +131,8 @@ class Hamburger extends React.Component {
       fetchClientMessages,
       navigation,
     } = this.props;
+    const currentUser = firebaseAuth().currentUser;
+    if (!currentUser) this.logout();
     const senderId = userDetails.userId;
     const locationRef = database().ref(`liveLocation/${senderId}`);
     messaging().setBackgroundMessageHandler(message => {
@@ -457,6 +476,8 @@ class Hamburger extends React.Component {
       jobsInfo: { jobRequests },
       generalInfo: { othersCoordinatesFetched }
     } = this.props;
+    const currentUser = firebaseAuth().currentUser;
+    if (!currentUser) this.logout();
     if (jobRequests && !othersCoordinatesFetched)
       this.fetchEmployeeLocations();
   }
@@ -669,7 +690,10 @@ const mapDispatchToProps = dispatch => {
     },
     getPendingJobRequest: (props, proId, navTo) => {
       dispatch(getPendingJobRequest(props, proId, navTo));
-    }
+    },
+    resetUserDetails: () => {
+      dispatch(resetUserDetails());
+    },
   };
 };
 

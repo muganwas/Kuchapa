@@ -100,13 +100,12 @@ class ProChatAfterBookingDetailsScreen extends Component {
   }
 
   componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', () =>
+      this.handleBackButtonClick(),
+    );
     const {
       fetchedNotifications,
-      navigation,
       userInfo: { providerDetails },
-      jobsInfo: {
-        selectedJobRequest: { user_id },
-      },
       fetchEmployeeMessages,
     } = this.props;
     if (!socket.connected) {
@@ -116,15 +115,6 @@ class ProChatAfterBookingDetailsScreen extends Component {
     }
     this.reInit(this.props);
     fetchedNotifications({ type: 'messages', value: 0 });
-    BackHandler.addEventListener('hardwareBackPress', () =>
-      this.handleBackButtonClick(),
-    );
-    navigation.addListener('focus', async () => {
-      this.reInit(this.props);
-    });
-    navigation.addListener('blur', () => {
-      deregisterOnlineStatusListener(user_id);
-    });
   }
 
   componentWillUnmount() {
@@ -132,6 +122,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
+    deregisterOnlineStatusListener(user_id);
   }
 
   reInit = async (props) => {

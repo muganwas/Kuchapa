@@ -23,6 +23,7 @@ import {
 
 const PRO_GET_PROFILE = Config.baseURL + 'employee/';
 const GET_ALL_PROVIDER_URL = Config.baseURL + 'job/serviceprovider/';
+const UPDATE_ONLINE_STATUS = Config.baseURL + 'users/updateOnlineStatus/';
 const USER_GET_PROFILE = Config.baseURL + 'users/';
 const storageRef = storage().ref('/users_info');
 
@@ -186,23 +187,17 @@ export const autoLogin = async (
 };
 
 export const synchroniseOnlineStatus = async (id, savedStatus) => {
-  let status = savedStatus;
-  const usersRef = database().ref(`users/${id}`);
-  await usersRef.once('value', snapshot => {
-    const value = snapshot.val();
-    if (value != undefined) status = value.status;
-    else {
-      usersRef
-        .set({ status })
-        .then(() => {
-          SimpleToast.show('Status set.', SimpleToast.SHORT);
-        })
-        .catch(e => {
-          SimpleToast.show('Could not set status.', SimpleToast.SHORT);
-        });
-    }
+  const idToken = await firebaseAuth().currentUser.getIdToken();
+  const resp = await fetch(UPDATE_ONLINE_STATUS, {
+    method: "POST",
+    headers: {
+      Authorization: 'Bearer ' + idToken,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id, savedStatus }),
   });
-  return status;
+  const responseJson = await resp.json();
+  return responseJson.data.status;
 };
 
 export const inhouseLogin = async ({
@@ -219,7 +214,7 @@ export const inhouseLogin = async ({
   const provider = userType === 'Provider';
   const fetchProfileUrl = provider ? PRO_GET_PROFILE : USER_GET_PROFILE;
   try {
-    const idToken = await firebaseAuth().currentUser.getIdToken();
+    const idToken = await firebaseAuth().currentUser.getIdToken(true);
     const response = await fetch(fetchProfileUrl + userId + '?fcm_id=' + fcmToken, {
       headers: {
         Authorization: 'Bearer ' + idToken
@@ -278,6 +273,7 @@ export const inhouseLogin = async ({
       fetchPendingJobInfo(props, userId, home);
     } else onLoginFailure(responseJson.message);
   } catch (e) {
+    console.log('login error', { e })
     const message = e.message.indexOf('Network') > -1
       ? 'Check your internet connection and try again'
       : 'Something went wrong, try again later';
@@ -681,10 +677,12 @@ export const updateProfileImageTask = async ({
   toggleIsLoading,
   updateURL,
 }) => {
+  const currentUser = firebaseAuth().currentUser;
+  if (!currentUser) return SimpleToast.show('Session expired, re-authenticate.');
   toggleIsLoading(true);
   const { fileName, uri } = imageObject;
   const userDataRef = storageRef.child(`/${firebaseId}/${fileName}`);
-  const idToken = await firebaseAuth().currentUser.getIdToken();
+  const idToken = await currentUser.getIdToken();
   userDataRef
     .putFile(uri)
     .then(uploadRes => {

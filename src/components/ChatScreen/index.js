@@ -94,11 +94,7 @@ class ChatScreen extends Component {
 
   componentDidMount() {
     const {
-      fetchedNotifications,
-      jobsInfo: {
-        selectedJobRequest: { employee_id },
-      },
-      navigation,
+      fetchedNotifications
     } = this.props;
     this.reInit(this.props);
     fetchedNotifications({ type: 'messages', value: 0 });
@@ -106,19 +102,19 @@ class ChatScreen extends Component {
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    navigation.addListener('focus', async () => {
-      this.reInit(this.props);
-    });
-    navigation.addListener('blur', () => {
-      deregisterOnlineStatusListener(employee_id);
-    });
   }
 
   componentWillUnmount() {
+    const {
+      jobsInfo: {
+        selectedJobRequest: { employee_id },
+      },
+    } = this.props;
     BackHandler.removeEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
+    deregisterOnlineStatusListener(employee_id);
   }
 
   reInit = props => {

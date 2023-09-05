@@ -74,12 +74,12 @@ class ProNotificationsScreen extends Component {
   }
 
   componentDidMount() {
-    const { fetchedNotifications } = this.props;
-    fetchedNotifications({ type: 'generic', value: 0 });
-    this.getAllNotificationsProvider();
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
+    const { fetchedNotifications } = this.props;
+    fetchedNotifications({ type: 'generic', value: 0 });
+    this.getAllNotificationsProvider();
   }
 
   componentWillUnmount() {

@@ -198,12 +198,14 @@ class MapDirectionScreen extends Component {
   };
 
   async componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', () =>
+      this.handleBackButtonClick(),
+    );
     const {
       generalInfo: { othersCoordinates, usersCoordinates },
       jobsInfo: {
         selectedJobRequest: { employee_id },
-      },
-      navigation,
+      }
     } = this.props;
     const employeeLatitude = othersCoordinates[employee_id]
       ? othersCoordinates[employee_id].latitude
@@ -218,16 +220,8 @@ class MapDirectionScreen extends Component {
       employeeLatitude + ',' + employeeLongitude,
       destination,
     );
-
-    BackHandler.addEventListener('hardwareBackPress', () =>
-      this.handleBackButtonClick(),
-    );
     await this.reInit(this.props);
     this.refetchDirections();
-    navigation.addListener('focus', async () => {
-      this.reInit(this.props);
-      this.refetchDirections();
-    });
   }
 
   componentWillUnmount() {

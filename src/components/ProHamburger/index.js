@@ -9,8 +9,10 @@ import {
   Platform,
 } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
+import firebaseAuth from '@react-native-firebase/auth';
 import { cloneDeep } from 'lodash';
 import { DrawerActions } from '@react-navigation/native';
+import rNES from 'react-native-encrypted-storage';
 import { NavigationEvents, withNavigation } from '@react-navigation/compat';
 import database from '@react-native-firebase/database';
 import geolocation from '@react-native-community/geolocation';
@@ -48,6 +50,7 @@ import {
   updateCompletedBookingData,
   updateFailedBookingData,
 } from '../../Redux/Actions/jobsActions';
+import { resetUserDetails } from '../../Redux/Actions/userActions';
 import Config from '../Config';
 import _ from 'lodash';
 import { black, white, red } from '../../Constants/colors';
@@ -111,6 +114,8 @@ class ProHamburger extends React.Component {
       getAllWorkRequestPro,
       getPendingJobRequests,
     } = this.props;
+    const currentUser = firebaseAuth().currentUser;
+    if (!currentUser) this.logout();
     const receiverId = providerDetails.providerId;
     messaging().setBackgroundMessageHandler(message => {
       if (message && message.data) {
@@ -351,11 +356,27 @@ class ProHamburger extends React.Component {
     });
   }
 
+  logout = async () => {
+    const { resetUserDetails, navigation: { navigate } } = this.props;
+    if (firebaseAuth().currentUser) firebaseAuth().signOut();
+    await rNES.removeItem('userId');
+    await rNES.removeItem('auth');
+    await rNES.removeItem('firebaseId');
+    await rNES.removeItem('email');
+    await rNES.removeItem('idToken');
+    await rNES.removeItem('userType');
+    resetUserDetails();
+    Config.socket.close();
+    navigate('AfterSplash');
+  }
+
   componentDidUpdate() {
     const {
       jobsInfo: { allJobRequestsProviders },
       generalInfo: { othersCoordinatesFetched }
     } = this.props;
+    const currentUser = firebaseAuth().currentUser;
+    if (!currentUser) this.logout();
     if (allJobRequestsProviders && !othersCoordinatesFetched)
       this.fetchOthersLocations();
   }
@@ -553,6 +574,9 @@ const mapDispatchToProps = dispatch => {
     },
     updateFailedBookingData: data => {
       dispatch(updateFailedBookingData(data));
+    },
+    resetUserDetails: () => {
+      dispatch(resetUserDetails());
     },
   };
 };

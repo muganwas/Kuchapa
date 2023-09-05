@@ -142,7 +142,7 @@ class SplashScreen extends Component {
     });
 
   logout = async () => {
-    const { resetUserDetails } = this.props;
+    const { resetUserDetails, navigation: { navigate } } = this.props;
     if (firebaseAuth().currentUser) firebaseAuth().signOut();
     await rNES.removeItem('userId');
     await rNES.removeItem('auth');
@@ -152,6 +152,7 @@ class SplashScreen extends Component {
     await rNES.removeItem('userType');
     resetUserDetails();
     Config.socket.close();
+    navigate('AfterSplash');
   }
 
   splashTimeOut = async () => {

@@ -67,7 +67,6 @@ class ProAddAddressScreen extends Component {
   componentDidMount() {
     const {
       userInfo: { providerDetails },
-      navigation,
     } = this.props;
     BackHandler.addEventListener(
       'hardwareBackPress',

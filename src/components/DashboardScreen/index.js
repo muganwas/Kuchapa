@@ -12,6 +12,7 @@ import {
   FlatList,
   Modal,
   Platform,
+  RefreshControl,
   ScrollView,
   LogBox,
 } from 'react-native';
@@ -86,11 +87,8 @@ class DashboardScreen extends Component {
   };
 
   componentDidMount = () => {
-    this.onRefresh();
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-    this.props.navigation.addListener('focus', () => {
-      this.onRefresh();
-    });
+    this.onRefresh();
   };
 
   componentWillUnmount() {
@@ -562,7 +560,15 @@ class DashboardScreen extends Component {
           style={[
             styles.gridView,
             { flex: 1, marginBottom: jobRequests.length === 0 ? 0 : 45 },
-          ]}>
+          ]}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isLoading}
+              onRefresh={this.onRefresh}
+              title="Loading"
+            />
+          }
+        >
           <View style={{ height: '100%' }}>
             <FlatList
               keyboardShouldPersistTaps={'handled'}

@@ -98,29 +98,23 @@ class ProAcceptRejectJobScreen extends Component {
   }
 
   componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', () =>
+      this.handleBackButtonClick(),
+    );
+    this.init(this.props);
+  }
+
+  componentWillUnmount() {
     const {
-      navigation,
       jobsInfo: {
         selectedJobRequest: { user_id },
       },
     } = this.props;
-    this.init(this.props);
-    BackHandler.addEventListener('hardwareBackPress', () =>
-      this.handleBackButtonClick(),
-    );
-    navigation.addListener('focus', async () => {
-      this.init(this.props);
-    });
-    navigation.addListener('blur', () => {
-      deregisterOnlineStatusListener(user_id);
-    });
-  }
-
-  componentWillUnmount() {
     BackHandler.removeEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
+    deregisterOnlineStatusListener(user_id);
   }
 
   init = props => {

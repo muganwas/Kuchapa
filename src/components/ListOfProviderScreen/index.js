@@ -61,10 +61,10 @@ class ListOfProviderScreen extends Component {
   }
 
   componentDidMount() {
-    this.initialize();
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
+    this.initialize();
   }
 
   componentWillUnmount() {

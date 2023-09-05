@@ -18,7 +18,6 @@ import {
 import { connect } from 'react-redux';
 import RNExitApp from 'react-native-exit-app';
 import SimpleToast from 'react-native-simple-toast';
-import database from '@react-native-firebase/database';
 import ReviewDialog from '../ReviewDialog';
 import Config from '../Config';
 import ProHamburger from '../ProHamburger';
@@ -45,7 +44,7 @@ import {
 import {
   acceptChatRequest,
   rejectChatRequest,
-  updateAvailabilityInMongoDB,
+  updateAvailabilityInDB,
   getAllRecentChats,
 } from '../../controllers/chats';
 import { requestClientForReview } from '../../controllers/jobs';
@@ -120,16 +119,12 @@ class ProDashboardScreen extends Component {
 
   //Get All Bookings
   componentDidMount = () => {
-    this.initiateProps();
-    this.onRefresh();
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    this.props.navigation.addListener('focus', () => {
-      this.initiateProps();
-      this.onRefresh();
-    });
+    this.initiateProps();
+    this.onRefresh();
   };
 
   componentWillUnmount() {
@@ -145,7 +140,7 @@ class ProDashboardScreen extends Component {
 
   componentDidUpdate() {
     const {
-      generalInfo: { connectivityAvailable, othersCoordinates },
+      generalInfo: { connectivityAvailable },
       userInfo: { providerDetails },
     } = this.props;
     const { status } = this.state;
@@ -356,8 +351,8 @@ class ProDashboardScreen extends Component {
     }
   };
 
-  updateAvailabilityInDB = async userData =>
-    await updateAvailabilityInMongoDB({
+  updateOnlineAvailability = async userData =>
+    await updateAvailabilityInDB({
       userData,
       providerDetails: this.props?.userInfo?.providerDetails,
       updateProviderDetails: this.props?.updateProviderDetails,
@@ -379,13 +374,12 @@ class ProDashboardScreen extends Component {
       },
     });
 
-  changeAvailabilityStaus = () => {
+  changeAvailabilityStatus = () => {
     const {
-      generalInfo: { online },
+      generalInfo: { online, connectivityAvailable },
       userInfo: { providerDetails },
     } = this.props;
-    const providerId = providerDetails.providerId;
-    const usersRef = database().ref('users/' + providerId);
+    if (!connectivityAvailable) return false;
     this.setState({
       isLoading: true,
     });
@@ -397,99 +391,18 @@ class ProDashboardScreen extends Component {
       Config.socket.open();
       this.setState({ isLoading: false });
     } else if (manualOffline) {
-      let userData = {
-        status: '1',
-      };
-      usersRef.once('value', data => {
-        if (data) {
-          usersRef
-            .update(userData)
-            .then(() => {
-              this.updateAvailabilityInDB({
-                online: '1',
-              });
-            })
-            .catch(e => {
-              SimpleToast.show('Could not update online status');
-              console.log(e.message);
-            });
-        } else {
-          usersRef
-            .set(userData)
-            .then(() => {
-              this.updateAvailabilityInDB({
-                online: '1',
-              });
-            })
-            .catch(e => {
-              SimpleToast.show('Could not update online status');
-              console.log(e.message);
-            });
-        }
+      this.updateOnlineAvailability({
+        online: '1',
       });
     } else if (combinedOffline) {
       Config.socket.open();
-      let userData = {
-        status: '1',
-      };
-      usersRef.once('value', data => {
-        if (data) {
-          usersRef
-            .update(userData)
-            .then(() => {
-              this.updateAvailabilityInDB({
-                online: '1',
-              });
-            })
-            .catch(e => {
-              SimpleToast.show('Could not update online status');
-              console.log(e.message);
-            });
-        } else {
-          usersRef
-            .set(userData)
-            .then(() => {
-              this.updateAvailabilityInDB({
-                online: '1',
-              });
-            })
-            .catch(e => {
-              SimpleToast.show('Could not update online status');
-              console.log(e.message);
-            });
-        }
+      this.updateOnlineAvailability({
+        online: '1',
       });
     } else {
       const newStatus = providerDetails.online === '1' ? '0' : '1';
-      let userData = {
-        status: newStatus,
-      };
       !online ? Config.socket.open() : Config.socket.close();
-      usersRef.once('value', data => {
-        if (data) {
-          usersRef
-            .update(userData)
-            .then(() => {
-              this.updateAvailabilityInDB({ online: newStatus });
-            })
-            .catch(e => {
-              SimpleToast.show('Could not update online status');
-              console.log(e.message);
-            });
-        } else {
-          usersRef
-            .set(userData)
-            .then(() => {
-              this.updateAvailabilityInDB({
-                online: newStatus,
-              });
-            })
-            .catch(e => {
-              SimpleToast.show('Could not update online status');
-              console.log(e.message);
-            });
-        }
-      });
+      this.updateOnlineAvailability({ online: newStatus });
     }
   };
 
@@ -846,6 +759,7 @@ class ProDashboardScreen extends Component {
       messagesInfo: { latestChats },
       navigation,
     } = this.props;
+    const { status } = this.state;
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
@@ -900,8 +814,8 @@ class ProDashboardScreen extends Component {
                   : '#f4f3f4'
               }
               ios_backgroundColor={this.state.availBackground}
-              onValueChange={this.changeAvailabilityStaus}
-              value={this.state.status === 'ONLINE'}
+              onChange={this.changeAvailabilityStatus}
+              value={status === 'ONLINE'}
             />
             <Text
               style={{
@@ -909,9 +823,7 @@ class ProDashboardScreen extends Component {
                 textTransform: 'capitalize',
                 alignSelf: 'center',
               }}>
-              {online && providerDetails.online === '1' && connectivityAvailable
-                ? 'ONLINE'
-                : 'OFFLINE'}
+              {status}
             </Text>
           </View>
         </View>

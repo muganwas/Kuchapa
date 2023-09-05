@@ -7,6 +7,7 @@ import FilePickerManager from 'react-native-file-picker';
 import Config from '../components/Config';
 import { imageExists } from '../misc/helpers';
 import { uploadAttachment } from './storage';
+import { synchroniseOnlineStatus } from './users';
 
 const REJECT_ACCEPT_REQUEST = Config.baseURL + 'jobrequest/updatejobrequest';
 const socket = Config.socket;
@@ -196,7 +197,7 @@ export const rejectChatRequest = async (
   }
 };
 
-export const updateAvailabilityInMongoDB = async ({
+export const updateAvailabilityInDB = async ({
   userData,
   providerDetails,
   updateProviderDetails,
@@ -216,17 +217,18 @@ export const updateAvailabilityInMongoDB = async ({
       },
       body: JSON.stringify(userData),
     });
-    const response = resp.json();
-    const { result, data } = response;
+    const response = await resp.json();
+    const { result, data, message } = response;
     if (result && data) {
       newProDits.online = data.online;
+      await synchroniseOnlineStatus(providerDetails.providerId, data.online);
       updateProviderDetails(newProDits);
-      onSuccess(response.message, online, data.online);
+      onSuccess(message, online, data.online);
     } else {
-      onError(response.message);
+      onError(message);
     }
   } catch (e) {
-    onError('Something went wrong, please try again later');
+    onError(e.message);
   }
 };
 //Recent Chat Message

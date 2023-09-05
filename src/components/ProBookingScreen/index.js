@@ -66,11 +66,11 @@ class ProBookingScreen extends Component {
   }
 
   componentDidMount() {
-    this.getAllBookingsProvider();
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
+    this.getAllBookingsProvider();
   }
 
   componentWillUnmount() {

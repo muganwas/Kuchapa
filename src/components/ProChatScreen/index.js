@@ -104,14 +104,6 @@ class ProChatScreen extends Component {
   }
 
   componentDidMount() {
-    const {
-      navigation,
-      jobsInfo: {
-        selectedJobRequest: { user_id },
-      },
-      userInfo: { providerDetails },
-      fetchEmployeeMessages,
-    } = this.props;
     if (!socket.connected) {
       socket.close();
       socket.connect();
@@ -121,19 +113,19 @@ class ProChatScreen extends Component {
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
-    navigation.addListener('focus', async () => {
-      this.reInit(this.props);
-    });
-    navigation.addListener('blur', () => {
-      deregisterOnlineStatusListener(user_id);
-    });
   }
 
   componentWillUnmount() {
+    const {
+      jobsInfo: {
+        selectedJobRequest: { user_id },
+      }
+    } = this.props;
     BackHandler.removeEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
+    deregisterOnlineStatusListener(user_id);
   }
 
   reInit = (props) => {

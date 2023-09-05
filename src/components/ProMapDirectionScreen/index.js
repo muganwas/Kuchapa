@@ -118,12 +118,14 @@ class ProMapDirectionScreen extends Component {
   }
 
   componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', () =>
+      this.handleBackButtonClick(),
+    );
     const {
       generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
         selectedJobRequest: { user_id },
       },
-      navigation,
     } = this.props;
     const destination =
       othersCoordinates[user_id]?.latitude +
@@ -134,12 +136,6 @@ class ProMapDirectionScreen extends Component {
       destination,
     );
     this.onRefresh();
-    BackHandler.addEventListener('hardwareBackPress', () =>
-      this.handleBackButtonClick(),
-    );
-    navigation.addListener('focus', async () => {
-      this.onRefresh();
-    });
   }
 
   componentDidUpdate(oldProps) {

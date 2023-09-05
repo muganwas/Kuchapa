@@ -171,32 +171,10 @@ class ProviderDetailsScreen extends Component {
   }
 
   componentDidMount() {
-    this.initialRender(this.props);
-    const { navigation } = this.props;
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
-    navigation.addListener('focus', () => {
-      this.initialRender(this.props);
-    });
-    navigation.addListener('blur', () => {
-      this.setState({
-        isLoading: false,
-        requestStatus: '',
-      });
-      const {
-        userInfo: { userDetails },
-        getPendingJobRequest,
-      } = this.props;
-      getPendingJobRequest(this.props, userDetails.userId);
-    });
-  }
-
-  componentWillUnmount() {
-    BackHandler.removeEventListener(
-      'hardwareBackPress',
-      this.handleBackButtonClick,
-    );
+    this.initialRender(this.props);
   }
 
   initialRender = async (props) => {
@@ -320,6 +298,10 @@ class ProviderDetailsScreen extends Component {
     getPendingJobRequest(this.props, userDetails.userId);
     const providerId = route.params.providerId;
     providerId && deregisterOnlineStatusListener(providerId);
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
   }
 
   changeDialogVisibility = () =>

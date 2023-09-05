@@ -24,7 +24,6 @@ const StatusBarPlaceHolder = () => {
 
 export default class ContactUsScreen extends Component {
     componentDidMount() {
-        const { navigation } = this.props;
         BackHandler.addEventListener('hardwareBackPress', () => this.handleBackButtonClick());
     }
 

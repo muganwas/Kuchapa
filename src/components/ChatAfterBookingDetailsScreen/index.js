@@ -102,15 +102,10 @@ class ChatAfterBookingDetailsScreen extends Component {
   }
 
   componentDidMount() {
-    const {
-      fetchedNotifications,
-      navigation,
-      userInfo: { userDetails },
-      jobsInfo: {
-        selectedJobRequest: { employee_id },
-      },
-      fetchClientMessages,
-    } = this.props;
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
     if (!socket.connected) {
       socket.close();
       socket.connect();
@@ -118,23 +113,19 @@ class ChatAfterBookingDetailsScreen extends Component {
     }
     this.reInit(this.props);
     fetchedNotifications({ type: 'messages', value: 0 });
-    BackHandler.addEventListener(
-      'hardwareBackPress',
-      this.handleBackButtonClick,
-    );
-    navigation.addListener('focus', async () => {
-      this.reInit(this.props);
-    });
-    navigation.addListener('blur', () => {
-      deregisterOnlineStatusListener(employee_id);
-    });
   }
 
   componentWillUnmount() {
+    const {
+      jobsInfo: {
+        selectedJobRequest: { employee_id },
+      }
+    } = this.props;
     BackHandler.removeEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
+    deregisterOnlineStatusListener(employee_id);
   }
 
   reInit = (props) => {
