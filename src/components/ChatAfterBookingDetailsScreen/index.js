@@ -102,6 +102,7 @@ class ChatAfterBookingDetailsScreen extends Component {
   }
 
   componentDidMount() {
+    const { fetchClientMessages, fetchedNotifications } = this.props;
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
@@ -176,16 +177,16 @@ class ChatAfterBookingDetailsScreen extends Component {
 
   componentDidUpdate() {
     const {
-      messagesInfo: { dataChatSource },
+      messagesInfo: { dataChatSource, fetchedDBMessages },
       jobsInfo: {
         selectedJobRequest: { employee_id },
       },
       generalInfo: { OnlineUsers },
     } = this.props;
-    const { liveChatStatus, selectedStatus } = this.state;
+    const { liveChatStatus, selectedStatus, isLoading } = this.state;
     const providerId = employee_id;
     const localDataChatSource = this.state.dataChatSource;
-    //if (fetched && isLoading) this.setState({isLoading: false});
+    if (fetchedDBMessages && isLoading) this.setState({ isLoading: false });
     if (
       JSON.stringify(dataChatSource[employee_id]) !==
       JSON.stringify(localDataChatSource)

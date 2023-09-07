@@ -172,15 +172,15 @@ class ProChatAfterBookingDetailsScreen extends Component {
 
   componentDidUpdate() {
     const {
-      messagesInfo: { dataChatSource },
+      messagesInfo: { dataChatSource, fetchedDBMessages },
       jobsInfo: {
         selectedJobRequest: { user_id },
       },
       generalInfo: { OnlineUsers },
     } = this.props;
-    const { liveChatStatus, selectedStatus } = this.state;
+    const { liveChatStatus, selectedStatus, isLoading } = this.state;
     const localDataChatSource = this.state.dataChatSource;
-    //if (fetched && isLoading) this.setState({isLoading: false});
+    if (fetchedDBMessages && isLoading) this.setState({ isLoading: false });
     if (
       JSON.stringify(dataChatSource[user_id]) !==
       JSON.stringify(localDataChatSource)

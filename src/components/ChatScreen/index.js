@@ -124,7 +124,7 @@ class ChatScreen extends Component {
         jobRequests,
         selectedJobRequest: { employee_id },
       },
-      messagesInfo: { dataChatSource, fetched },
+      messagesInfo: { dataChatSource, fetchedDBMessages },
       generalInfo: { OnlineUsers },
       fetchClientMessages,
       route,
@@ -142,7 +142,7 @@ class ChatScreen extends Component {
       inputMessage: '',
       showButton: false,
       dataChatSource: dataChatSource[employee_id] || [],
-      isLoading: !fetched,
+      isLoading: !fetchedDBMessages,
       isUploading: false,
       isJobAccepted:
         jobRequests[currRequestPos] &&
@@ -197,7 +197,7 @@ class ChatScreen extends Component {
 
   componentDidUpdate() {
     const {
-      messagesInfo: { fetched, dataChatSource },
+      messagesInfo: { fetchedDBMessages, dataChatSource },
       jobsInfo: {
         selectedJobRequest: { employee_id },
         jobRequests,
@@ -216,7 +216,7 @@ class ChatScreen extends Component {
       selectedStatus,
     } = this.state;
     const localDataChatSource = this.state.dataChatSource;
-    if (fetched && isLoading) this.setState({ isLoading: false });
+    if (fetchedDBMessages && isLoading) this.setState({ isLoading: false });
 
     if (
       JSON.stringify(dataChatSource[employee_id]) !==

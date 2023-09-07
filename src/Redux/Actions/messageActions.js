@@ -54,7 +54,6 @@ export const fetchEmployeeMessages = ({ receiverId, callBack }) => {
     try {
       fetchEmployeeMessagesFunc(receiverId, dispatch, dbMessagesFetched, callBack);
     } catch (e) {
-      console.log('mongo messages error', e);
       dispatch(messagesError(e.message));
       callBack && callBack();
     }

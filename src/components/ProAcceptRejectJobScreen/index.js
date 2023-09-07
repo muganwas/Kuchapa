@@ -125,7 +125,7 @@ class ProAcceptRejectJobScreen extends Component {
         jobRequestsProviders,
         selectedJobRequest: { user_id },
       },
-      messagesInfo: { messages, fetchedDBMessages },
+      messagesInfo: { dataChatSource, fetchedDBMessages },
       generalInfo: { OnlineUsers },
       route
     } = this.props || props;
@@ -142,7 +142,7 @@ class ProAcceptRejectJobScreen extends Component {
       showButton: false,
       isAcceptJob: jobRequestsProviders[currRequestPos]?.status === 'Accepted',
       isRejectJob: false,
-      dataChatSource: messages[user_id] || [],
+      dataChatSource: dataChatSource[user_id] || [],
       isLoading: !fetchedDBMessages,
       isErrorToast: false,
       receiverId: jobRequestsProviders[currRequestPos]?.user_id,

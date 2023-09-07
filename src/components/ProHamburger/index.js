@@ -106,7 +106,6 @@ class ProHamburger extends React.Component {
   async componentDidMount() {
     const {
       fetchedNotifications,
-      fetchEmployeeMessages,
       updateLiveChatUsers,
       userInfo: { providerDetails },
       navigation,
@@ -170,7 +169,6 @@ class ProHamburger extends React.Component {
           delivery_lang: data.delivery_lang,
         });
       } else if (title.toLowerCase() === 'job completed' || title.toLowerCase() === 'job cancelled') {
-        console.log('accepted route', this.props.route)
         navigation.navigate('ProHome');
       } else if (
         title.toLowerCase() === 'job cancelled' ||
@@ -184,8 +182,6 @@ class ProHamburger extends React.Component {
 
       }
     });
-    //await getAllWorkRequestPro(receiverId);
-    //await fetchEmployeeMessages(receiverId);
     await this.fetchOthersLocations();
     await checkNoficationsAvailability();
     await checkForUserType(navigation.navigate);

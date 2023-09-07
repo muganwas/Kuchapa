@@ -232,7 +232,6 @@ class Hamburger extends React.Component {
     });
     await checkNoficationsAvailability();
     await checkForUserType(navigation.navigate);
-    //await fetchClientMessages(senderId);
     /** fetch users current position and upload it to db */
     locationPermissionRequest(() => {
       const {
@@ -387,9 +386,7 @@ class Hamburger extends React.Component {
         ? cloneDeep(newMessages[sender])
         : [];
       let prevMessage = prevMessages.pop();
-      if (JSON.stringify(prevMessage) === JSON.stringify(data))
-        console.log('repeated message');
-      else {
+      if (JSON.stringify(prevMessage) !== JSON.stringify(data)) {
         let newMessagesCount = currentMessagesCount + 1;
         fetchedNotifications({ type: 'messages', value: newMessagesCount });
         newMessages[sender]
