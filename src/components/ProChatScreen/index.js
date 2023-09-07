@@ -105,7 +105,6 @@ class ProChatScreen extends Component {
 
   componentDidMount() {
     if (!socket.connected) {
-      socket.close();
       socket.connect();
       fetchEmployeeMessages(providerDetails.providerId);
     }
@@ -141,7 +140,6 @@ class ProChatScreen extends Component {
       fetchEmployeeMessages,
     } = props;
     if (!socket.connected) {
-      socket.close();
       socket.connect();
       fetchEmployeeMessages(providerDetails.providerId);
     }

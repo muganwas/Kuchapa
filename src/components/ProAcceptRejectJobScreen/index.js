@@ -14,7 +14,6 @@ import {
   Platform,
   Modal,
   KeyboardAvoidingView,
-  ActivityIndicator,
 } from 'react-native';
 import { withNavigation } from '@react-navigation/compat';
 import Toast from 'react-native-simple-toast';
@@ -97,10 +96,12 @@ class ProAcceptRejectJobScreen extends Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
+    const { fetchEmployeeMessages, userInfo: { providerDetails } } = this.props
+    await fetchEmployeeMessages(providerDetails.providerId);
     this.init(this.props);
   }
 
@@ -117,22 +118,19 @@ class ProAcceptRejectJobScreen extends Component {
     deregisterOnlineStatusListener(user_id);
   }
 
-  init = props => {
+  init = async props => {
     const {
       userInfo: { providerDetails },
       jobsInfo: {
         jobRequestsProviders,
         selectedJobRequest: { user_id },
       },
-      messagesInfo: { dataChatSource, fetched },
+      messagesInfo: { messages, fetchedDBMessages },
       generalInfo: { OnlineUsers },
-      route,
-      fetchEmployeeMessages,
-    } = props;
+      route
+    } = this.props || props;
     if (!socket.connected) {
-      socket.close();
       socket.connect();
-      fetchEmployeeMessages(providerDetails.providerId);
     }
     const currRequestPos = route.params.currentPos || 0;
     this.setState({
@@ -144,8 +142,8 @@ class ProAcceptRejectJobScreen extends Component {
       showButton: false,
       isAcceptJob: jobRequestsProviders[currRequestPos]?.status === 'Accepted',
       isRejectJob: false,
-      dataChatSource: dataChatSource[user_id] || [],
-      isLoading: !fetched,
+      dataChatSource: messages[user_id] || [],
+      isLoading: !fetchedDBMessages,
       isErrorToast: false,
       receiverId: jobRequestsProviders[currRequestPos]?.user_id,
       receiverName: jobRequestsProviders[currRequestPos]?.name,
@@ -188,8 +186,10 @@ class ProAcceptRejectJobScreen extends Component {
       jobsInfo: {
         selectedJobRequest: { user_id },
       },
+      messagesInfo: { fetchedDBMessages }
     } = this.props;
-    const { liveChatStatus, selectedStatus } = this.state;
+    const { liveChatStatus, selectedStatus, isLoading } = this.state;
+    if (isLoading && fetchedDBMessages) this.setState({ isLoading: false });
     if (
       OnlineUsers[user_id] &&
       liveChatStatus !== OnlineUsers[user_id].status
@@ -400,15 +400,6 @@ class ProAcceptRejectJobScreen extends Component {
               />
             </View>
           </ScrollView>
-          {this.state.isLoading && (
-            <View style={styles.loaderStyle}>
-              <ActivityIndicator
-                style={{ height: 80 }}
-                color="red"
-                size="large"
-              />
-            </View>
-          )}
           <View style={styles.footerContainer}>
             {!this.state.isAcceptJob && !this.state.isRejectJob && (
               <View

@@ -98,10 +98,10 @@ class SplashScreen extends Component {
     this.rightButtonAction = null;
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     setTimeout(() => this.splashTimeOut(), 3000);
     const { fetchCodes } = this.props;
-    fetchCodes();
+    await fetchCodes();
   }
 
   componentDidUpdate() {
@@ -200,9 +200,9 @@ class SplashScreen extends Component {
                         },
                         null,
                         () => {
-                          if (message.includes('re-authenticate')) {
+                          this.clearDialog();
+                          if (message.includes('re-authenticate') || message.includes('Not Found')) {
                             this.logout();
-                            this.clearDialog();
                             return navigation.navigate('AfterSplash');
                           }
                           if (Android) {
@@ -227,6 +227,7 @@ class SplashScreen extends Component {
                 },
                 null,
                 () => {
+                  this.clearDialog();
                   if (Android) BackHandler.exitApp();
                   else RNExitApp.exitApp();
                 },
@@ -243,6 +244,7 @@ class SplashScreen extends Component {
             },
             null,
             () => {
+              this.clearDialog();
               if (Android) BackHandler.exitApp();
               else RNExitApp.exitApp();
             },
@@ -258,6 +260,7 @@ class SplashScreen extends Component {
         },
         null,
         () => {
+          this.clearDialog();
           if (Android) BackHandler.exitApp();
           else RNExitApp.exitApp();
         },

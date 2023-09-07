@@ -167,6 +167,7 @@ export const autoLogin = async (
       const currentEmail = firebaseAuth().currentUser?.email;
       const currentFirebaseId = firebaseAuth().currentUser?.uid;
       const firebaseId = await rNES.getItem('firebaseId');
+      console.log('login auto going inhouse');
       if (currentEmail === email && firebaseId === currentFirebaseId)
         return inhouseLogin(userId, userType, fcmToken);
       firebaseAuth()
@@ -222,6 +223,8 @@ export const inhouseLogin = async ({
     });
     const responseJson = await response.json();
     let onlineStatus;
+    console.log('login ', responseJson)
+    console.log('login onfailure ', onLoginFailure)
     if (responseJson && responseJson.result) {
       const id = responseJson.data.id;
       onlineStatus = await synchroniseOnlineStatus(
@@ -273,7 +276,6 @@ export const inhouseLogin = async ({
       fetchPendingJobInfo(props, userId, home);
     } else onLoginFailure(responseJson.message);
   } catch (e) {
-    console.log('login error', { e })
     const message = e.message.indexOf('Network') > -1
       ? 'Check your internet connection and try again'
       : 'Something went wrong, try again later';

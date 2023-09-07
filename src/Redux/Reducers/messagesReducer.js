@@ -14,6 +14,7 @@ const initialState = {
   fetchedLatestChats: false,
   latestChatsError: false,
   fetched: false,
+  fetchedDBMessages: false,
   fetching: false,
   error: null,
 };
@@ -40,7 +41,7 @@ const messagesReducer = (state = initialState, action) => {
         ...state,
         messages: action.payload,
         error: null,
-        fetched: true,
+        fetchedDBMessages: true,
         fetching: false,
       };
     case FETCHING_MESSAGES_ERROR:

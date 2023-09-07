@@ -627,7 +627,6 @@ export const getPendingJobRequestFunc = async (userId, navigation, navTo, fetche
   const responseJson = await response.json();
   const newJobRequest = [];
   if (responseJson.result) {
-    //const id = responseJson.data.id;
     responseJson.data.map(async (job, index) => {
       if (job && job.employee_details) {
         let jobData = {

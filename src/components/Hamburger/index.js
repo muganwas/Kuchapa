@@ -143,152 +143,96 @@ class Hamburger extends React.Component {
       }
     });
     messaging().onMessage(async message => {
-      const data = JSON.parse(message.data.data);
-      const { title, main_id, orderId } = data;
-      const check = main_id + title;
-      notifications.push(check);
-      const {
-        fetchedNotifications,
-        updateActiveRequest,
-        notificationsInfo,
-        fetchedPendingJobInfo,
-        getAllWorkRequestClient,
-        getPendingJobRequest,
-        jobsInfo: { jobRequests },
-        userInfo: { userDetails },
-      } = this.props;
-      const senderId = userDetails.userId;
-      const { currentMessage } = this.state;
-      const currentGenericCount = notificationsInfo.generic;
-      this.setState({ currentMessage: message });
-      if (!_.isEqual(currentMessage, message)) {
-        title !== 'Message Recieved' &&
-          fetchedNotifications({
-            type: 'generic',
-            value: currentGenericCount + 1,
-          });
-      }
-      let newJobRequests = cloneDeep(jobRequests);
-      let pos;
-      await jobRequests.map((obj, i) => {
-        if (orderId === obj.order_id) pos = i;
-      });
-      title !== 'Message Recieved' && this.getAllNotificationsCustomer();
-      if (title.toLowerCase() === 'chat request rejected') {
-        if (pos !== undefined) {
-          newJobRequests.splice(pos, 1);
-          fetchedPendingJobInfo(newJobRequests);
-          navigation.navigate('Home');
-        } else getPendingJobRequest(this.props, senderId, 'Home');
-        getAllWorkRequestClient(senderId);
-        this.showToast(
-          'The service provider rejected your request. please try again later',
-        );
-      } else if (title.toLowerCase() === 'job accepted') {
-        const providerData =
-          typeof data.ProviderData === 'string'
-            ? JSON.parse(data.ProviderData)
-            : data.ProviderData;
-        const pendingJobData = {
-          id: data.mainId,
-          order_id: data.orderId,
-          employee_id: providerData.ProviderId,
-          image: providerData.image,
-          fcm_id: providerData.fcmId,
-          name: providerData.name,
-          surName: providerData.surname,
-          mobile: providerData.mobile,
-          description: providerData.description,
-          employee_details: providerData,
-          address: providerData.address,
-          lat: providerData.lat,
-          lang: providerData.lang,
-          service_name: data.serviceName,
-          chat_status: data.chat_status,
-          status: data.status,
-          delivery_address: data.delivery_address,
-          delivery_lat: data.delivery_lat,
-          delivery_lang: data.delivery_lang,
-        };
-        pendingJobData.imageAvailable = await imageExists(providerData.image);
-        if (pos !== undefined) {
-          newJobRequests[pos] = pendingJobData;
-          fetchedPendingJobInfo(newJobRequests);
-          navigation.navigate('Home');
-        } else getPendingJobRequest(this.props, senderId, 'Home');
-        getAllWorkRequestClient(senderId);
-        this.getAllBookingsCustomer();
-        this.showToast('Your job has been accepted.');
-      } else if (title.toLowerCase() === 'job rejected') {
-        if (pos !== undefined) {
-          newJobRequests.splice(pos, 1);
-          fetchedPendingJobInfo(newJobRequests);
-          navigation.navigate('Home');
-        } else getPendingJobRequest(this.props, senderId, 'Home');
-        this.getAllBookingsCustomer();
-        this.showToast('Your job has been rejected. please try again later');
-      } else if (title.toLowerCase() === 'job completed') {
-        if (pos !== undefined) {
-          newJobRequests.splice(pos, 1);
-          fetchedPendingJobInfo(newJobRequests);
-          navigation.navigate('Home');
-        } else getPendingJobRequest(this.props, senderId, 'Home');
-        getAllWorkRequestClient(senderId);
-        this.getAllBookingsCustomer();
-        this.showToast('Your job is complete..');
-      } else if (title.toLowerCase() === 'chat request accepted') {
-        const providerData =
-          typeof data.ProviderData === 'string'
-            ? JSON.parse(data.ProviderData)
-            : data.ProviderData;
-        const pendingJobData = {
-          id: data.mainId,
-          order_id: data.orderId,
-          employee_id: providerData.ProviderId,
-          image: providerData.image,
-          fcm_id: providerData.fcmId,
-          name: providerData.name,
-          surName: providerData.surname,
-          mobile: providerData.mobile,
-          description: providerData.description,
-          address: providerData.address,
-          lat: providerData.lat,
-          lang: providerData.lang,
-          service_name: data.serviceName,
-          chat_status: data.chat_status,
-          employee_details: providerData,
-          status: data.status,
-          delivery_address: data.delivery_address,
-          delivery_lat: data.delivery_lat,
-          delivery_lang: data.delivery_lang,
-        };
-        pendingJobData.imageAvailable = await imageExists(providerData.image);
-        if (pos !== undefined) {
-          newJobRequests[pos] = pendingJobData;
-          fetchedPendingJobInfo(newJobRequests);
-          navigation.navigate('Home');
-        } else getPendingJobRequest(this.props, senderId, 'Home');
-        getAllWorkRequestClient(senderId);
-        this.showToast('Chat request accepted');
-        updateActiveRequest(false);
-      } else if (
-        title.toLowerCase() === 'No Response' ||
-        title.toLowerCase() === 'cancelled' ||
-        title.toLowerCase() === 'job cancelled'
-      ) {
-        if (pos !== undefined) {
-          newJobRequests.splice(pos, 1);
-          fetchedPendingJobInfo(newJobRequests);
-          navigation.navigate('Home');
-        } else getPendingJobRequest(this.props, senderId, 'Home');
-        this.showToast(
-          'The service provider is nolonger available. please try again later',
-        );
+      try {
+        const data = JSON.parse(message.data.data);
+        const { title, main_id, orderId } = data;
+        const check = main_id + title;
+        notifications.push(check);
+        const {
+          fetchedNotifications,
+          updateActiveRequest,
+          notificationsInfo,
+          fetchedPendingJobInfo,
+          getAllWorkRequestClient,
+          getPendingJobRequest,
+          jobsInfo: { jobRequests },
+          userInfo: { userDetails },
+        } = this.props;
+        const senderId = userDetails.userId;
+        const { currentMessage } = this.state;
+        const currentGenericCount = notificationsInfo.generic;
+        this.setState({ currentMessage: message });
+        if (!_.isEqual(currentMessage, message)) {
+          title !== 'Message Recieved' &&
+            fetchedNotifications({
+              type: 'generic',
+              value: currentGenericCount + 1,
+            });
+        }
+        let newJobRequests = cloneDeep(jobRequests);
+        let pos;
+        await jobRequests.map((obj, i) => {
+          if (orderId === obj.order_id) pos = i;
+        });
+        title !== 'Message Recieved' && this.getAllNotificationsCustomer();
+        if (title.toLowerCase() === 'chat request rejected') {
+          if (pos !== undefined) {
+            newJobRequests.splice(pos, 1);
+            fetchedPendingJobInfo(newJobRequests);
+            navigation.navigate('Home');
+          } else getPendingJobRequest(this.props, senderId, 'Home');
+          getAllWorkRequestClient(senderId);
+          this.showToast(
+            'The service provider rejected your request. please try again later',
+          );
+        } else if (title.toLowerCase() === 'job accepted') {
+          getPendingJobRequest(this.props, senderId, 'Home');
+          getAllWorkRequestClient(senderId);
+          this.getAllBookingsCustomer();
+          this.showToast('Your job has been accepted.');
+        } else if (title.toLowerCase() === 'job rejected') {
+          if (pos !== undefined) {
+            newJobRequests.splice(pos, 1);
+            fetchedPendingJobInfo(newJobRequests);
+            navigation.navigate('Home');
+          } else getPendingJobRequest(this.props, senderId, 'Home');
+          this.getAllBookingsCustomer();
+          this.showToast('Your job has been rejected. please try again later');
+        } else if (title.toLowerCase() === 'job completed') {
+          if (pos !== undefined) {
+            newJobRequests.splice(pos, 1);
+            fetchedPendingJobInfo(newJobRequests);
+            navigation.navigate('Home');
+          } else getPendingJobRequest(this.props, senderId, 'Home');
+          getAllWorkRequestClient(senderId);
+          this.getAllBookingsCustomer();
+          this.showToast('Your job is complete..');
+        } else if (title.toLowerCase() === 'chat request accepted') {
+          getPendingJobRequest(this.props, senderId, 'Home');
+          getAllWorkRequestClient(senderId);
+          this.showToast('Chat request accepted');
+          updateActiveRequest(false);
+        } else if (
+          title.toLowerCase() === 'No Response' ||
+          title.toLowerCase() === 'cancelled' ||
+          title.toLowerCase() === 'job cancelled'
+        ) {
+          if (pos !== undefined) {
+            newJobRequests.splice(pos, 1);
+            fetchedPendingJobInfo(newJobRequests);
+            navigation.navigate('Home');
+          } else getPendingJobRequest(this.props, senderId, 'Home');
+          this.showToast(
+            'The service provider is nolonger available. please try again later',
+          );
+        }
+      } catch (e) {
+        SimpleToast.show(e.message);
       }
     });
     await checkNoficationsAvailability();
     await checkForUserType(navigation.navigate);
-    await fetchClientMessages(senderId);
+    //await fetchClientMessages(senderId);
     /** fetch users current position and upload it to db */
     locationPermissionRequest(() => {
       const {
@@ -337,7 +281,7 @@ class Hamburger extends React.Component {
           },
           error => {
             SimpleToast.show('Location could not be retrieved');
-            console.log('lat long ', { error });
+            fetchCoordinatesError(error.message);
           },
           {
             enableHighAccuracy: true,
@@ -351,7 +295,6 @@ class Hamburger extends React.Component {
             coords: { latitude, longitude },
           } = info;
           const {
-            fetchingCoordinates,
             fetchedCoordinates,
             fetchCoordinatesError,
           } = this.props;
@@ -359,7 +302,6 @@ class Hamburger extends React.Component {
             lat: latitude.toString(),
             lng: longitude.toString(),
           });
-          fetchingCoordinates();
           locationRef
             .update({
               latitude,
@@ -376,10 +318,11 @@ class Hamburger extends React.Component {
         },
         error => {
           SimpleToast.show('Location could not be retrieved');
-          console.log(error);
+          fetchCoordinatesError(error.message);
         },
         {
           enableHighAccuracy: true,
+          distanceFilter: 200
         },
       );
       /** end lookout for pros changing position */
@@ -463,12 +406,11 @@ class Hamburger extends React.Component {
       updateOnlineStatus(false);
       if (connectivityAvailable) {
         setTimeout(() => {
-          socket.close();
-          socket.open();
+          socket.connect();
         }, 1000);
       }
     });
-    socket.open();
+    socket.connect();
   }
 
   componentDidUpdate() {
@@ -518,7 +460,6 @@ class Hamburger extends React.Component {
 
   fetchEmployeeLocations = () => {
     const {
-      fetchingOthersCoordinates,
       fetchedOthersCoordinates,
       fetchOthersCoordinatesError,
       jobsInfo: { allJobRequestsClient },
@@ -547,7 +488,6 @@ class Hamburger extends React.Component {
             generalInfo: { othersCoordinates },
           } = this.props;
           let newOthersCoordinates = Object.assign({}, othersCoordinates);
-          fetchingOthersCoordinates();
           database()
             .ref(`liveLocation/${employee_id}`)
             .once('value', result => {

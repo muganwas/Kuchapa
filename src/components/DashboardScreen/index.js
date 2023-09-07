@@ -35,6 +35,7 @@ import {
   setSelectedJobRequest,
   updateActiveRequest,
   getAllWorkRequestClient,
+  getPendingJobRequest
 } from '../../Redux/Actions/jobsActions';
 import { font_size } from '../../Constants/metrics';
 import {
@@ -86,9 +87,22 @@ class DashboardScreen extends Component {
     this.setState({ buttonType: buttonType1 });
   };
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
+    const { navigation } = this.props;
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-    this.onRefresh();
+    await this.fetchAllServices();
+    await this.getAllRecentChatsCustomer();
+    navigation.addListener('focus', async () => {
+      const {
+        getAllWorkRequestClient,
+        fetchPendingJobsRequest,
+        userInfo: { userDetails },
+      } = this.props;
+      this.setState({ isLoading: true });
+      await getAllWorkRequestClient(userDetails.userId);
+      await fetchPendingJobsRequest(this.props, userDetails.userId, 'Home');
+      this.setState({ isLoading: false });
+    })
   };
 
   componentWillUnmount() {
@@ -259,12 +273,7 @@ class DashboardScreen extends Component {
 
   renderSeparator = () => <View style={{ height: 1, width: '100%', backgroundColor: black }} />;
 
-  onRefresh = async () => {
-    /** Has to be called on mount because service have to be populated */
-    const {
-      getAllWorkRequestClient,
-      userInfo: { userDetails },
-    } = this.props;
+  fetchAllServices = async () => {
     if (
       !this.state.dataSource ||
       (this.state.dataSource && this.state.dataSource.length === 0)
@@ -294,6 +303,15 @@ class DashboardScreen extends Component {
         isLoading: false,
       });
     }
+  }
+
+  onRefresh = async () => {
+    /** Has to be called on mount because service have to be populated */
+    const {
+      getAllWorkRequestClient,
+      userInfo: { userDetails },
+    } = this.props;
+    await this.fetchAllServices();
     await getAllWorkRequestClient(userDetails.userId);
     await this.getAllRecentChatsCustomer();
     this.setState({ isLoading: false });
@@ -658,6 +676,9 @@ const mapDispatchToProps = dispatch => {
     },
     updateLatestChats: data => {
       dispatch(updateLatestChats(data));
+    },
+    fetchPendingJobsRequest: (props, senderId, navTo) => {
+      dispatch(getPendingJobRequest(props, senderId, navTo));
     }
   };
 };

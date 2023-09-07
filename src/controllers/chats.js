@@ -376,7 +376,6 @@ export const sendMessageTask = async ({
 }) => {
   if (!socket.connected) {
     toggleIsLoading(true);
-    socket.close();
     socket.connect();
     await fetchMessages(userId, () =>
       setTimeout(() => toggleIsLoading(false), 200),

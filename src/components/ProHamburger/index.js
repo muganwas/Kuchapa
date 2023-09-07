@@ -169,6 +169,9 @@ class ProHamburger extends React.Component {
           delivery_lat: data.delivery_lat,
           delivery_lang: data.delivery_lang,
         });
+      } else if (title.toLowerCase() === 'job completed' || title.toLowerCase() === 'job cancelled') {
+        console.log('accepted route', this.props.route)
+        navigation.navigate('ProHome');
       } else if (
         title.toLowerCase() === 'job cancelled' ||
         title.toLowerCase() === 'job completed'
@@ -181,11 +184,11 @@ class ProHamburger extends React.Component {
 
       }
     });
-    await getAllWorkRequestPro(receiverId);
+    //await getAllWorkRequestPro(receiverId);
+    //await fetchEmployeeMessages(receiverId);
     await this.fetchOthersLocations();
     await checkNoficationsAvailability();
     await checkForUserType(navigation.navigate);
-    await fetchEmployeeMessages(receiverId);
     const { updateConnectivityStatus, updateOnlineStatus } = this.props;
 
     NetInfo.addEventListener(state => {
@@ -235,8 +238,7 @@ class ProHamburger extends React.Component {
       updateOnlineStatus(false);
       if (connectivityAvailable) {
         setTimeout(() => {
-          socket.close();
-          socket.open();
+          socket.connect();
         }, 1000);
       }
     });
@@ -260,7 +262,7 @@ class ProHamburger extends React.Component {
         dbMessagesFetched(newMessages);
       }
     });
-    socket.open();
+    socket.connect();
     const userRef = database().ref(`liveLocation/${receiverId}`);
     locationPermissionRequest(() => {
       const {
@@ -305,7 +307,6 @@ class ProHamburger extends React.Component {
           },
           error => {
             SimpleToast.show('Location could not be retrieved');
-            console.log(error);
           },
           {
             enableHighAccuracy: true,
@@ -316,7 +317,6 @@ class ProHamburger extends React.Component {
       geolocation.watchPosition(
         async info => {
           const {
-            fetchingCoordinates,
             fetchedCoordinates,
             fetchCoordinatesError,
           } = this.props;
@@ -327,7 +327,6 @@ class ProHamburger extends React.Component {
             lat: latitude.toString(),
             lng: longitude.toString(),
           });
-          fetchingCoordinates();
           userRef
             .update({
               latitude,
@@ -347,10 +346,11 @@ class ProHamburger extends React.Component {
         },
         error => {
           SimpleToast.show('Location could not be retrieved');
-          console.log(error);
+          fetchCoordinatesError(error.message);
         },
         {
           enableHighAccuracy: true,
+          distanceFilter: 200
         },
       );
     });
@@ -387,6 +387,7 @@ class ProHamburger extends React.Component {
     } = this.props;
     const senderId = providerDetails.providerId;
     senderId && deregisterOnlineStatusListener(senderId);
+    geolocation.clearWatch();
   }
 
   getAllNotificationsProvider = () =>
@@ -418,7 +419,6 @@ class ProHamburger extends React.Component {
   fetchOthersLocations = async () => {
     const {
       jobsInfo: { allJobRequestsProviders },
-      fetchingOthersCoordinates,
       fetchedOthersCoordinates,
       fetchOthersCoordinatesError,
     } = this.props;
@@ -442,7 +442,6 @@ class ProHamburger extends React.Component {
       database()
         .ref(`liveLocation/${user_id}`)
         .on('child_changed', () => {
-          fetchingOthersCoordinates();
           const {
             generalInfo: { othersCoordinates, },
           } = this.props;

@@ -109,7 +109,6 @@ class ProChatAfterBookingDetailsScreen extends Component {
       fetchEmployeeMessages,
     } = this.props;
     if (!socket.connected) {
-      socket.close();
       socket.connect();
       fetchEmployeeMessages(providerDetails.providerId);
     }
@@ -137,7 +136,6 @@ class ProChatAfterBookingDetailsScreen extends Component {
       fetchEmployeeMessages,
     } = props;
     if (!socket.connected) {
-      socket.close();
       socket.connect();
       fetchEmployeeMessages(providerDetails.providerId);
     }

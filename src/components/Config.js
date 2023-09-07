@@ -17,7 +17,7 @@ import {
 } from "../../config.json";
 export default class Config {
   static clientId = WEB_CLIENT_ID;
-  static baseURL = BASE_URL_CLOUD;
+  static baseURL = BASE_URL_LOCAL;
   static apiKey = FIREBASE_API_KEY;
   static mapsApiKey = MAPS_API_KEY;
   static defaultCCode = DEFAULT_COUNTRY_CODE;

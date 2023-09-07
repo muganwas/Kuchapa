@@ -107,7 +107,6 @@ class ChatAfterBookingDetailsScreen extends Component {
       this.handleBackButtonClick,
     );
     if (!socket.connected) {
-      socket.close();
       socket.connect();
       fetchClientMessages(userDetails.userId);
     }

@@ -90,6 +90,7 @@ class ProDashboardScreen extends Component {
     } = props;
     this.state = {
       isLoading: true,
+      isLoadingLatestChats: true,
       isErrorToast: false,
       mainId: '',
       reviewData: '',
@@ -104,6 +105,7 @@ class ProDashboardScreen extends Component {
           : 'red',
       isDialogLogoutVisible: false,
       isWorkRequest: false,
+      isJobRequest: false,
       isRecentUser: false,
       isReviewDialogVisible: false,
       rating: '3',
@@ -119,12 +121,15 @@ class ProDashboardScreen extends Component {
 
   //Get All Bookings
   componentDidMount = () => {
+    const { navigation } = this.props;
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    this.initiateProps();
-    this.onRefresh();
+    navigation.addListener('focus', () => {
+      this.onRefresh();
+    });
+    this.getAllRecentChatsPro();
   };
 
   componentWillUnmount() {
@@ -134,16 +139,17 @@ class ProDashboardScreen extends Component {
     );
   }
 
-  initiateProps = () => {
-    this.setState({ isLoading: false, isWorkRequest: true });
-  };
-
   componentDidUpdate() {
     const {
       generalInfo: { connectivityAvailable },
       userInfo: { providerDetails },
+      jobsInfo: {
+        dataWorkSource,
+        dataWorkSourceFetched
+      }
     } = this.props;
-    const { status } = this.state;
+    const { status, isLoading } = this.state;
+    if (dataWorkSource && dataWorkSourceFetched && isLoading) this.setState({ isLoading: false, isWorkRequest: true });
     if (!connectivityAvailable && status === 'ONLINE')
       this.setState({
         status: 'OFFLINE',
@@ -161,6 +167,25 @@ class ProDashboardScreen extends Component {
     }
   }
 
+  onRefresh = async () => {
+    this.setState({ refreshing: true, isLoading: true, isWorkRequest: false });
+    const {
+      generalInfo: { online, connectivityAvailable },
+      userInfo: { providerDetails },
+      fetchJobRequestHistory,
+    } = this.props;
+    this.setState({
+      status:
+        online && providerDetails.online === '1' && connectivityAvailable
+          ? 'ONLINE'
+          : 'OFFLINE'
+    });
+    await fetchJobRequestHistory(providerDetails.providerId);
+    await this.getAllRecentChatsPro();
+    this.setState({ refreshing: false, isLoading: false, isWorkRequest: true });
+    this.springValue = new Animated.Value(100);
+  };
+
   //Recent Chat Message
   getAllRecentChatsPro = async () =>
     await getAllRecentChats({
@@ -168,7 +193,7 @@ class ProDashboardScreen extends Component {
       dataSource: this.props?.messagesInfo?.latestChats,
       onSuccess: data => {
         this.props.updateLatestChats(data);
-        this.setState({ isLoading: false });
+        this.setState({ isLoadingLatestChats: false });
       },
     });
 
@@ -348,7 +373,7 @@ class ProDashboardScreen extends Component {
           </TouchableOpacity>
         </TouchableOpacity>
       );
-    }
+    } return <></>;
   };
 
   updateOnlineAvailability = async userData =>
@@ -388,20 +413,20 @@ class ProDashboardScreen extends Component {
     const combinedOffline = !online && providerDetails.online === '0';
     if (liveOffline) {
       Config.socket.close();
-      Config.socket.open();
+      Config.socket.connect();
       this.setState({ isLoading: false });
     } else if (manualOffline) {
       this.updateOnlineAvailability({
         online: '1',
       });
     } else if (combinedOffline) {
-      Config.socket.open();
+      Config.socket.connect();
       this.updateOnlineAvailability({
         online: '1',
       });
     } else {
       const newStatus = providerDetails.online === '1' ? '0' : '1';
-      !online ? Config.socket.open() : Config.socket.close();
+      !online ? Config.socket.connect() : Config.socket.close();
       this.updateOnlineAvailability({ online: newStatus });
     }
   };
@@ -719,27 +744,6 @@ class ProDashboardScreen extends Component {
     } else SimpleToast.show(message);
   };
 
-  onRefresh = async () => {
-    this.setState({ refreshing: true });
-    const {
-      generalInfo: { online, connectivityAvailable },
-      userInfo: { providerDetails },
-      fetchJobRequestHistory,
-    } = this.props;
-    this.setState({
-      status:
-        online && providerDetails.online === '1' && connectivityAvailable
-          ? 'ONLINE'
-          : 'OFFLINE',
-      isJobRequest: false,
-      isRecentUser: false,
-    });
-    await fetchJobRequestHistory(providerDetails.providerId);
-    await this.getAllRecentChatsPro();
-    this.springValue = new Animated.Value(100);
-    this.setState({ refreshing: false });
-  };
-
   changeWaitingDialogVisibility = (bool, error) => {
     this.setState(prevState => ({
       isLoading: typeof bool === 'boolean' ? bool : !prevState.isLoading,
@@ -754,7 +758,6 @@ class ProDashboardScreen extends Component {
         jobRequestsProviders,
         dataWorkSource
       },
-      generalInfo: { online, connectivityAvailable },
       userInfo: { providerDetails },
       messagesInfo: { latestChats },
       navigation,
@@ -867,9 +870,11 @@ class ProDashboardScreen extends Component {
                     </TouchableOpacity>
                   )}
                 </View>
-                <View style={styles.listView}>
-                  {latestChats.map(this.renderRecentMessageItem)}
-                </View>
+                <ScrollView>
+                  <View style={styles.listView}>
+                    {latestChats.map(this.renderRecentMessageItem)}
+                  </View>
+                </ScrollView>
               </View>
             )}
             {this.state.isWorkRequest && (
@@ -888,7 +893,7 @@ class ProDashboardScreen extends Component {
                     }}>
                     Work
                   </Text>
-                  {false && (
+                  {true && (
                     <TouchableOpacity style={styles.viewAll}>
                       <Text style={styles.textViewAll}>View All</Text>
                     </TouchableOpacity>
@@ -945,9 +950,11 @@ class ProDashboardScreen extends Component {
                   </Text>
                 </View>
                 <View style={styles.listView}>
-                  {dataWorkSource && dataWorkSource.length > 0 ? (
-                    dataWorkSource.map(this.renderWorkItem)
-                  ) : (
+                  {dataWorkSource && dataWorkSource.length > 0 ? <ScrollView>
+                    {
+                      dataWorkSource.map(this.renderWorkItem)
+                    }
+                  </ScrollView> : (
                     <View style={{ padding: 15 }}>
                       {providerDetails.address === '' ? (
                         <View
@@ -996,67 +1003,37 @@ class ProDashboardScreen extends Component {
                 </View>
               </View>
             )}
-            <Modal
-              transparent={true}
-              visible={this.state.isDialogLogoutVisible}
-              animationType="fade"
-              onRequestClose={() =>
-                this.changeDialogVisibility(false, '', '', '', '', '')
-              }>
-              <ReviewDialog
-                style={{
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 0 },
-                  shadowOpacity: 0.75,
-                  shadowRadius: 5,
-                  elevation: 5,
-                }}
-                changeDialogVisibility={this.changeDialogVisibility}
-                updateRating={(rating) => this.setState({ rating })}
-                updateReview={(review) => this.setState({ review })}
-                data={this.state.reviewData}
-                review={this.state.review}
-                rating={this.state.rating}
-              />
-            </Modal>
           </View>
-
-          {!this.state.isRecentUser &&
-            !this.state.isWorkRequest &&
-            !this.state.isLoading && (
-              <View
-                style={{
-                  width: screenWidth,
-                  height: screenHeight - 130,
-                  justifyContent: 'center',
-                }}>
-                <Image
-                  style={{
-                    height: 75,
-                    width: 75,
-                    justifyContent: 'center',
-                    alignSelf: 'center',
-                    alignContent: 'center',
-                    marginLeft: 10,
-                  }}
-                  source={require('../../icons/no_request.png')}
-                />
-                <Text
-                  style={{
-                    fontSize: font_size.header,
-                    alignItems: 'center',
-                    alignSelf: 'center',
-                  }}>
-                  No Job Request Found
-                </Text>
-              </View>
-            )}
         </ScrollView>
         {jobRequestsProviders && jobRequestsProviders.length > 0 && (
           <View style={styles.pendingJobsContainer}>
             {jobRequestsProviders.map(this.renderPendingJobs)}
           </View>
         )}
+
+        <Modal
+          transparent={true}
+          visible={this.state.isDialogLogoutVisible}
+          animationType="fade"
+          onRequestClose={() =>
+            this.changeDialogVisibility(false, '', '', '', '', '')
+          }>
+          <ReviewDialog
+            style={{
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 0 },
+              shadowOpacity: 0.75,
+              shadowRadius: 5,
+              elevation: 5,
+            }}
+            changeDialogVisibility={this.changeDialogVisibility}
+            updateRating={(rating) => this.setState({ rating })}
+            updateReview={(review) => this.setState({ review })}
+            data={this.state.reviewData}
+            review={this.state.review}
+            rating={this.state.rating}
+          />
+        </Modal>
 
         <Modal
           transparent={true}

@@ -93,15 +93,15 @@ class ChatScreen extends Component {
   }
 
   componentDidMount() {
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
     const {
       fetchedNotifications
     } = this.props;
     this.reInit(this.props);
     fetchedNotifications({ type: 'messages', value: 0 });
-    BackHandler.addEventListener(
-      'hardwareBackPress',
-      this.handleBackButtonClick,
-    );
   }
 
   componentWillUnmount() {
@@ -117,7 +117,7 @@ class ChatScreen extends Component {
     deregisterOnlineStatusListener(employee_id);
   }
 
-  reInit = props => {
+  reInit = async props => {
     const {
       userInfo: { userDetails },
       jobsInfo: {
@@ -130,10 +130,9 @@ class ChatScreen extends Component {
       route,
     } = props;
     if (!socket.connected) {
-      socket.close();
       socket.connect();
-      fetchClientMessages(userDetails.userId);
     }
+    fetchClientMessages(userDetails.userId);
     const currRequestPos = route.params.currentPosition || 0;
     const providerId = route.params.providerId || employee_id;
     this.setState({
