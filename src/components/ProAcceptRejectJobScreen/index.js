@@ -90,6 +90,7 @@ class ProAcceptRejectJobScreen extends Component {
       imageAvailable: false,
       isLoading: true,
       receiverId: '',
+      receiverFcmId: '',
       senderId: '',
       showButton: false,
       uploadingImage: false,

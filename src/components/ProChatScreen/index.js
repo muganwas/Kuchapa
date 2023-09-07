@@ -104,10 +104,6 @@ class ProChatScreen extends Component {
   }
 
   componentDidMount() {
-    if (!socket.connected) {
-      socket.connect();
-      fetchEmployeeMessages(providerDetails.providerId);
-    }
     this.reInit(this.props);
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
@@ -141,8 +137,8 @@ class ProChatScreen extends Component {
     } = props;
     if (!socket.connected) {
       socket.connect();
-      fetchEmployeeMessages(providerDetails.providerId);
     }
+    fetchEmployeeMessages(providerDetails.providerId);
     const currentPos = route?.params?.currentPos;
     this.setState({
       showButton: false,

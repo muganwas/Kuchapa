@@ -179,7 +179,6 @@ class ProHamburger extends React.Component {
             ? 'Job was cancelled by client'
             : 'Job was completed by client',
         );
-
       }
     });
     await this.fetchOthersLocations();

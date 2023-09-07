@@ -5,6 +5,7 @@ import {
   View,
   Image,
   Dimensions,
+  ActivityIndicator,
   TouchableOpacity,
   ScrollView,
   Modal,
@@ -34,7 +35,6 @@ import {
   fetchProviderJobInfoError,
   setSelectedJobRequest,
   getAllWorkRequestPro,
-  fetchedDataWorkSource,
 } from '../../Redux/Actions/jobsActions';
 import { updateProviderDetails } from '../../Redux/Actions/userActions';
 import {
@@ -49,7 +49,7 @@ import {
 } from '../../controllers/chats';
 import { requestClientForReview } from '../../controllers/jobs';
 import { reviewTask } from '../../controllers/bookings';
-import { font_size } from '../../Constants/metrics';
+import { font_size, spacing } from '../../Constants/metrics';
 import {
   colorBg,
   colorYellow,
@@ -271,109 +271,114 @@ class ProDashboardScreen extends Component {
             </View>
           </TouchableOpacity>
         );
-    } return <></>
+    } return <View key={index}></View>
   };
 
-  renderWorkItem = (item, index) => {
+  renderDoneJobs = () => {
     const {
       userInfo: { providerDetails },
+      jobsInfo: { dataWorkSource },
       navigation,
     } = this.props;
-    if (
-      item &&
-      String(item.employee_id) === String(providerDetails.providerId) &&
-      (item.status === 'Accepted' ||
-        item.status === 'Completed' ||
-        item.status === 'Cancelled')
-    ) {
-      return (
-        <TouchableOpacity
-          key={index}
-          style={{
-            width: screenWidth,
-            flexDirection: 'row',
-            backgroundColor: 'white',
-          }}
-          onPress={() =>
-            navigation.navigate('ProBookingDetails', {
-              currentPos: index,
-              bookingDetails: item,
-            })
-          }>
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              paddingTop: 15,
-              paddingBottom: 15,
-              paddingLeft: 5,
-              paddingRight: 5,
-            }}>
-            <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
-              {item.service_details.service_name}
-            </Text>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              paddingTop: 15,
-              paddingBottom: 15,
-              paddingLeft: 5,
-              paddingRight: 5,
-            }}>
-            <Text
+    return <View>{
+      dataWorkSource.map((item, index) => {
+        if (
+          item &&
+          String(item.employee_id) === String(providerDetails.providerId) &&
+          (item.status === 'Accepted' ||
+            item.status === 'Completed' ||
+            item.status === 'Cancelled')
+        ) {
+          return (
+            <TouchableOpacity
+              key={index}
               style={{
-                fontSize: 12,
-                fontWeight: 'bold',
-                ...(item.status === 'Pending'
-                  ? styles.colorYellow
-                  : item.status === 'Accepted'
-                    ? styles.colorGreen
-                    : item.status === 'Completed'
-                      ? styles.colorBlack
-                      : styles.colorRed),
-              }}>
-              {item.status}
-            </Text>
-          </View>
-          <TouchableOpacity
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              paddingTop: 15,
-              paddingBottom: 15,
-              paddingLeft: 5,
-              paddingRight: 5,
-            }}
-            onPress={() => this.askForReview(item)}>
-            <Text style={{ fontSize: 12 }}>
-              {item.customer_review == 'Requested'
-                ? 'Waiting'
-                : item.customer_rating == ''
-                  ? 'Ask for review'
-                  : item.customer_rating + '/5'}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              paddingTop: 15,
-              paddingBottom: 15,
-              paddingLeft: 5,
-              paddingRight: 5,
-            }}
-            onPress={() => this.changeDialogVisibility(true, '', item, '', '')}>
-            <Text style={{ fontSize: 12 }}>
-              {item.employee_rating == ''
-                ? 'Give review'
-                : item.employee_rating + '/5'}
-            </Text>
-          </TouchableOpacity>
-        </TouchableOpacity>
-      );
-    } return <></>;
+                width: screenWidth,
+                flexDirection: 'row',
+                backgroundColor: 'white',
+              }}
+              onPress={() =>
+                navigation.navigate('ProBookingDetails', {
+                  currentPos: index,
+                  bookingDetails: item,
+                })
+              }>
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  paddingTop: 15,
+                  paddingBottom: 15,
+                  paddingLeft: 5,
+                  paddingRight: 5,
+                }}>
+                <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
+                  {item.service_details.service_name}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  paddingTop: 15,
+                  paddingBottom: 15,
+                  paddingLeft: 5,
+                  paddingRight: 5,
+                }}>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 'bold',
+                    ...(item.status === 'Pending'
+                      ? styles.colorYellow
+                      : item.status === 'Accepted'
+                        ? styles.colorGreen
+                        : item.status === 'Completed'
+                          ? styles.colorBlack
+                          : styles.colorRed),
+                  }}>
+                  {item.status}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  paddingTop: 15,
+                  paddingBottom: 15,
+                  paddingLeft: 5,
+                  paddingRight: 5,
+                }}
+                onPress={() => this.askForReview(item)}>
+                <Text style={{ fontSize: 12 }}>
+                  {item.customer_review == 'Requested'
+                    ? 'Waiting'
+                    : item.customer_rating == ''
+                      ? 'Ask for review'
+                      : item.customer_rating + '/5'}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  paddingTop: 15,
+                  paddingBottom: 15,
+                  paddingLeft: 5,
+                  paddingRight: 5,
+                }}
+                onPress={() => this.changeDialogVisibility(true, '', item, '', '')}>
+                <Text style={{ fontSize: 12 }}>
+                  {item.employee_rating == ''
+                    ? 'Give review'
+                    : item.employee_rating + '/5'}
+                </Text>
+              </TouchableOpacity>
+            </TouchableOpacity>
+          );
+        } return <View key={index}></View>
+      })
+    }</View>
   };
 
   updateOnlineAvailability = async userData =>
@@ -756,10 +761,11 @@ class ProDashboardScreen extends Component {
     const {
       jobsInfo: {
         jobRequestsProviders,
-        dataWorkSource
+        dataWorkSource,
+        dataWorkSourceFetched
       },
       userInfo: { providerDetails },
-      messagesInfo: { latestChats },
+      messagesInfo: { latestChats, fetchedLatestChats },
       navigation,
     } = this.props;
     const { status } = this.state;
@@ -862,7 +868,7 @@ class ProDashboardScreen extends Component {
                     }}>
                     Recent Message
                   </Text>
-                  {false && (
+                  {true && (
                     <TouchableOpacity
                       style={styles.viewAll}
                       onPress={() => navigation.navigate('ProAllMessage')}>
@@ -871,13 +877,14 @@ class ProDashboardScreen extends Component {
                   )}
                 </View>
                 <ScrollView>
-                  <View style={styles.listView}>
+                  {fetchedLatestChats && <View style={styles.listView}>
                     {latestChats.map(this.renderRecentMessageItem)}
-                  </View>
+                  </View>}
                 </ScrollView>
               </View>
             )}
-            {this.state.isWorkRequest && (
+            {!fetchedLatestChats && <View style={styles.activityIncatorContainer}><ActivityIndicator size={'large'} color={themeRed} /></View>}
+            {this.state.isWorkRequest && dataWorkSourceFetched && (
               <View style={styles.mainContainer}>
                 <View style={styles.recentMessageHeader}>
                   <Text
@@ -893,8 +900,8 @@ class ProDashboardScreen extends Component {
                     }}>
                     Work
                   </Text>
-                  {true && (
-                    <TouchableOpacity style={styles.viewAll}>
+                  {false && (
+                    <TouchableOpacity onPress={() => navigation.navigate('Booking', { from: 'Dashboard' })} style={styles.viewAll}>
                       <Text style={styles.textViewAll}>View All</Text>
                     </TouchableOpacity>
                   )}
@@ -950,11 +957,10 @@ class ProDashboardScreen extends Component {
                   </Text>
                 </View>
                 <View style={styles.listView}>
-                  {dataWorkSource && dataWorkSource.length > 0 ? <ScrollView>
-                    {
-                      dataWorkSource.map(this.renderWorkItem)
-                    }
-                  </ScrollView> : (
+                  {dataWorkSource && dataWorkSource.length > 0 && <ScrollView>
+                    {this.renderDoneJobs()}
+                  </ScrollView>}
+                  {dataWorkSourceFetched && dataWorkSource.length === 0 && (
                     <View style={{ padding: 15 }}>
                       {providerDetails.address === '' ? (
                         <View
@@ -1003,6 +1009,7 @@ class ProDashboardScreen extends Component {
                 </View>
               </View>
             )}
+            {!dataWorkSourceFetched && <View style={styles.activityIncatorContainer}><ActivityIndicator size={'large'} color={themeRed} /></View>}
           </View>
         </ScrollView>
         {jobRequestsProviders && jobRequestsProviders.length > 0 && (
@@ -1010,7 +1017,6 @@ class ProDashboardScreen extends Component {
             {jobRequestsProviders.map(this.renderPendingJobs)}
           </View>
         )}
-
         <Modal
           transparent={true}
           visible={this.state.isDialogLogoutVisible}
@@ -1111,9 +1117,6 @@ const mapDispatchToProps = dispatch => {
     updateProviderDetails: dits => {
       dispatch(updateProviderDetails(dits));
     },
-    fetchedDataWorkSource: dws => {
-      dispatch(fetchedDataWorkSource(dws));
-    }
   };
 };
 
@@ -1137,6 +1140,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
+  },
+  activityIncatorContainer: {
+    display: 'flex',
+    backgroundColor: white,
+    padding: spacing.small
   },
   onlineOfflineHeader: {
     width: screenWidth,
@@ -1203,19 +1211,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   viewAll: {
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingTop: 5,
-    paddingBottom: 5,
+    paddingLeft: spacing.small,
+    paddingRight: spacing.small,
+    paddingTop: spacing.small,
+    paddingBottom: spacing.small,
     backgroundColor: 'white',
-    borderColor: colorYellow,
+    borderColor: themeRed,
     borderWidth: 2,
     borderRadius: 5,
-    marginRight: 20,
+    marginRight: spacing.large,
   },
   textViewAll: {
     textAlignVertical: 'center',
     textAlign: 'center',
+    fontSize: font_size.normal,
     alignSelf: 'flex-end',
     color: 'black',
   },

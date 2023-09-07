@@ -573,9 +573,10 @@ export const getAllWorkRequestProFunc = async (providerId, fetchedDataWorkSource
           dataWorkSource.push(responseJson.data[i]);
         }
       }
-      dispatch(fetchedDataWorkSource(dataWorkSource));
-      dispatch(fetchedAllJobRequestsPro(newAllProvidersDetails));
+
     }
+    dispatch(fetchedDataWorkSource(dataWorkSource));
+    dispatch(fetchedAllJobRequestsPro(newAllProvidersDetails));
   } else {
     SimpleToast.show('Could not fetch all work requests.');
   }
@@ -606,9 +607,9 @@ export const getAllWorkRequestClientFunc = async (clientId, fetchedDataWorkSourc
           }
         }
       }
-      dispatch(fetchedDataWorkSource(dataWorkSource));
-      dispatch(fetchedAllJobRequestsClient(newAllClientDetails));
     }
+    dispatch(fetchedDataWorkSource(dataWorkSource));
+    dispatch(fetchedAllJobRequestsClient(newAllClientDetails));
   } else {
     SimpleToast.show('Could not fetch all work requests');
   }
