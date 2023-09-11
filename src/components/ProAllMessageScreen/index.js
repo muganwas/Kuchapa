@@ -104,7 +104,7 @@ class ProAllMessageScreen extends Component {
     const currentPos = allJobRequestsProviders.findIndex(el => el.user_id === item.id);
     const selectedJobReq = allJobRequestsProviders[currentPos];
 
-    if (selectedJobReq.user_details)
+    if (selectedJobReq?.user_details)
       return (
         <TouchableOpacity
           key={index}
@@ -173,6 +173,7 @@ class ProAllMessageScreen extends Component {
           </View>
         </TouchableOpacity>
       );
+    return <View key={index}></View>
   };
 
   searchTask = textInput => {
