@@ -1,4 +1,3 @@
-import { imageExists } from '../misc/helpers';
 import { cloneDeep } from 'lodash';
 import firebaseAuth from '@react-native-firebase/auth';
 import SimpleToast from 'react-native-simple-toast';
@@ -27,10 +26,6 @@ export const getAllBookings = async ({
     if (responseJson.result && responseJson.data) {
       let newData = cloneDeep(responseJson.data);
       for (let i = 0; i < newData.length; i++) {
-        if (newData[i]?.user_details)
-          newData[i].user_details.imageAvailable = await imageExists(newData[i]?.user_details?.image);
-        if (newData[i]?.employee_details)
-          newData[i].employee_details.imageAvailable = await imageExists(newData[i]?.employee_details?.image);
         if (newData[i].chat_status === '1') {
           if (newData[i].status === 'Completed') {
             bookingCompleteData.push(newData[i]);
@@ -122,7 +117,7 @@ export const requestForBooking = async ({
   onError,
   goBack,
 }) => {
-  if (!userDetails.lang) {
+  if (!userDetails.lang || !userDetails.lat) {
     onError(true, 'Please provide your address first');
     setTimeout(
       () =>

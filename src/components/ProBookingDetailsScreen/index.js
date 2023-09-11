@@ -60,20 +60,20 @@ class ProBookingDetailsScreen extends Component {
     this.state = {
       isLoading: false,
       isErrorToast: false,
-      bookingDetails: props.route.params.bookingDetails,
+      bookingDetails: props.route?.params?.bookingDetails,
       isRatingDialogVisible: false,
       mainId: '',
-      fcm_id: props.route.params.bookingDetails.user_details.fcm_id,
+      fcm_id: props.route?.params?.bookingDetails?.user_details.fcm_id,
       username:
-        props.route.params.bookingDetails.user_details.username,
+        props.route?.params?.bookingDetails?.user_details.username,
       customer_rating:
-        props.route.params.bookingDetails.customer_rating,
+        props.route?.params?.bookingDetails?.customer_rating,
       customer_review:
-        props.route.params.bookingDetails.customer_review,
+        props.route?.params?.bookingDetails?.customer_review,
       employee_rating:
-        props.route.params.bookingDetails.employee_rating,
+        props.route?.params?.bookingDetails?.employee_rating,
       employee_review:
-        props.route.params.bookingDetails.employee_review,
+        props.route?.params?.bookingDetails?.employee_review,
     };
   }
 
@@ -268,7 +268,7 @@ class ProBookingDetailsScreen extends Component {
               <Image
                 style={styles.profilePicture}
                 source={
-                  this.state.bookingDetails.user_details.image
+                  this.state.bookingDetails.user_details.image_exists
                     ? { uri: this.state.bookingDetails.user_details.image }
                     : require('../../images/generic_avatar.png')
                 }
@@ -505,6 +505,7 @@ class ProBookingDetailsScreen extends Component {
               receiverId: this.state.bookingDetails.user_id,
               receiverName: this.state.bookingDetails.user_details.username,
               receiverImage: this.state.bookingDetails.user_details.image,
+              receiverImageAvailable: this.state.bookingDetails.user_details.image_exists,
               orderId: this.state.bookingDetails.order_id,
               serviceName: this.state.bookingDetails.service_details
                 .service_name,

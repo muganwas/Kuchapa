@@ -1,8 +1,6 @@
 import SimpleToast from 'react-native-simple-toast';
 import { cloneDeep } from 'lodash';
 import firebaseAuth from '@react-native-firebase/auth';
-import { imageExists } from '../misc/helpers';
-
 
 export const getAllNotifications = async ({
   userId,
@@ -23,15 +21,6 @@ export const getAllNotifications = async ({
     const responseJson = await response.json();
     if (responseJson.result) {
       let dataSource = cloneDeep(responseJson.data);
-      if (userType === 'Provider') {
-        dataSource?.map(async (item, i) => {
-          dataSource[i].customer_details.imageAvailable = await imageExists(item.customer_details.image);
-        });
-      } else {
-        dataSource?.map(async (item, i) => {
-          dataSource[i].employee_details.imageAvailable = await imageExists(item.employee_details.image);
-        });
-      }
       onSuccess(dataSource);
     } else {
       onError();

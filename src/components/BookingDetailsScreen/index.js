@@ -268,7 +268,7 @@ class BookingDetailsScreen extends Component {
                   <Image
                     style={styles.profilePicture}
                     source={
-                      this.state.bookingDetails.employee_details.image
+                      this.state.bookingDetails.employee_details.image_exists
                         ? {
                           uri: this.state.bookingDetails.employee_details
                             .image,

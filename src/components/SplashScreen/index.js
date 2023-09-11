@@ -60,7 +60,9 @@ import ProChatScreen from '../ProChatScreen';
 import {
   updateUserDetails,
   updateProviderDetails,
-  resetUserDetails
+  resetUserDetails,
+  fetchProviderProfile,
+  fetchUserProfile
 } from '../../Redux/Actions/userActions';
 import {
   getPendingJobRequest,
@@ -96,17 +98,19 @@ class SplashScreen extends Component {
     };
     this.leftButtonActon = null;
     this.rightButtonAction = null;
+    this._unsubscribe;
   }
 
   async componentDidMount() {
-    setTimeout(() => this.splashTimeOut(), 3000);
     const { fetchCodes } = this.props;
     await fetchCodes();
+    this.splashTimeOut();
   }
 
-  componentDidUpdate() {
+  async componentDidUpdate() {
     const {
       jobsInfo: { requestsProvidersFetched, requestsFetched },
+      userInfo: { fetchingUserDetails, fetchingProviderDetails, providerDetailsFetched, userDetailsFetched }
     } = this.props;
     if (
       requestsProvidersFetched &&
@@ -114,6 +118,14 @@ class SplashScreen extends Component {
       this.state.isLoading === true
     )
       this.setState({ isLoading: false });
+    const userType = await rNES.getItem('userType');
+    if (userType) {
+      const isFetching = userType === 'Provider' ? fetchingProviderDetails : fetchingUserDetails;
+      const fetched = userType === 'Provider' ? providerDetailsFetched : userDetailsFetched;
+      if (!this.state.isLoading && userType && !isFetching && !fetched) {
+        this.splashTimeOut();
+      }
+    }
   }
 
   showDialogAction = (
@@ -163,8 +175,8 @@ class SplashScreen extends Component {
         fetchPendingJobRequestInfo,
         fetchJobRequestHistoryPro,
         fetchJobRequestHistoryClient,
-        updateUserDetails,
-        updateProviderDetails,
+        fetchProviderProfile,
+        fetchUserProfile,
       } = this.props;
       const userId = await rNES.getItem('userId');
       getUserType(
@@ -188,8 +200,8 @@ class SplashScreen extends Component {
                       ? fetchJobRequestHistoryPro
                       : fetchJobRequestHistoryClient,
                     updateAppUserDetails: provider
-                      ? updateProviderDetails
-                      : updateUserDetails,
+                      ? fetchProviderProfile
+                      : fetchUserProfile,
                     onLoginFailure: message =>
                       this.showDialogAction(
                         {
@@ -228,6 +240,7 @@ class SplashScreen extends Component {
                 null,
                 () => {
                   this.clearDialog();
+                  this.logout();
                   if (Android) BackHandler.exitApp();
                   else RNExitApp.exitApp();
                 },
@@ -245,6 +258,7 @@ class SplashScreen extends Component {
             null,
             () => {
               this.clearDialog();
+              this.logout();
               if (Android) BackHandler.exitApp();
               else RNExitApp.exitApp();
             },
@@ -261,6 +275,7 @@ class SplashScreen extends Component {
         null,
         () => {
           this.clearDialog();
+          this.logout();
           if (Android) BackHandler.exitApp();
           else RNExitApp.exitApp();
         },
@@ -350,6 +365,12 @@ const mapDispatchToProps = dispatch => {
     fetchCodes: () => {
       dispatch(fetchCountryCodes());
     },
+    fetchProviderProfile: (proId, fcm) => {
+      dispatch(fetchProviderProfile(proId, fcm))
+    },
+    fetchUserProfile: (userId, fcm) => {
+      dispatch(fetchUserProfile(userId, fcm))
+    }
   };
 };
 

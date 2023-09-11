@@ -138,6 +138,7 @@ class ProBookingScreen extends Component {
   };
 
   renderBookingHistoryItem = (item, index) => {
+    console.log('booking history item ', { item })
     if (item.user_details)
       return (
         <TouchableOpacity
@@ -168,7 +169,7 @@ class ProBookingScreen extends Component {
                 borderRadius: 100,
               }}
               source={
-                item?.user_details?.imageAvailable
+                item?.user_details?.image_exists
                   ? { uri: item.user_details.image }
                   : require('../../images/generic_avatar.png')
               }

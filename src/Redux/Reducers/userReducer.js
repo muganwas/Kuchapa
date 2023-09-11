@@ -5,6 +5,8 @@ import {
   UPDATE_NEW_USER_INFO,
   UPDATE_USER_AUTH_TOKEN,
   UPDATE_PROVIDER_AUTH_TOKEN,
+  FETCHING_PROVIDER_PROFILE,
+  FETCHING_USER_PROFILE
 } from '../types';
 
 const initialState = {
@@ -47,6 +49,8 @@ const initialState = {
     firebaseId: '',
     authToken: null,
   },
+  fetchingProviderDetails: false,
+  fetchingUserDetails: false,
   providerDetailsFetched: false,
   userDetailsFetched: false,
 };
@@ -58,12 +62,24 @@ const userReducer = (state = initialState, action) => {
         ...state,
         providerDetails: action.payload,
         providerDetailsFetched: true,
+        fetchingProviderDetails: false,
       };
     case UPDATE_USER_DETAILS:
       return {
         ...state,
         userDetails: action.payload,
         userDetailsFetched: true,
+        fetchingUserDetails: false
+      };
+    case FETCHING_PROVIDER_PROFILE:
+      return {
+        ...state,
+        fetchingProviderDetails: true
+      };
+    case FETCHING_USER_PROFILE:
+      return {
+        ...state,
+        fetchingUserDetails: true
       };
     case UPDATE_PROVIDER_AUTH_TOKEN:
       return {
@@ -117,6 +133,8 @@ const userReducer = (state = initialState, action) => {
           authToken: null,
         },
         providerDetailsFetched: false,
+        fetchingProviderDetails: false,
+        fetchingUserDetails: false,
         userDetailsFetched: false,
       };
     case UPDATE_NEW_USER_INFO:

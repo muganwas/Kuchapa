@@ -6,6 +6,8 @@ import {
   RESET_USER_DETAILS,
   UPDATE_USER_AUTH_TOKEN,
   UPDATE_PROVIDER_AUTH_TOKEN,
+  FETCHING_USER_PROFILE,
+  FETCHING_PROVIDER_PROFILE
 } from '../types';
 import { messagesError } from './messageActions';
 
@@ -22,6 +24,18 @@ export const updateNewUserInfo = payload => {
     payload,
   };
 };
+
+export const fetchingUserDetails = () => {
+  return {
+    type: FETCHING_USER_PROFILE
+  }
+}
+
+export const fetchingProviderDetails = () => {
+  return {
+    type: FETCHING_PROVIDER_PROFILE
+  }
+}
 
 export const updateUserDetails = payload => {
   return {
@@ -53,9 +67,9 @@ export const updateProviderAuthToken = payload => {
 export const fetchProviderProfile = (userId, fcmToken) => {
   return async dispatch => {
     try {
+      dispatch(fetchingProviderDetails());
       fetchProviderProfileFunc(userId, fcmToken, updateProviderDetails, dispatch);
     } catch (e) {
-      console.log('pro profile fetch error', e);
       dispatch(messagesError(e.message));
     }
   };
@@ -64,9 +78,9 @@ export const fetchProviderProfile = (userId, fcmToken) => {
 export const fetchUserProfile = (userId, fcmToken) => {
   return dispatch => {
     try {
-      fetchUserProfileFunc(userId, fcmToken, updateNewUserInfo, dispatch);
+      dispatch(fetchingUserDetails());
+      fetchUserProfileFunc(userId, fcmToken, updateUserDetails, dispatch);
     } catch (e) {
-      console.log('user profile fetch error --', e);
       dispatch(messagesError(e.message));
     }
   };

@@ -167,7 +167,6 @@ export const autoLogin = async (
       const currentEmail = firebaseAuth().currentUser?.email;
       const currentFirebaseId = firebaseAuth().currentUser?.uid;
       const firebaseId = await rNES.getItem('firebaseId');
-      console.log('login auto going inhouse');
       if (currentEmail === email && firebaseId === currentFirebaseId)
         return inhouseLogin(userId, userType, fcmToken);
       firebaseAuth()
@@ -222,57 +221,9 @@ export const inhouseLogin = async ({
       }
     });
     const responseJson = await response.json();
-    let onlineStatus;
-    console.log('login ', responseJson)
-    console.log('login onfailure ', onLoginFailure)
     if (responseJson && responseJson.result) {
-      const id = responseJson.data.id;
-      onlineStatus = await synchroniseOnlineStatus(
-        id,
-        responseJson.data.online,
-      );
-      const imageAvailable = await imgExists(responseJson.data.image);
-      let data = provider
-        ? {
-          providerId: responseJson.data.id,
-          name: responseJson.data.username,
-          email: responseJson.data.email,
-          password: responseJson.data.password,
-          image: responseJson.data.image,
-          imageAvailable,
-          surname: responseJson.data.surname,
-          mobile: responseJson.data.mobile,
-          services: responseJson.data.services,
-          description: responseJson.data.description,
-          address: responseJson.data.address,
-          lat: responseJson.data.lat,
-          lang: responseJson.data.lang,
-          invoice: responseJson.data.invoice,
-          firebaseId: responseJson.data.id,
-          online: onlineStatus,
-          status: responseJson.data.status,
-          fcmId: responseJson.data.fcm_id,
-          accountType: responseJson.data.account_type,
-        }
-        : {
-          userId: responseJson.data.id,
-          accountType: responseJson.data.acc_type,
-          email: responseJson.data.email,
-          password: responseJson.data.password,
-          username: responseJson.data.username,
-          image: responseJson.data.image,
-          imageAvailable,
-          mobile: responseJson.data.mobile,
-          dob: responseJson.data.dob,
-          address: responseJson.data.address,
-          lat: responseJson.data.lat,
-          online: onlineStatus,
-          lang: responseJson.data.lang,
-          firebaseId: responseJson.data.id,
-          fcmId: responseJson.data.fcm_id,
-        };
-      updateAppUserDetails(data);
-      fetchJobRequestHistory(userId);
+      await updateAppUserDetails(userId, fcmToken);
+      await fetchJobRequestHistory(userId);
       fetchPendingJobInfo(props, userId, home);
     } else onLoginFailure(responseJson.message);
   } catch (e) {
@@ -332,7 +283,6 @@ export const fbGmailLoginTask = async ({
 }) => {
   const home = userType === 'Provider' ? 'ProHome' : 'Home';
   const userTypeName = userType === 'Provider' ? 'Provider' : 'User';
-  const provider = userType === 'Provider';
   toggleLoading();
   const fcmToken = await messaging().getToken();
   if (fcmToken) {
@@ -356,122 +306,19 @@ export const fbGmailLoginTask = async ({
         body: JSON.stringify({ data: userData })
       });
       const responseJson = await response.json();
-      if (responseJson.result && responseJson.data.createdDate) {
-        const id = responseJson.data.id;
-        const onlineStatus = await synchroniseOnlineStatus(
-          id,
-          responseJson.data.online,
-        );
+      if (responseJson.result && responseJson.data) {
         try {
           const id = responseJson.data.id;
-          const resp = await fetch(fetchProfileUrl + id + '?fcm_id=' + fcmToken, {
-            method: 'GET',
-            headers: {
-              Authorization: 'Bearer ' + idToken,
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
-          });
-          const response = await resp.json();
+          updateAppUserDetails(id, fcmToken);
+          //Store data like sharedPreference
+          rNES.setItem('userId', id);
+          rNES.setItem('idToken', idToken);
+          rNES.setItem('userType', userTypeName);
+          rNES.setItem('email', email);
+          rNES.setItem('firebaseId', firebaseId);
+          fetchJobRequestHistory(id);
           toggleLoading();
-          const imageAvailable = await imgExists(responseJson.data.image);
-          if (response && response.result) {
-            const data = provider
-              ? {
-                providerId: response.data.id,
-                name: response.data.username,
-                email: response.data.email,
-                password: response.data.password,
-                image: response.data.image,
-                imageAvailable,
-                surname: response.data.surname,
-                mobile: response.data.mobile,
-                services: response.data.services,
-                description: response.data.description,
-                address: response.data.address,
-                lat: response.data.lat,
-                lang: response.data.lang,
-                invoice: response.data.invoice,
-                firebaseId,
-                online: onlineStatus,
-                status: response.data.status,
-                fcmId: response.data.fcm_id,
-                accountType: responseJson.data.account_type,
-              }
-              : {
-                userId: response.data.id,
-                accountType: response.data.acc_type,
-                email: response.data.email,
-                password: response.data.password,
-                username: response.data.username,
-                image: response.data.image,
-                imageAvailable,
-                mobile: response.data.mobile,
-                dob: response.data.dob,
-                address: response.data.address,
-                lat: response.data.lat,
-                online: onlineStatus,
-                lang: response.data.lang,
-                firebaseId,
-                fcmId: response.data.fcm_id,
-              };
-            updateAppUserDetails(data);
-            //Store data like sharedPreference
-            rNES.setItem('userId', id);
-            rNES.setItem('idToken', idToken);
-            rNES.setItem('userType', userTypeName);
-            rNES.setItem('email', data.email);
-            rNES.setItem('firebaseId', firebaseId);
-            fetchJobRequestHistory(id);
-            fetchAppUserJobRequests(props, id, home);
-          } else {
-            const data = provider
-              ? {
-                providerId: responseJson.data.id,
-                name: responseJson.data.username,
-                email: responseJson.data.email,
-                password: responseJson.data.password,
-                image: responseJson.data.image,
-                surname: responseJson.data.surname,
-                mobile: responseJson.data.mobile,
-                services: responseJson.data.services,
-                description: responseJson.data.description,
-                address: responseJson.data.address,
-                lat: responseJson.data.lat,
-                lang: responseJson.data.lang,
-                invoice: responseJson.data.invoice,
-                online: onlineStatus,
-                status: responseJson.data.status,
-                fcmId: responseJson.data.fcm_id,
-                accountType: responseJson.data.account_type,
-                firebaseId,
-              }
-              : {
-                userId: responseJson.data.id,
-                accountType: responseJson.data.acc_type,
-                email: responseJson.data.email,
-                password: responseJson.data.password,
-                username: responseJson.data.username,
-                image: responseJson.data.image,
-                mobile: responseJson.data.mobile,
-                dob: responseJson.data.dob,
-                address: responseJson.data.address,
-                online: onlineStatus,
-                lat: responseJson.data.lat,
-                lang: responseJson.data.lang,
-                fcmId: responseJson.data.fcm_id,
-                firebaseId,
-              };
-            updateAppUserDetails(data);
-            //Store data like sharedPreference
-            rNES.setItem('userId', id);
-            rNES.setItem('idToken', idToken);
-            rNES.setItem('userType', userTypeName);
-            rNES.setItem('email', data.email);
-            rNES.setItem('firebaseId', firebaseId);
-            fetchJobRequestHistory(id);
-            fetchAppUserJobRequests(props, id, home);
-          }
+          fetchAppUserJobRequests(props, id, home);
         } catch (e) {
           onError(e.message);
         }
@@ -510,7 +357,6 @@ export const authenticateTask = async ({
 }) => {
   toggleLoading();
   const fcmToken = await messaging().getToken();
-  const provider = userType === 'Provider';
   const home = userType === 'Provider' ? 'ProHome' : 'Home';
   if (fcmToken) {
     try {
@@ -537,53 +383,8 @@ export const authenticateTask = async ({
           });
           const responseJson = await response.json();
           if (responseJson && responseJson.result) {
-            const onlineStatus = await synchroniseOnlineStatus(
-              responseJson.data.id,
-              responseJson.data.online,
-            );
-            toggleLoading();
             const id = responseJson.data.id;
-            const imageAvailable = await imgExists(responseJson.data.image);
-            const data = provider
-              ? {
-                providerId: responseJson.data.id,
-                name: responseJson.data.username,
-                email: responseJson.data.email,
-                password: responseJson.data.password,
-                image: responseJson.data.image,
-                imageAvailable,
-                surname: responseJson.data.surname,
-                mobile: responseJson.data.mobile,
-                services: responseJson.data.services,
-                description: responseJson.data.description,
-                address: responseJson.data.address,
-                lat: responseJson.data.lat,
-                lang: responseJson.data.lang,
-                invoice: responseJson.data.invoice,
-                online: onlineStatus,
-                status: responseJson.data.status,
-                fcmId: responseJson.data.fcm_id,
-                accountType: responseJson.data.account_type,
-                firebaseId: uid,
-              }
-              : {
-                userId: responseJson.data.id,
-                accountType: responseJson.data.acc_type,
-                email: responseJson.data.email,
-                password: responseJson.data.password,
-                username: responseJson.data.username,
-                image: responseJson.data.image,
-                imageAvailable,
-                mobile: responseJson.data.mobile,
-                dob: responseJson.data.dob,
-                online: onlineStatus,
-                address: responseJson.data.address,
-                lat: responseJson.data.lat,
-                lang: responseJson.data.lang,
-                fcmId: responseJson.data.fcm_id,
-                firebaseId: uid,
-              };
-            updateAppUserDetails(data);
+            updateAppUserDetails(id, fcmToken);
             //Store data like sharedPreference
             rNES.setItem('userId', id);
             rNES.setItem('userType', userType);
@@ -595,6 +396,7 @@ export const authenticateTask = async ({
             rNES.setItem('auth', JSON.stringify(auth));
             rNES.setItem('firebaseId', uid);
             fetchJobRequestHistory(id);
+            toggleLoading();
             fetchAppUserJobRequests(props, id, home);
           } else {
             onError(responseJson.message);
@@ -801,10 +603,6 @@ export const phoneLoginTask = async ({
       const responseJson = await response.json();
       if (responseJson.result && responseJson.data.createdDate) {
         const id = responseJson.data.id;
-        const onlineStatus = await synchroniseOnlineStatus(
-          id,
-          responseJson.data.online,
-        );
         try {
           /** get stored profile if exists */
           const resp = await fetch(getProfileURL + id + '?fcm_id=' + fcmToken, {
@@ -816,50 +614,8 @@ export const phoneLoginTask = async ({
             },
           });
           const response = await resp.json();
-          toggleIsLoading(false);
           if (response && response.result) {
-            const imageAvailable = await imgExists(response.data.image);
-            const data =
-              userType === 'Provider'
-                ? {
-                  providerId: response.data.id,
-                  name: response.data.username,
-                  email: response.data.email,
-                  password: response.data.password,
-                  image: response.data.image,
-                  imageAvailable,
-                  surname: response.data.surname,
-                  mobile: response.data.mobile,
-                  services: response.data.services,
-                  description: response.data.description,
-                  address: response.data.address,
-                  lat: response.data.lat,
-                  lang: response.data.lang,
-                  invoice: response.data.invoice,
-                  online: onlineStatus,
-                  firebaseId,
-                  status: response.data.status,
-                  fcmId: response.data.fcm_id,
-                  accountType: response.data.account_type,
-                }
-                : {
-                  userId: response.data.id,
-                  accountType: response.data.acc_type,
-                  email: response.data.email,
-                  password: response.data.password,
-                  username: response.data.username,
-                  image: response.data.image,
-                  imageAvailable,
-                  mobile: response.data.mobile,
-                  dob: response.data.dob,
-                  address: response.data.address,
-                  online: onlineStatus,
-                  lat: response.data.lat,
-                  lang: response.data.lang,
-                  firebaseId,
-                  fcmId: response.data.fcm_id,
-                };
-            updateUserDetails(data);
+            updateUserDetails(id, fcmToken);
             //Store data like sharedPreference
             rNES.setItem('userId', id);
             rNES.setItem('userType', userType);
@@ -868,6 +624,7 @@ export const phoneLoginTask = async ({
             rNES.setItem('firebaseId', firebaseId);
             //Check if any Ongoing Request
             fetchJobRequestHistory(id);
+            toggleIsLoading(false);
             fetchJobRequests(props, id, Home);
           } else {
             toggleIsLoading(false);
@@ -1058,6 +815,7 @@ export const getAllProviders = async ({
   }
 };
 
+/** TODO: to be moved to API */
 export const calculateDistance = async ({
   usersCoordinates,
   dataSource,
@@ -1118,19 +876,13 @@ export const fetchProfile = async ({
       },
     });
     const responseJson = await response.json();
-    let imageAvailable =
-      responseJson.data.image && !responseJson.data.image !== 'no-image.jpg'
-        ? true
-        : false;
-    if (imageAvailable)
-      imageAvailable = await imgExists(responseJson.data.image);
     if (responseJson.result) {
       const id = responseJson.data.id;
       onSuccess({
         userId: responseJson.data.id,
         userName: responseJson.data.username,
         userImage: responseJson.data.image,
-        imageAvailable,
+        imageAvailable: responseJson.data.image_available,
         userMobile: responseJson.data.mobile,
         userDob: responseJson.data.dob,
         userAddress: responseJson.data.address,

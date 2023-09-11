@@ -10,7 +10,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { cloneDeep } from 'lodash';
 import SimpleToast from 'react-native-simple-toast';
 import moment from 'moment';
-import rNES from 'react-native-encrypted-storage';
+import { synchroniseOnlineStatus } from '../controllers/users';
 import Config from '../components/Config';
 
 const phoneUtil = PhoneNumberUtil.getInstance();
@@ -43,7 +43,7 @@ export const locationPermissionRequest = async (action = () => { }) => {
       }
     }
   } catch (err) {
-    console.log(err);
+    SimpleToast.show('There was an error setting location permissions.');
   }
 };
 
@@ -410,6 +410,11 @@ export const fetchUserProfileFunc = async (userId, fcmToken, updateUserDetails, 
   });
   const responseJson = await response.json();
   if (responseJson && responseJson.result) {
+    const id = responseJson.data.id;
+    const online = await synchroniseOnlineStatus(
+      id,
+      responseJson.data.online,
+    );
     let userData = {
       userId: responseJson.data.id,
       accountType: responseJson.data.acc_type,
@@ -418,6 +423,8 @@ export const fetchUserProfileFunc = async (userId, fcmToken, updateUserDetails, 
       username: responseJson.data.username,
       image: responseJson.data.image,
       mobile: responseJson.data.mobile,
+      online,
+      imageAvailable: responseJson.data.image_available,
       dob: responseJson.data.dob,
       address: responseJson.data.address,
       lat: responseJson.data.lat,
@@ -425,22 +432,6 @@ export const fetchUserProfileFunc = async (userId, fcmToken, updateUserDetails, 
       firebaseId: responseJson.data.id,
       fcmId: responseJson.data.fcm_id,
     };
-    const id = responseJson.data.id;
-    const usersRef = database().ref(`users/${id}`);
-    await usersRef.once('value', snapshot => {
-      const value = snapshot.val();
-      if (value) status = value.status;
-      else {
-        usersRef
-          .set({ status: responseJson.data.status })
-          .then(() => {
-            console.log('status set');
-          })
-          .catch(e => {
-            console.log(e.message);
-          });
-      }
-    });
     dispatch(updateUserDetails(userData));
   } else {
     SimpleToast.show('Could not fetch profile information');
@@ -461,21 +452,10 @@ export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderD
   let status;
   if (responseJson && responseJson.result) {
     const id = responseJson.data.id;
-    const usersRef = database().ref(`users/${id}`);
-    await usersRef.once('value', snapshot => {
-      const value = snapshot.val();
-      if (value) status = value.status;
-      else {
-        usersRef
-          .set({ status: responseJson.data.status })
-          .then(() => {
-            console.log('status set');
-          })
-          .catch(e => {
-            console.log(e.message);
-          });
-      }
-    });
+    const online = await synchroniseOnlineStatus(
+      id,
+      responseJson.data.online,
+    );
     const providerData = {
       providerId: responseJson.data.id,
       name: responseJson.data.username,
@@ -486,6 +466,8 @@ export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderD
       mobile: responseJson.data.mobile,
       services: responseJson.data.services,
       description: responseJson.data.description,
+      online,
+      imageAvailable: responseJson.data.image_available,
       address: responseJson.data.address,
       lat: responseJson.data.lat,
       lang: responseJson.data.lang,
@@ -502,7 +484,6 @@ export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderD
 };
 
 export const getPendingJobRequestProviderFunc = async (providerId, navigation, navTo, fetchedJobProviderInfo, dispatch) => {
-  console.log('accptiong go to', navTo)
   const newJobRequestsProviders = [];
   const idToken = await firebaseAuth().currentUser.getIdToken();
   const response = await fetch(PENDING_JOB_PROVIDER + providerId + '/pending', {
@@ -529,6 +510,7 @@ export const getPendingJobRequestProviderFunc = async (providerId, navigation, n
           address: job.customer_details && job.customer_details.address,
           lat: job.customer_details && job.customer_details.lat,
           lang: job.customer_details && job.customer_details.lang,
+          imageAvailable: job.customer_details && job.customer_details.image_available,
           service_name: job.service_details.service_name,
           chat_status: job.chat_status,
           status: job.status,
@@ -537,9 +519,6 @@ export const getPendingJobRequestProviderFunc = async (providerId, navigation, n
           delivery_lang: job.delivery_lang,
           customer_details: job.customer_details,
         };
-        //check if image is reachable
-        if (job.customer_details)
-          jobData.imageAvailable = await imageExists(job.customer_details.image);
         newJobRequestsProviders.push(jobData);
       }
     });
@@ -565,7 +544,6 @@ export const getAllWorkRequestProFunc = async (providerId, fetchedDataWorkSource
   const dataWorkSource = [];
   if (responseJson.result) {
     for (let i = 0; i < responseJson.data.length; i++) {
-      newAllProvidersDetails[i].imageAvailable = await imageExists(responseJson.data[i].user_details.image);
       if (responseJson.data[i].chat_status === '1') {
         dataWorkSource.push(responseJson.data[i]);
       } else if (responseJson.data[i].chat_status === '0') {
@@ -597,12 +575,10 @@ export const getAllWorkRequestClientFunc = async (clientId, fetchedDataWorkSourc
   if (responseJson.result) {
     for (let i = 0; i < responseJson.data.length; i++) {
       if (responseJson.data[i]) {
-        if (responseJson.data[i].employee_details)
-          newAllClientDetails[i].imageAvailable = await imageExists(responseJson.data[i].employee_details.image);
         if (responseJson.data[i].chat_status == '1') {
           dataWorkSource.push(responseJson.data[i]);
         } else if (responseJson.data[i].chat_status == '0') {
-          if (responseJson.data[i].status != 'Pending') {
+          if (responseJson.data[i].status !== 'Pending') {
             dataWorkSource.push(responseJson.data[i]);
           }
         }
@@ -646,12 +622,10 @@ export const getPendingJobRequestFunc = async (userId, navigation, navTo, fetche
           address: job.employee_details && job.employee_details.address,
           lat: job.employee_details && job.employee_details.lat,
           lang: job.employee_details && job.employee_details.lang,
+          imageAvailable: job.employee_details && job.employee_details.image_available,
           service_name: job.service_details.service_name,
           employee_details: job.employee_details,
         };
-        //check if image is reachable
-        if (job.employee_details)
-          jobData.imageAvailable = await imageExists(job.employee_details.image);
         newJobRequest.push(jobData);
       }
     });

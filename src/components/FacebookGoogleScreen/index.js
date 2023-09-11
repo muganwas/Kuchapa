@@ -25,6 +25,7 @@ import Config from '../Config';
 import {
   updateUserDetails,
   updateUserAuthToken,
+  fetchUserProfile
 } from '../../Redux/Actions/userActions';
 import WaitingDialog from '../WaitingDialog';
 import DialogComponent from '../DialogComponent';
@@ -179,7 +180,7 @@ class FacebookGoogleScreen extends Component {
       authURL: AUTHENTICATE_URL,
       fetchAppUserJobRequests: this.props.fetchJobRequests,
       fetchJobRequestHistory: this.props.fetchJobRequestHistory,
-      updateAppUserDetails: this.props.updateUserDetails,
+      updateAppUserDetails: this.props.fetchUserProfile,
       toggleLoading: this.changeWaitingDialogVisibility,
       onError: message =>
         this.showDialogAction(
@@ -433,6 +434,9 @@ const mapDispatchToProps = dispatch => {
     updateUserAuthToken: authToken => {
       dispatch(updateUserAuthToken(authToken));
     },
+    fetchUserProfile: (id, fcm) => {
+      dispatch(fetchUserProfile(id, fcm));
+    }
   };
 };
 

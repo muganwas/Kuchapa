@@ -28,6 +28,7 @@ import {
   updateUserAuthToken,
   updateProviderDetails,
   updateProviderAuthToken,
+  fetchProviderProfile
 } from '../../Redux/Actions/userActions';
 import {
   updateConfirmationObject,
@@ -167,7 +168,7 @@ class LoginPhoneScreen extends Component {
       fetchJobRequests: this.props.fetchProvidersJobRequests,
       fetchJobRequestHistory: this.props.fetchJobRequestHistory,
       validationInfo: this.props.validationInfo,
-      updateUserDetails: this.props.updateProviderDetails,
+      updateUserDetails: this.props.fetchProviderProfile,
       toggleIsLoading: this.changeWaitingDialogVisibility,
       registerURL: REGISTER_URL,
       getProfileURL: PRO_GET_PROFILE,
@@ -478,6 +479,9 @@ const mapDispatchToProps = dispatch => {
     updateProviderAuthToken: token => {
       dispatch(updateProviderAuthToken(token));
     },
+    fetchProviderProfile: (id, fcm) => {
+      dispatch(fetchProviderProfile(id, fcm));
+    }
   };
 };
 

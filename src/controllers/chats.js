@@ -45,6 +45,7 @@ export const acceptChatRequest = async (
       delivery_address,
       delivery_lat,
       delivery_lang,
+      imageAvailable
     } = jobRequests[pos];
 
     setSelectedJobRequest(jobRequests[pos]);
@@ -110,8 +111,8 @@ export const acceptChatRequest = async (
         delivery_address,
         delivery_lat,
         delivery_lang,
+        imageAvailable
       };
-      jobData.imageAvailable = await imageExists(image);
       newjobRequests[pos] = jobData;
       fetchedPendingJobInfo(newjobRequests);
       if (redirect) navigate();
@@ -137,7 +138,6 @@ export const rejectChatRequest = async (
   },
   redirect = true,
 ) => {
-  console.log('rejecting ...')
   try {
     toggleLoading(true);
     let newjobRequestsProviders = cloneDeep(jobRequestsProviders);

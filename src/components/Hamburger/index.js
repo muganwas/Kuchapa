@@ -60,7 +60,6 @@ import { resetUserDetails } from '../../Redux/Actions/userActions';
 import {
   locationPermissionRequest,
   returnCoordDetails,
-  imageExists,
   checkNoficationsAvailability,
 } from '../../misc/helpers';
 import { checkForUserType } from '../../controllers/users';
@@ -128,7 +127,6 @@ class Hamburger extends React.Component {
       fetchedNotifications,
       updateLiveChatUsers,
       userInfo: { userDetails },
-      fetchClientMessages,
       navigation,
     } = this.props;
     const currentUser = firebaseAuth().currentUser;

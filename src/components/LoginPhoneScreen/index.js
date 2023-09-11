@@ -25,6 +25,7 @@ import Config from '../Config';
 import {
   updateUserDetails,
   updateUserAuthToken,
+  fetchUserProfile
 } from '../../Redux/Actions/userActions';
 import {
   updateConfirmationObject,
@@ -165,7 +166,7 @@ class LoginPhoneScreen extends Component {
       firebaseId: this.state.firebaseId,
       fetchJobRequests: this.props.fetchJobRequests,
       fetchJobRequestHistory: this.props.fetchJobRequestHistory,
-      updateUserDetails: this.props.updateUserDetails,
+      updateUserDetails: this.props.fetchUserProfile,
       validationInfo: this.props.validationInfo,
       toggleIsLoading: this.changeWaitingDialogVisibility,
       registerURL: REGISTER_URL,
@@ -464,6 +465,9 @@ const mapDispatchToProps = dispatch => {
     updateMobileNumber: number => {
       dispatch(updateMobileNumber(number));
     },
+    fetchUserProfile: (id, fcm) => {
+      dispatch(fetchUserProfile(id, fcm));
+    }
   };
 };
 

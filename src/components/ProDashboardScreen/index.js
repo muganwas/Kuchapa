@@ -35,6 +35,7 @@ import {
   fetchProviderJobInfoError,
   setSelectedJobRequest,
   getAllWorkRequestPro,
+  getPendingJobRequestProvider
 } from '../../Redux/Actions/jobsActions';
 import { updateProviderDetails } from '../../Redux/Actions/userActions';
 import {
@@ -117,6 +118,7 @@ class ProDashboardScreen extends Component {
       proImageAvailable: null,
     };
     this.springValue = new Animated.Value(100);
+    this._unsubscribe;
   }
 
   //Get All Bookings
@@ -126,7 +128,7 @@ class ProDashboardScreen extends Component {
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    navigation.addListener('focus', () => {
+    this._unsubscribe = navigation.addListener('focus', () => {
       this.onRefresh();
     });
     this.getAllRecentChatsPro();
@@ -137,6 +139,7 @@ class ProDashboardScreen extends Component {
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
+    this._unsubscribe();
   }
 
   componentDidUpdate() {
@@ -172,7 +175,6 @@ class ProDashboardScreen extends Component {
     const {
       generalInfo: { online, connectivityAvailable },
       userInfo: { providerDetails },
-      fetchJobRequestHistory,
     } = this.props;
     this.setState({
       status:
@@ -180,7 +182,6 @@ class ProDashboardScreen extends Component {
           ? 'ONLINE'
           : 'OFFLINE'
     });
-    await fetchJobRequestHistory(providerDetails.providerId);
     await this.getAllRecentChatsPro();
     this.setState({ refreshing: false, isLoading: false, isWorkRequest: true });
     this.springValue = new Animated.Value(100);
@@ -1101,6 +1102,9 @@ const mapDispatchToProps = dispatch => {
     },
     fetchedPendingJobInfo: info => {
       dispatch(fetchedJobProviderInfo(info));
+    },
+    fetchPendingJobProviderInfo: (props, proId, navigateTo) => {
+      dispatch(getPendingJobRequestProvider(props, proId, navigateTo));
     },
     fetchingPendingJobInfoError: error => {
       dispatch(fetchProviderJobInfoError(error));

@@ -35,7 +35,6 @@ import {
   MessagesHeader,
   MessagesFooter,
 } from '../ProMessagesComponents';
-import { imageExists } from '../../misc/helpers';
 
 const screenWidth = Dimensions.get('window').width;
 const socket = Config.socket;
@@ -70,8 +69,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
       userInfo: { providerDetails },
       route
     } = props;
-    let imageAvailable;
-    imageAvailable = imageExists(route.params.receiverImage);
+
     this.state = {
       showButton: false,
       senderId: providerDetails.providerId,
@@ -82,14 +80,14 @@ class ProChatAfterBookingDetailsScreen extends Component {
       dataChatSource: dataChatSource[user_id] || [],
       isLoading: !fetched,
       isUploading: false,
-      receiverId: route.params.receiverId,
-      receiverName: route.params.receiverName,
-      receiverImage: route.params.receiverImage,
-      imageAvailable,
-      orderId: route.params.orderId,
-      serviceName: route.params.serviceName,
-      pageTitle: route.params.pageTitle,
-      client_FCM_id: route.params.fcm_id,
+      receiverId: route?.params?.receiverId,
+      receiverName: route?.params?.receiverName,
+      receiverImage: route?.params?.receiverImage,
+      imageAvailable: route?.params?.receiverImageAvailable,
+      orderId: route?.params?.orderId,
+      serviceName: route?.params?.serviceName,
+      pageTitle: route?.params?.pageTitle,
+      client_FCM_id: route?.params?.fcm_id,
       selectedStatus: '0',
       liveChatStatus: OnlineUsers[user_id] ? OnlineUsers[user_id].status : '0',
       online: false,
@@ -104,19 +102,34 @@ class ProChatAfterBookingDetailsScreen extends Component {
       this.handleBackButtonClick(),
     );
     const {
-      fetchedNotifications,
+      jobsInfo: {
+        selectedJobRequest: { user_id },
+      },
+      generalInfo: { OnlineUsers },
       userInfo: { providerDetails },
       fetchEmployeeMessages,
+      fetchedNotifications
     } = this.props;
     if (!socket.connected) {
       socket.connect();
-      fetchEmployeeMessages(providerDetails.providerId);
     }
-    this.reInit(this.props);
+    fetchEmployeeMessages(providerDetails.providerId);
+    setOnlineStatusListener({
+      OnlineUsers,
+      userId: user_id,
+      setStatus: (selectedStatus, online) =>
+        this.setState({
+          selectedStatus,
+          online,
+        }),
+    });
     fetchedNotifications({ type: 'messages', value: 0 });
   }
 
   componentWillUnmount() {
+    const { jobsInfo: {
+      selectedJobRequest: { user_id }
+    } } = this.props;
     BackHandler.removeEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
@@ -139,7 +152,6 @@ class ProChatAfterBookingDetailsScreen extends Component {
       socket.connect();
       fetchEmployeeMessages(providerDetails.providerId);
     }
-    let imageAvailable = await imageExists(route.params.receiverImage);
     this.setState({
       showButton: false,
       senderId: providerDetails.providerId,
@@ -150,14 +162,14 @@ class ProChatAfterBookingDetailsScreen extends Component {
       dataChatSource: dataChatSource[user_id] || [],
       isLoading: !fetched,
       isUploading: false,
-      imageAvailable,
-      receiverId: route.params.receiverId,
-      receiverName: route.params.receiverName,
-      receiverImage: route.params.receiverImage,
-      orderId: route.params.orderId,
-      serviceName: route.params.serviceName,
-      pageTitle: route.params.pageTitle,
-      client_FCM_id: route.params.fcm_id,
+      imageAvailable: route?.params?.receiverImageAvailable,
+      receiverId: route?.params?.receiverId,
+      receiverName: route?.params?.receiverName,
+      receiverImage: route?.params?.receiverImage,
+      orderId: route?.params?.orderId,
+      serviceName: route?.params?.serviceName,
+      pageTitle: route?.params?.pageTitle,
+      client_FCM_id: route?.params?.fcm_id,
     });
     setOnlineStatusListener({
       OnlineUsers,

@@ -88,21 +88,9 @@ class DashboardScreen extends Component {
   };
 
   componentDidMount = async () => {
-    const { navigation } = this.props;
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
     await this.fetchAllServices();
     await this.getAllRecentChatsCustomer();
-    navigation.addListener('focus', async () => {
-      const {
-        getAllWorkRequestClient,
-        fetchPendingJobsRequest,
-        userInfo: { userDetails },
-      } = this.props;
-      this.setState({ isLoading: true });
-      await getAllWorkRequestClient(userDetails.userId);
-      await fetchPendingJobsRequest(this.props, userDetails.userId, 'Home');
-      this.setState({ isLoading: false });
-    })
   };
 
   componentWillUnmount() {

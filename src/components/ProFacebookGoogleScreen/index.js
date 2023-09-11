@@ -26,6 +26,7 @@ import DialogComponent from '../DialogComponent';
 import {
   updateProviderDetails,
   updateProviderAuthToken,
+  fetchProviderProfile
 } from '../../Redux/Actions/userActions';
 import { font_size } from '../../Constants/metrics';
 import { themeRed, black, white, lightGray } from '../../Constants/colors';
@@ -149,7 +150,7 @@ class FacebookGoogleScreen extends Component {
       registerUrl: REGISTER_URL,
       fetchProfileUrl: PRO_GET_PROFILE,
       loginType,
-      updateAppUserDetails: this.props.updateProviderDetails,
+      updateAppUserDetails: this.props.fetchProviderProfile,
       fetchAppUserJobRequests: this.props.fetchProvidersJobRequests,
       fetchJobRequestHistory: this.props.fetchJobRequestHistory,
       toggleLoading: this.changeWaitingDialogVisibility,
@@ -179,7 +180,7 @@ class FacebookGoogleScreen extends Component {
       authURL: AUTHENTICATE_URL,
       fetchAppUserJobRequests: this.props.fetchProvidersJobRequests,
       fetchJobRequestHistory: this.props.fetchJobRequestHistory,
-      updateAppUserDetails: this.props.updateProviderDetails,
+      updateAppUserDetails: this.props.fetchProviderProfile,
       toggleLoading: this.changeWaitingDialogVisibility,
       onError: message => {
         this.showDialogAction(
@@ -439,6 +440,9 @@ const mapDispatchToProps = dispatch => {
     },
     updateProviderAuthToken: token => {
       dispatch(updateProviderAuthToken(token));
+    },
+    fetchProviderProfile: (proId, fcm) => {
+      dispatch(fetchProviderProfile(proId, fcm))
     },
   };
 };
