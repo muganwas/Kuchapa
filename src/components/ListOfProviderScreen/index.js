@@ -48,7 +48,6 @@ class ListOfProviderScreen extends Component {
       serviceName: null,
       serviceId: null,
       dataSource: [],
-      distInfo: {},
       distCalculated: false,
       isNoData: false,
       isData: false,
@@ -80,7 +79,6 @@ class ListOfProviderScreen extends Component {
       serviceName: route.params.serviceName,
       serviceId: route.params.serviceId,
       dataSource: [],
-      distInfo: {},
       distCalculated: false,
       isNoData: false,
       isData: false,
@@ -97,18 +95,10 @@ class ListOfProviderScreen extends Component {
       userDetails: this.props?.userInfo?.userDetails,
       serviceId: this.props.route.params.serviceId,
       toggleIsLoading: this.changeWaitingDialogVisibility,
-      usersCoordinates: this.props?.generalInfo?.usersCoordinates,
-      setDistInfo: distInfo => this.setState({ distInfo }),
-      setDistDataSource: dataSource => {
-        this.setState({
-          distCalculated: true,
-          dataSource,
-          refreshing: false,
-        });
-      },
-      onSuccess: () =>
+      onSuccess: (dataSource) =>
         this.setState({
           isLoading: false,
+          dataSource,
           isNoData: false,
           isData: true,
         }),
@@ -117,20 +107,6 @@ class ListOfProviderScreen extends Component {
           isLoading: false,
           isNoData: true,
           isData: false,
-        }),
-    });
-
-  calculateDistanceLocal = async dataSource =>
-    calculateDistance({
-      usersCoordinates: this.props?.generalInfo?.usersCoordinates,
-      dataSource,
-      setDistInfo: distInfo => this.setState({ distInfo }),
-      toggleIsRefreshing: this.toggleRefreshing,
-      onSuccess: dataSource =>
-        this.setState({
-          distCalculated: true,
-          dataSource,
-          refreshing: false,
         }),
     });
 
@@ -164,7 +140,7 @@ class ListOfProviderScreen extends Component {
                 name: item.username,
                 surname: item.surname,
                 image: item.image,
-                imageAvailable: item.imageAvailable,
+                imageAvailable: item.image_available,
                 mobile: item.mobile,
                 avgRating: item.avgRating,
                 distance: item.hash,
@@ -202,7 +178,7 @@ class ListOfProviderScreen extends Component {
                   alignSelf: 'center',
                 }}
                 source={
-                  item.imageAvailable
+                  item.image_available
                     ? { uri: item.image }
                     : require('../../images/generic_avatar.png')
                 }
@@ -407,7 +383,7 @@ class ListOfProviderScreen extends Component {
               showsVerticalScrollIndicator={false}
               extraData={this.state}
               refreshing={this.state.refreshing}
-              onRefresh={this.calculateDistanceLocal}
+              onRefresh={this.getAllProvidersLocal}
             />
           </View>
         )}

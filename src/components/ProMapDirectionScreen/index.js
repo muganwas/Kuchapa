@@ -30,6 +30,7 @@ import {
   startFetchingJobProvider,
   fetchProviderJobInfoError,
   setSelectedJobRequest,
+  fetchedJobProviderInfo
 } from '../../Redux/Actions/jobsActions';
 import { font_size } from '../../Constants/metrics';
 import {
@@ -805,6 +806,9 @@ const mapDispatchToProps = dispatch => {
     dispatchSelectedJobRequest: job => {
       dispatch(setSelectedJobRequest(job));
     },
+    fetchedPendingJobInfo: info => {
+      dispatch(fetchedJobProviderInfo(info));
+    }
   };
 };
 

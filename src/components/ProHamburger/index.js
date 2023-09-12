@@ -202,10 +202,10 @@ class ProHamburger extends React.Component {
     });
 
     socket.on('connect', () => {
-      const userId = providerDetails.providerId;
-      if (userId) {
+      const proId = providerDetails.providerId;
+      if (proId) {
         socket.emit('authentication', {
-          id: userId,
+          id: proId,
           userType: 'employee',
         });
       }
@@ -229,12 +229,16 @@ class ProHamburger extends React.Component {
       const {
         generalInfo: { connectivityAvailable },
       } = this.props;
-      updateLiveChatUsers({});
-      updateOnlineStatus(false);
-      if (connectivityAvailable) {
-        setTimeout(() => {
-          socket.connect();
-        }, 1000);
+      try {
+        updateLiveChatUsers({});
+        updateOnlineStatus(false);
+        if (connectivityAvailable) {
+          setTimeout(() => {
+            socket.connect();
+          }, 1000);
+        }
+      } catch (e) {
+        SimpleToast.show(e.message);
       }
     });
     socket.on('chat-message', data => {

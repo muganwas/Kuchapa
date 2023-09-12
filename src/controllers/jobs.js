@@ -150,11 +150,10 @@ export const jobCancelTask = async ({
       updatePendingJobInfo(newJobRequests);
       navigate && navigate(dash);
     } else {
-      onError('An error has occurred, please try again later');
+      onError(responseJson.message);
     }
   } catch (e) {
-    console.log('Error >>> ' + e);
-    onError("Couldn't cancel job, please try again later");
+    onError(e.message);
   }
 };
 

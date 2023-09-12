@@ -150,8 +150,8 @@ class ProChatAfterBookingDetailsScreen extends Component {
     } = props;
     if (!socket.connected) {
       socket.connect();
-      fetchEmployeeMessages(providerDetails.providerId);
     }
+    fetchEmployeeMessages(providerDetails.providerId);
     this.setState({
       showButton: false,
       senderId: providerDetails.providerId,
@@ -171,15 +171,15 @@ class ProChatAfterBookingDetailsScreen extends Component {
       pageTitle: route?.params?.pageTitle,
       client_FCM_id: route?.params?.fcm_id,
     });
-    setOnlineStatusListener({
-      OnlineUsers,
-      userId: user_id,
-      setStatus: (selectedStatus, online) =>
-        this.setState({
-          selectedStatus,
-          online,
-        }),
-    });
+    // setOnlineStatusListener({
+    //   OnlineUsers,
+    //   userId: user_id,
+    //   setStatus: (selectedStatus, online) =>
+    //     this.setState({
+    //       selectedStatus,
+    //       online,
+    //     }),
+    // });
   };
 
   componentDidUpdate() {

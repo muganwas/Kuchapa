@@ -63,7 +63,8 @@ import {
   checkNoficationsAvailability,
 } from '../../misc/helpers';
 import { checkForUserType } from '../../controllers/users';
-import { deregisterOnlineStatusListener } from '../../controllers/chats';
+import { updateLatestChats } from '../../Redux/Actions/messageActions';
+import { deregisterOnlineStatusListener, getAllRecentChats } from '../../controllers/chats';
 import { getAllNotifications } from '../../controllers/notifications';
 import { getAllBookings } from '../../controllers/bookings';
 import { white } from '../../Constants/colors';
@@ -393,16 +394,21 @@ class Hamburger extends React.Component {
         dbMessagesFetched(newMessages);
       }
     });
+
     socket.on('disconnect', info => {
-      updateLiveChatUsers({});
       const {
-        generalInfo: { connectivityAvailable },
+        generalInfo: { connectivityAvailable }
       } = this.props;
-      updateOnlineStatus(false);
-      if (connectivityAvailable) {
-        setTimeout(() => {
-          socket.connect();
-        }, 1000);
+      try {
+        updateLiveChatUsers({});
+        updateOnlineStatus(false);
+        if (connectivityAvailable) {
+          setTimeout(() => {
+            socket.connect();
+          }, 1000);
+        }
+      } catch (e) {
+        SimpleToast.show(e.message)
       }
     });
     socket.connect();
@@ -628,6 +634,9 @@ const mapDispatchToProps = dispatch => {
     },
     resetUserDetails: () => {
       dispatch(resetUserDetails());
+    },
+    updateLatestChats: data => {
+      dispatch(updateLatestChats(data));
     },
   };
 };

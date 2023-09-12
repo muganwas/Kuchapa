@@ -102,16 +102,32 @@ class ChatAfterBookingDetailsScreen extends Component {
   }
 
   componentDidMount() {
-    const { fetchClientMessages, fetchedNotifications } = this.props;
+    const {
+      userInfo: { userDetails },
+      jobsInfo: {
+        selectedJobRequest: { employee_id },
+      },
+      generalInfo: { OnlineUsers },
+      fetchClientMessages,
+      fetchedNotifications
+    } = this.props;
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
     if (!socket.connected) {
       socket.connect();
-      fetchClientMessages(userDetails.userId);
     }
-    this.reInit(this.props);
+    fetchClientMessages(userDetails.userId);
+    setOnlineStatusListener({
+      OnlineUsers,
+      userId: employee_id,
+      setStatus: (selectedStatus, online) =>
+        this.setState({
+          selectedStatus,
+          online,
+        }),
+    });
     fetchedNotifications({ type: 'messages', value: 0 });
   }
 
@@ -138,10 +154,9 @@ class ChatAfterBookingDetailsScreen extends Component {
       fetchClientMessages,
     } = props;
     if (!socket.connected) {
-      socket.close();
       socket.connect();
-      fetchClientMessages(userDetails.userId);
     }
+    fetchClientMessages(userDetails.userId);
     this.setState({
       senderId: userDetails.userId,
       senderImage: userDetails.image,
@@ -164,15 +179,15 @@ class ChatAfterBookingDetailsScreen extends Component {
       isJobAccepted: props.route.params.isJobAccepted,
       provider_FCM_id: props.route.params.fcmId,
     });
-    setOnlineStatusListener({
-      OnlineUsers,
-      userId: employee_id,
-      setStatus: (selectedStatus, online) =>
-        this.setState({
-          selectedStatus,
-          online,
-        }),
-    });
+    // setOnlineStatusListener({
+    //   OnlineUsers,
+    //   userId: employee_id,
+    //   setStatus: (selectedStatus, online) =>
+    //     this.setState({
+    //       selectedStatus,
+    //       online,
+    //     }),
+    // });
   };
 
   componentDidUpdate() {

@@ -17,7 +17,6 @@ import {
   emailCheck,
   passwordCheck,
   sanitizeMobileNumber,
-  imageExists as imgExists,
   getDistance,
 } from '../misc/helpers';
 
@@ -775,9 +774,6 @@ export const getAllProviders = async ({
   userDetails,
   serviceId,
   toggleIsLoading,
-  usersCoordinates,
-  setDistInfo,
-  setDistDataSource,
   onSuccess,
   onError,
 }) => {
@@ -797,18 +793,10 @@ export const getAllProviders = async ({
       body: JSON.stringify(data),
     });
     const responseJson = await response.json();
-    if (responseJson.result) {
-      let dataSource = responseJson.data;
-      await calculateDistance({
-        usersCoordinates,
-        dataSource,
-        setDistInfo,
-        onSuccess: setDistDataSource,
-      });
-      onSuccess();
-    } else {
+    if (responseJson.result)
+      onSuccess(responseJson.data);
+    else
       onError();
-    }
   } catch (e) {
     toggleIsLoading(false);
     SimpleToast.show('Something went wrong, try again');
@@ -827,33 +815,29 @@ export const calculateDistance = async ({
   var distInfo = {};
   var tempDatasource = cloneDeep(dataSource);
   if (dataSource.length > 0) {
-    await dataSource.map(async (obj, key) => {
-      const { _id, image } = obj;
-      let imageAvaliable = image && image !== 'no-image.jpg' ? true : false;
-      if (image && imageAvaliable) {
-        imageAvaliable = await imgExists(image);
-      }
-      tempDatasource[key].imageAvailable = imageAvaliable;
-      await database()
-        .ref(`liveLocation/${_id}`)
-        .once('value', result => {
-          const { latitude, longitude, address } = result.val();
-          const dist = getDistance(
-            latitude,
-            longitude,
-            usersCoordinates.latitude,
-            usersCoordinates.longitude,
-            'K',
-          );
-          distInfo[_id] = parseFloat(dist).toFixed(1);
-          tempDatasource[key].hash = parseFloat(dist).toFixed(1);
-          tempDatasource[key].currentAddress = address;
-          setDistInfo(distInfo);
-        })
-        .catch(e => {
-          SimpleToast.show('Could not calculate distance');
-        });
-    });
+    try {
+      await dataSource.map(async (obj, key) => {
+        const { _id, image_available } = obj;
+        tempDatasource[key].imageAvailable = image_available;
+        const result = await database()
+          .ref(`liveLocation/${_id}`)
+          .once('value');
+        const { latitude, longitude, address } = result.val();
+        const dist = getDistance(
+          latitude,
+          longitude,
+          usersCoordinates.latitude,
+          usersCoordinates.longitude,
+          'K',
+        );
+        distInfo[_id] = parseFloat(dist).toFixed(1);
+        tempDatasource[key].hash = parseFloat(dist).toFixed(1);
+        tempDatasource[key].currentAddress = address;
+        setDistInfo(distInfo);
+      });
+    } catch (e) {
+      SimpleToast.show(e.message);
+    };
     onSuccess(tempDatasource);
   }
 };

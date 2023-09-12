@@ -123,7 +123,8 @@ class ProDashboardScreen extends Component {
 
   //Get All Bookings
   componentDidMount = () => {
-    const { navigation } = this.props;
+    const { navigation, generalInfo: { online, connectivityAvailable }, } = this.props;
+    if (!online && connectivityAvailable) Config.socket.connect();
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
@@ -410,6 +411,7 @@ class ProDashboardScreen extends Component {
       generalInfo: { online, connectivityAvailable },
       userInfo: { providerDetails },
     } = this.props;
+    console.log('online status ', { connectivityAvailable, online }, 'pro ', providerDetails.online);
     if (!connectivityAvailable) return false;
     this.setState({
       isLoading: true,
@@ -417,6 +419,7 @@ class ProDashboardScreen extends Component {
     const liveOffline = !online && providerDetails.online === '1';
     const manualOffline = online && providerDetails.online === '0';
     const combinedOffline = !online && providerDetails.online === '0';
+
     if (liveOffline) {
       Config.socket.close();
       Config.socket.connect();

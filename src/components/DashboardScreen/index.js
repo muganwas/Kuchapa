@@ -49,6 +49,7 @@ import {
 } from '../../Constants/colors';
 import images from '../../Constants/images';
 import { jobCancelTask, fetchServices } from '../../controllers/jobs';
+import Config from '../Config';
 
 const screenWidth = Dimensions.get('window').width;
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
@@ -88,6 +89,8 @@ class DashboardScreen extends Component {
   };
 
   componentDidMount = async () => {
+    const { generalInfo: { online, connectivityAvailable }, } = this.props;
+    if (!online && connectivityAvailable) Config.socket.connect();
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
     await this.fetchAllServices();
     await this.getAllRecentChatsCustomer();

@@ -5,7 +5,6 @@ import database from '@react-native-firebase/database';
 import firebaseAuth from '@react-native-firebase/auth';
 import FilePickerManager from 'react-native-file-picker';
 import Config from '../components/Config';
-import { imageExists } from '../misc/helpers';
 import { uploadAttachment } from './storage';
 import { synchroniseOnlineStatus } from './users';
 
@@ -232,17 +231,18 @@ export const updateAvailabilityInDB = async ({
   }
 };
 //Recent Chat Message
-export const getAllRecentChats = async ({ id, dataSource, onSuccess }) => {
+export const getAllRecentChats = async ({ id, dataSource, onSuccess, onError }) => {
+  if (!id) return onError();
   const dbRef = database()
     .ref('recentMessage')
     .child(id);
   let newDataSource = cloneDeep(dataSource);
   dbRef.on('value', async resp => {
     const messages = resp.val();
+    if (!messages) return onError();
     let newMsgs = [];
     let msgsArr = Object.values(messages);
     msgsArr.map(async message => {
-      message.exists = await imageExists(message.image);
       let present = false;
       await newDataSource.map(obj => {
         if (JSON.stringify(obj) === JSON.stringify(message)) present = true;
@@ -251,11 +251,11 @@ export const getAllRecentChats = async ({ id, dataSource, onSuccess }) => {
         newMsgs.push(message);
       }
     });
-    newMsgs.length > 0 && onSuccess(newMsgs);
+    newMsgs && onSuccess(newMsgs);
+    !newMsgs && onError();
   });
   dbRef.on('child_changed', async resp => {
     let message = resp.val();
-    message.exists = await imageExists(message.image);
     let present = false;
     await newDataSource.map((obj, i) => {
       if (obj.name === message.name) {
@@ -263,20 +263,21 @@ export const getAllRecentChats = async ({ id, dataSource, onSuccess }) => {
       }
     });
     if (message && !present) {
-      onSuccess(newDataSource);
+      return onSuccess(newDataSource);
     }
+    onError();
   });
   dbRef.on('child_added', async resp => {
     let message = resp.val();
-    message.exists = await imageExists(message.image);
     let present = false;
     await newDataSource.map(obj => {
       if (JSON.stringify(obj) === JSON.stringify(message)) present = true;
     });
     if (message && !present) {
       newDataSource.push(message);
-      onSuccess(newDataSource);
+      return onSuccess(newDataSource);
     }
+    onError();
   });
 };
 

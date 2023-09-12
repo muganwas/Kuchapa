@@ -27,6 +27,8 @@ import {
   fetchProviderJobInfoError,
   setSelectedJobRequest,
 } from '../../Redux/Actions/jobsActions';
+import { updateLatestChats } from '../../Redux/Actions/messageActions';
+import { getAllRecentChats } from '../../controllers/chats';
 import { colorBg, white, themeRed, lightGray } from '../../Constants/colors';
 
 const screenWidth = Dimensions.get('window').width;
@@ -66,19 +68,21 @@ class ProAllMessageScreen extends Component {
   componentDidMount() {
     const {
       messagesInfo: { latestChats },
+      navigation
     } = this.props;
     this.setState({ dataSource: latestChats, isLoading: false });
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
+    this._unsubscribe = navigation.addListener('focus', this.updateDataSource);
   }
 
-  componentDidUpdate(prevState) {
+  componentDidUpdate() {
     const {
       messagesInfo: { latestChats },
     } = this.props;
-    if (!_.isEqual(prevState.messagesInfo.latestChats, latestChats)) {
+    if (!_.isEqual(this.state.dataSource, latestChats)) {
       this.setState({ dataSource: latestChats, isLoading: false });
     }
   }
@@ -88,6 +92,20 @@ class ProAllMessageScreen extends Component {
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
+    this._unsubscribe();
+  }
+
+  updateDataSource = async () => {
+    this.setState({ isLoading: true });
+    await getAllRecentChats({
+      id: this.props?.userInfo?.providerDetails?.providerId,
+      dataSource: this.props?.messagesInfo?.latestChats,
+      onSuccess: data => {
+        this.props.updateLatestChats(data);
+        this.setState({ isLoading: false });
+      },
+      onError: () => this.setState({ isLoading: false })
+    });
   }
 
   handleBackButtonClick = () => {
@@ -132,7 +150,7 @@ class ProAllMessageScreen extends Component {
             <Image
               style={{ width: 40, height: 40, borderRadius: 100 }}
               source={
-                item.image && item.exists
+                item.image && item.imageExists
                   ? { uri: item.image }
                   : require('../../images/generic_avatar.png')
               }
@@ -300,6 +318,9 @@ const mapDispatchToProps = dispatch => {
     },
     dispatchSelectedJobRequest: job => {
       dispatch(setSelectedJobRequest(job));
+    },
+    updateLatestChats: data => {
+      dispatch(updateLatestChats(data));
     },
   };
 };

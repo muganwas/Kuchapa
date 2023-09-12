@@ -58,13 +58,6 @@ const messagesReducer = (state = initialState, action) => {
         fetchedLatestChats: true,
         latestChatsError: false,
       };
-    case UPDATE_LATEST_CHATS:
-      return {
-        ...state,
-        latestChats: action.payload,
-        fetchedLatestChats: true,
-        latestChatsError: false,
-      };
     case SET_LATEST_CHATS_ERROR:
       return {
         fetchedLatestChats: false,
