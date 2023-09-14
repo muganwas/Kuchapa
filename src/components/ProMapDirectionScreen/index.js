@@ -136,7 +136,7 @@ class ProMapDirectionScreen extends Component {
       destination,
     );
   }
-  /** TODO: fix coordinate update */
+
   componentDidUpdate(oldProps) {
     const {
       generalInfo: { usersCoordinates, othersCoordinates },
@@ -144,22 +144,14 @@ class ProMapDirectionScreen extends Component {
         selectedJobRequest: { user_id },
       },
     } = this.props;
-    if (
-      (othersCoordinates &&
-        oldProps &&
-        oldProps.generalInfo &&
-        oldProps.generalInfo.othersCoordinates &&
-        !isEqual(
-          othersCoordinates[user_id],
-          oldProps.generalInfo.othersCoordinates[user_id],
-        )) ||
-      (usersCoordinates &&
-        oldProps &&
-        oldProps.generalInfo &&
-        oldProps.generalInfo.usersCoordinates &&
-        !isEqual(usersCoordinates, oldProps.generalInfo.usersCoordinates))
-    ) {
-      this.onRefresh();
+    const { destinationLat, destinationLng, sourceLat, sourceLng } = this.state;
+    const currentOtherCoordinates = othersCoordinates[user_id];
+    // Check for changes before updating state
+    if (currentOtherCoordinates && (
+      (currentOtherCoordinates.latitude != destinationLat || currentOtherCoordinates.longitude != destinationLng) ||
+      (usersCoordinates.latitude != sourceLat || usersCoordinates.longitude != sourceLng)
+    )) {
+      this.upateLocations();
     }
   }
 
@@ -170,7 +162,7 @@ class ProMapDirectionScreen extends Component {
     );
   }
 
-  onRefresh = () => {
+  upateLocations = () => {
     const {
       generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {

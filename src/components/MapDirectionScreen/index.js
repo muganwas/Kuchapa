@@ -129,7 +129,7 @@ class MapDirectionScreen extends Component {
     this.rightButtonAction = null;
   }
 
-  reInit = async props => {
+  upateLocations = async props => {
     const {
       userInfo: { userDetails },
       generalInfo: { usersCoordinates, othersCoordinates },
@@ -207,7 +207,7 @@ class MapDirectionScreen extends Component {
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
-    await this.reInit(this.props);
+    await this.upateLocations(this.props);
     //this.refetchDirections();
   }
 
@@ -217,7 +217,7 @@ class MapDirectionScreen extends Component {
       this.handleBackButtonClick,
     );
   }
-  /** TODO: fix coordinate update */
+
   componentDidUpdate(oldProps) {
     const {
       generalInfo: { usersCoordinates, othersCoordinates },
@@ -225,61 +225,16 @@ class MapDirectionScreen extends Component {
         selectedJobRequest: { employee_id },
       },
     } = this.props;
-    if (
-      (othersCoordinates &&
-        oldProps &&
-        !isEqual(
-          othersCoordinates[employee_id],
-          oldProps?.generalInfo?.othersCoordinates[employee_id],
-        )) ||
-      (usersCoordinates &&
-        !isEqual(usersCoordinates, oldProps?.generalInfo?.usersCoordinates))
-    ) {
-      this.reInit(this.props);
+    const { destinationLat, destinationLng, sourceLat, sourceLng } = this.state;
+    const currentOtherCoordinates = othersCoordinates[employee_id];
+    // Check for changes before updating state
+    if (currentOtherCoordinates && (
+      (currentOtherCoordinates.latitude != sourceLat || currentOtherCoordinates.longitude != sourceLng) ||
+      (usersCoordinates.latitude != destinationLat || usersCoordinates.longitude != destinationLng)
+    )) {
+      this.upateLocations(this.props);
     }
   }
-
-  // refetchDirections = async () => {
-  //   const {
-  //     generalInfo: { usersCoordinates, othersCoordinates },
-  //     jobsInfo: {
-  //       selectedJobRequest: { employee_id },
-  //     },
-  //   } = this.props;
-  //   const { latitude, longitude } = othersCoordinates[employee_id] || {};
-  //   const { destinationLat, destinationLng, coords } = this.state;
-  //   if (latitude !== undefined && longitude !== undefined) {
-  //     if (
-  //       Math.floor(parseInt(latitude)) !==
-  //       Math.floor(parseInt(destinationLat)) ||
-  //       Math.floor(parseInt(longitude)) !== Math.floor(parseInt(destinationLng))
-  //     ) {
-  //       this.setState({
-  //         sourceLocation: latitude + ',' + longitude,
-  //         sourceLat: parseFloat(latitude),
-  //         sourceLng: parseFloat(longitude),
-  //         destinationLocation:
-  //           usersCoordinates.latitude + ',' + usersCoordinates.longitude,
-  //         destinationLat: parseFloat(usersCoordinates.latitude),
-  //         destinationLng: parseFloat(usersCoordinates.longitude),
-  //       });
-  //       const destination =
-  //         usersCoordinates.latitude + ',' + usersCoordinates.longitude;
-  //       await this.getDirectionsLocal(latitude + ',' + longitude, destination);
-  //     }
-  //   }
-  //   if (this.state.coords.length === 0) {
-  //     await this.getDirectionsLocal(
-  //       latitude + ',' + longitude,
-  //       this.state.destinationLocation,
-  //     );
-  //   } else {
-  //     let actualLat1 = coords[0].latitude;
-  //     let actualLong1 = coords[0].longitude;
-  //     if (actualLat1 && actualLong1 && !this.state.keyReset)
-  //       this.setState({ mapKey: Math.random(2), keyReset: true });
-  //   }
-  // };
 
   handleBackButtonClick = () => {
     this.props.navigation.navigate('Home');
