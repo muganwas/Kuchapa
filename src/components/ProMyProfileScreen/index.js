@@ -66,7 +66,6 @@ class ProMyProfileScreen extends Component {
     const {
       userInfo: { providerDetails },
     } = props;
-    console.log('provider details ..', providerDetails)
     this.state = {
       providerId: providerDetails.providerId,
       fcmId: providerDetails.fcmId,
@@ -120,10 +119,8 @@ class ProMyProfileScreen extends Component {
   componentDidMount = async () => {
     const {
       userInfo: { providerDetails },
-      validationInfo: { countryCode },
     } = this.props;
-    const { mobile } = this.state;
-    let newMobile = await sanitizeMobileNumber(mobile, countryCode, false);
+    let newMobile = await sanitizeMobileNumber(providerDetails.mobile, providerDetails.country_code, false);
     this.setState({ mobile: newMobile });
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
@@ -140,7 +137,6 @@ class ProMyProfileScreen extends Component {
         services[i].service_name +
         `${services.length > 1 ? ',' : ''}`;
     }
-
     this.setState({
       services: serviceName,
     });
@@ -305,7 +301,7 @@ class ProMyProfileScreen extends Component {
       image,
     } = this.state;
     const {
-      validationInfo: { countryCode },
+      userInfo: { providerDetails: { country_code } },
     } = this.props;
     return (
       <View style={styles.container}>
@@ -478,12 +474,12 @@ class ProMyProfileScreen extends Component {
                   }}
                   editable={!mobileDisabled}
                   keyboardType="phone-pad"
-                  placeholder={`${countryCode} 000 000 000`}
+                  placeholder={`${country_code} 000 000 000`}
                   value={mobile}
                   onChangeText={mobileInput =>
                     this.setState({ error: '', mobile: mobileInput })
                   }
-                  mask={`${countryCode} [000] [000] [000]`}
+                  mask={`${country_code} [000] [000] [000]`}
                 />
               </View>
 

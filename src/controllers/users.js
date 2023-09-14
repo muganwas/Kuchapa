@@ -20,10 +20,8 @@ import {
   getDistance,
 } from '../misc/helpers';
 
-const PRO_GET_PROFILE = Config.baseURL + 'employee/';
 const GET_ALL_PROVIDER_URL = Config.baseURL + 'job/serviceprovider/';
 const UPDATE_ONLINE_STATUS = Config.baseURL + 'users/updateOnlineStatus/';
-const USER_GET_PROFILE = Config.baseURL + 'users/';
 const storageRef = storage().ref('/users_info');
 
 export const checkForUserType = async navigate =>
@@ -209,26 +207,16 @@ export const inhouseLogin = async ({
   updateAppUserDetails,
   props,
 }) => {
-  const home = userType === 'Provider' ? 'ProHome' : 'Home';
-  const provider = userType === 'Provider';
-  const fetchProfileUrl = provider ? PRO_GET_PROFILE : USER_GET_PROFILE;
   try {
-    const idToken = await firebaseAuth().currentUser.getIdToken(true);
-    const response = await fetch(fetchProfileUrl + userId + '?fcm_id=' + fcmToken, {
-      headers: {
-        Authorization: 'Bearer ' + idToken
-      }
-    });
-    const responseJson = await response.json();
-    if (responseJson && responseJson.result) {
-      await updateAppUserDetails(userId, fcmToken);
-      await fetchJobRequestHistory(userId);
+    const home = userType === 'Provider' ? 'ProHome' : 'Home';
+    updateAppUserDetails(userId, fcmToken, () => {
+      fetchJobRequestHistory(userId);
       fetchPendingJobInfo(props, userId, home);
-    } else onLoginFailure(responseJson.message);
+    });
   } catch (e) {
     const message = e.message.indexOf('Network') > -1
       ? 'Check your internet connection and try again'
-      : 'Something went wrong, try again later';
+      : e.message;
     onLoginFailure(message);
   }
 };
@@ -308,7 +296,49 @@ export const fbGmailLoginTask = async ({
       if (responseJson.result && responseJson.data) {
         try {
           const id = responseJson.data.id;
-          updateAppUserDetails(id, fcmToken);
+          const online = await synchroniseOnlineStatus(id, responseJson.data.online);
+          let userData = userType === 'User' ? {
+            userId: responseJson.data.id,
+            accountType: responseJson.data.acc_type,
+            email: responseJson.data.email,
+            password: responseJson.data.password,
+            username: responseJson.data.username,
+            image: responseJson.data.image,
+            mobile: responseJson.data.mobile,
+            online,
+            imageAvailable: responseJson.data.image_available,
+            country_code: responseJson.data.country_code,
+            country_alpha: responseJson.data.country_alpha,
+            dob: responseJson.data.dob,
+            address: responseJson.data.address,
+            lat: responseJson.data.lat,
+            lang: responseJson.data.lang,
+            firebaseId: responseJson.data.id,
+            fcmId: responseJson.data.fcm_id,
+          } : {
+            providerId: responseJson.data.id,
+            name: responseJson.data.username,
+            email: responseJson.data.email,
+            password: responseJson.data.password,
+            image: responseJson.data.image,
+            surname: responseJson.data.surname,
+            mobile: responseJson.data.mobile,
+            country_code: responseJson.data.country_code,
+            country_alpha: responseJson.data.country_alpha,
+            services: responseJson.data.services,
+            description: responseJson.data.description,
+            online,
+            imageAvailable: responseJson.data.image_available,
+            address: responseJson.data.address,
+            lat: responseJson.data.lat,
+            lang: responseJson.data.lang,
+            invoice: responseJson.data.invoice,
+            firebaseId: responseJson.data.id,
+            status: responseJson.data.status,
+            fcmId: responseJson.data.fcm_id,
+            accountType: responseJson.data.account_type,
+          };
+          updateAppUserDetails(userData);
           //Store data like sharedPreference
           rNES.setItem('userId', id);
           rNES.setItem('idToken', idToken);
@@ -370,41 +400,76 @@ export const authenticateTask = async ({
           loginType: 'Firebase',
           fcm_id: fcmToken,
         };
-        try {
-          const response = await fetch(authURL, {
-            method: 'POST',
-            headers: {
-              Authorization: 'Bearer ' + idToken,
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-          });
-          const responseJson = await response.json();
-          if (responseJson && responseJson.result) {
-            const id = responseJson.data.id;
-            updateAppUserDetails(id, fcmToken);
-            //Store data like sharedPreference
-            rNES.setItem('userId', id);
-            rNES.setItem('userType', userType);
-            const auth = {
-              email,
-              password,
-            };
-            rNES.setItem('idToken', idToken);
-            rNES.setItem('auth', JSON.stringify(auth));
-            rNES.setItem('firebaseId', uid);
-            fetchJobRequestHistory(id);
-            toggleLoading();
-            fetchAppUserJobRequests(props, id, home);
-          } else {
-            onError(responseJson.message);
-          }
-        } catch (e) {
-          if (e && e.message.includes('Network'))
-            onError('App could not connect to server.');
-          else
-            onError('Something went wrong, please try again.');
+        const response = await fetch(authURL, {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + idToken,
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+        const responseJson = await response.json();
+        if (responseJson && responseJson.result) {
+          const id = responseJson.data.id;
+          const online = await synchroniseOnlineStatus(id, responseJson.data.online);
+          let userData = userType === 'User' ? {
+            userId: responseJson.data.id,
+            accountType: responseJson.data.acc_type,
+            email: responseJson.data.email,
+            password: responseJson.data.password,
+            username: responseJson.data.username,
+            image: responseJson.data.image,
+            mobile: responseJson.data.mobile,
+            country_code: responseJson.data.country_code,
+            country_alpha: responseJson.data.country_alpha,
+            online,
+            imageAvailable: responseJson.data.image_available,
+            dob: responseJson.data.dob,
+            address: responseJson.data.address,
+            lat: responseJson.data.lat,
+            lang: responseJson.data.lang,
+            firebaseId: responseJson.data.id,
+            fcmId: responseJson.data.fcm_id,
+          } : {
+            providerId: responseJson.data.id,
+            name: responseJson.data.username,
+            email: responseJson.data.email,
+            password: responseJson.data.password,
+            image: responseJson.data.image,
+            surname: responseJson.data.surname,
+            mobile: responseJson.data.mobile,
+            country_code: responseJson.data.country_code,
+            country_alpha: responseJson.data.country_alpha,
+            services: responseJson.data.services,
+            description: responseJson.data.description,
+            online,
+            imageAvailable: responseJson.data.image_available,
+            address: responseJson.data.address,
+            lat: responseJson.data.lat,
+            lang: responseJson.data.lang,
+            invoice: responseJson.data.invoice,
+            firebaseId: responseJson.data.id,
+            status: responseJson.data.status,
+            fcmId: responseJson.data.fcm_id,
+            accountType: responseJson.data.account_type,
+          };
+          updateAppUserDetails(userData);
+          //Store data like sharedPreference
+          rNES.setItem('userId', id);
+          rNES.setItem('userType', userType);
+          const auth = {
+            email,
+            password,
+          };
+          rNES.setItem('idToken', idToken);
+          rNES.setItem('auth', JSON.stringify(auth));
+          rNES.setItem('firebaseId', uid);
+          fetchJobRequestHistory(id);
+          toggleLoading();
+          fetchAppUserJobRequests(props, id, home);
+        } else {
+          onError(responseJson.message);
         }
       } else {
         onError('Something went wrong, please try again later.');
@@ -416,7 +481,7 @@ export const authenticateTask = async ({
       } else if (error.code === 'auth/wrong-password') {
         onError('You entered a wrong password!');
       } else {
-        onError('Something went wrong, please try again later.');
+        onError(error.message);
       }
     };
   } else {
@@ -803,7 +868,6 @@ export const getAllProviders = async ({
   }
 };
 
-/** TODO: to be moved to API */
 export const calculateDistance = async ({
   usersCoordinates,
   dataSource,
@@ -812,33 +876,30 @@ export const calculateDistance = async ({
   onSuccess,
 }) => {
   toggleIsRefreshing && toggleIsRefreshing(true);
-  var distInfo = {};
-  var tempDatasource = cloneDeep(dataSource);
+  const idToken = await firebaseAuth().currentUser.getIdToken();
   if (dataSource.length > 0) {
     try {
-      await dataSource.map(async (obj, key) => {
-        const { _id, image_available } = obj;
-        tempDatasource[key].imageAvailable = image_available;
-        const result = await database()
-          .ref(`liveLocation/${_id}`)
-          .once('value');
-        const { latitude, longitude, address } = result.val();
-        const dist = getDistance(
-          latitude,
-          longitude,
-          usersCoordinates.latitude,
-          usersCoordinates.longitude,
-          'K',
-        );
-        distInfo[_id] = parseFloat(dist).toFixed(1);
-        tempDatasource[key].hash = parseFloat(dist).toFixed(1);
-        tempDatasource[key].currentAddress = address;
-        setDistInfo(distInfo);
+      const response = await fetch(Config.baseURL + '/service/distance', {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + idToken,
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_lat: usersCoordinates.latitude,
+          user_lang: usersCoordinates.longitude,
+          emp_data: dataSource
+        })
       });
+      const { data, result, message } = await response.json();
+      if (result)
+        return onSuccess(data);
+      return SimpleToast.show(message);
+
     } catch (e) {
       SimpleToast.show(e.message);
     };
-    onSuccess(tempDatasource);
   }
 };
 
@@ -861,36 +922,20 @@ export const fetchProfile = async ({
     });
     const responseJson = await response.json();
     if (responseJson.result) {
-      const id = responseJson.data.id;
       onSuccess({
         userId: responseJson.data.id,
         userName: responseJson.data.username,
         userImage: responseJson.data.image,
         imageAvailable: responseJson.data.image_available,
         userMobile: responseJson.data.mobile,
+        country_code: responseJson.data.country_code,
+        country_alpha: responseJson.data.country_alpha,
         userDob: responseJson.data.dob,
         userAddress: responseJson.data.address,
         userLat: responseJson.data.lat,
         userLang: responseJson.data.lang,
         userFcmId: responseJson.data.fcm_id,
       });
-      await database()
-        .ref(`liveLocation/${id}`)
-        .once('value', result => {
-          const { latitude, longitude } = result.val();
-          const fullDist = getDistance(
-            latitude,
-            longitude,
-            responseJson.data.lat,
-            responseJson.data.lang,
-            'K',
-          );
-          const distance = parseFloat(fullDist).toFixed(1);
-          setDistance(distance);
-        })
-        .catch(e => {
-          onError("Someting went wrong, couldn't fetch user information");
-        });
     } else {
       onError('Something went wrong, try again');
     }

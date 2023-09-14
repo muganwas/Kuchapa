@@ -118,20 +118,16 @@ class ProDashboardScreen extends Component {
       proImageAvailable: null,
     };
     this.springValue = new Animated.Value(100);
-    this._unsubscribe;
   }
 
   //Get All Bookings
   componentDidMount = () => {
-    const { navigation, generalInfo: { online, connectivityAvailable }, } = this.props;
+    const { generalInfo: { online, connectivityAvailable }, } = this.props;
     if (!online && connectivityAvailable) Config.socket.connect();
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    this._unsubscribe = navigation.addListener('focus', () => {
-      this.onRefresh();
-    });
     this.getAllRecentChatsPro();
   };
 
@@ -140,7 +136,6 @@ class ProDashboardScreen extends Component {
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    this._unsubscribe();
   }
 
   componentDidUpdate() {

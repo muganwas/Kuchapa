@@ -398,7 +398,7 @@ export const fetchMessagesFunc = async (senderId, dispatch, dbMessagesFetched, c
   }
 }
 
-export const fetchUserProfileFunc = async (userId, fcmToken, updateUserDetails, dispatch) => {
+export const fetchUserProfileFunc = async (userId, fcmToken, updateUserDetails, dispatch, callBack) => {
   const idToken = await firebaseAuth().currentUser.getIdToken();
   const response = await fetch(USER_GET_PROFILE + userId + '?fcm_id=' + fcmToken, {
     method: 'GET',
@@ -423,6 +423,8 @@ export const fetchUserProfileFunc = async (userId, fcmToken, updateUserDetails, 
       username: responseJson.data.username,
       image: responseJson.data.image,
       mobile: responseJson.data.mobile,
+      country_code: responseJson.data.country_code,
+      country_alpha: responseJson.data.country_alpha,
       online,
       imageAvailable: responseJson.data.image_available,
       dob: responseJson.data.dob,
@@ -433,12 +435,12 @@ export const fetchUserProfileFunc = async (userId, fcmToken, updateUserDetails, 
       fcmId: responseJson.data.fcm_id,
     };
     dispatch(updateUserDetails(userData));
-  } else {
-    SimpleToast.show('Could not fetch profile information');
+    return callBack();
   }
+  return SimpleToast.show('Could not fetch profile information');
 };
 
-export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderDetails, dispatch) => {
+export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderDetails, dispatch, callBack) => {
   const idToken = await firebaseAuth().currentUser.getIdToken();
   const response = await fetch(PRO_GET_PROFILE + userId + '?fcm_id=' + fcmToken, {
     method: 'GET',
@@ -449,7 +451,6 @@ export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderD
     },
   });
   const responseJson = await response.json();
-  let status;
   if (responseJson && responseJson.result) {
     const id = responseJson.data.id;
     const online = await synchroniseOnlineStatus(
@@ -464,6 +465,8 @@ export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderD
       image: responseJson.data.image,
       surname: responseJson.data.surname,
       mobile: responseJson.data.mobile,
+      country_code: responseJson.data.country_code,
+      country_alpha: responseJson.data.country_alpha,
       services: responseJson.data.services,
       description: responseJson.data.description,
       online,
@@ -473,13 +476,14 @@ export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderD
       lang: responseJson.data.lang,
       invoice: responseJson.data.invoice,
       firebaseId: responseJson.data.id,
-      status: status != undefined ? status : responseJson.data.status,
+      status: responseJson.data.status,
       fcmId: responseJson.data.fcm_id,
       accountType: responseJson.data.account_type,
     };
     dispatch(updateProviderDetails(providerData));
+    return callBack();
   } else {
-    SimpleToast.show('Could not fetch profile information');
+    return SimpleToast.show('Could not fetch profile information');
   }
 };
 

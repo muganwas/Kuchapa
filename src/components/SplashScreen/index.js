@@ -76,7 +76,6 @@ import {
   autoLogin,
   inhouseLogin,
 } from '../../controllers/users';
-import { fetchCountryCodes } from '../../Redux/Actions/validationActions';
 import { white } from '../../Constants/colors';
 import Config from '../Config';
 
@@ -102,8 +101,6 @@ class SplashScreen extends Component {
   }
 
   async componentDidMount() {
-    const { fetchCodes } = this.props;
-    await fetchCodes();
     this.splashTimeOut();
   }
 
@@ -187,7 +184,7 @@ class SplashScreen extends Component {
               autoLogin(
                 { userId, userType, fcmToken },
                 () => this.setState({ isLoading: true }),
-                (userId, userType, fcmToken) => {
+                async (userId, userType, fcmToken) => {
                   const provider = userType === 'Provider';
                   inhouseLogin({
                     userId,
@@ -362,14 +359,11 @@ const mapDispatchToProps = dispatch => {
     updateProviderDetails: details => {
       dispatch(updateProviderDetails(details));
     },
-    fetchCodes: () => {
-      dispatch(fetchCountryCodes());
+    fetchProviderProfile: (proId, fcm, callBack) => {
+      dispatch(fetchProviderProfile(proId, fcm, callBack))
     },
-    fetchProviderProfile: (proId, fcm) => {
-      dispatch(fetchProviderProfile(proId, fcm))
-    },
-    fetchUserProfile: (userId, fcm) => {
-      dispatch(fetchUserProfile(userId, fcm))
+    fetchUserProfile: (userId, fcm, callBack) => {
+      dispatch(fetchUserProfile(userId, fcm, callBack))
     }
   };
 };

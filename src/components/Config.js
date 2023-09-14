@@ -31,6 +31,7 @@ export default class Config {
   static appId = FIREBASE_APP_ID;
   static socket = io(this.baseURL, {
     autoConnect: false,
+    secure: true,
     transports: ['websocket'],
   });
 }

@@ -700,7 +700,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     justifyContent: 'center',
     marginLeft: 5,
-    marginRight: 5,
   },
   buttonRed: {
     flex: 1,

@@ -135,9 +135,8 @@ class ProMapDirectionScreen extends Component {
       usersCoordinates.latitude + ',' + usersCoordinates.longitude,
       destination,
     );
-    this.onRefresh();
   }
-
+  /** TODO: fix coordinate update */
   componentDidUpdate(oldProps) {
     const {
       generalInfo: { usersCoordinates, othersCoordinates },

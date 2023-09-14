@@ -308,6 +308,8 @@ class DashboardScreen extends Component {
     this.setState({ isLoading: false });
   };
 
+
+
   //Recent Chat Message
   getAllRecentChatsCustomer = async () =>
     await getAllRecentChats({

@@ -23,7 +23,6 @@ import {
 } from '../../Redux/Actions/notificationActions';
 import { setSelectedJobRequest } from '../../Redux/Actions/jobsActions';
 import { updateLatestChats } from '../../Redux/Actions/messageActions';
-import { getAllRecentChats } from '../../controllers/chats';
 import Hamburger from '../Hamburger';
 import {
   lightGray,
@@ -71,14 +70,12 @@ class AllMessageScreen extends Component {
   componentDidMount() {
     const {
       messagesInfo: { latestChats },
-      navigation
     } = this.props;
     this.setState({ dataSource: latestChats, isLoading: false });
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    this._unsubscribe = navigation.addListener('focus', this.updateDataSource)
   }
 
   componentDidUpdate() {
@@ -95,20 +92,6 @@ class AllMessageScreen extends Component {
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    this._unsubscribe();
-  }
-
-  updateDataSource = async () => {
-    this.setState({ isLoading: true });
-    await getAllRecentChats({
-      id: this.props.userInfo?.userDetails?.userId,
-      dataSource: this.props.messagesInfo?.latestChats,
-      onSuccess: data => {
-        this.props.updateLatestChats(data);
-        this.setState({ isLoading: false })
-      },
-      onError: () => this.setState({ isLoading: false })
-    });
   }
 
   handleBackButtonClick = () => {

@@ -93,6 +93,8 @@ class LoginPhoneScreen extends Component {
   }
 
   componentDidMount() {
+    const { validationInfo } = this.props;
+    console.log(' validation info --', { validationInfo })
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
@@ -357,7 +359,7 @@ class LoginPhoneScreen extends Component {
                       this.input = ref;
                     }}
                     keyboardType="phone-pad"
-                    placeholder={`${countryCode || '+231'} 000 000 000`}
+                    placeholder={`${countryCode} 000 000 000`}
                     value={mobile}
                     onChangeText={phoneNumberInput => {
                       this.setState({
@@ -365,7 +367,7 @@ class LoginPhoneScreen extends Component {
                       });
                       updateMobileNumber(phoneNumberInput);
                     }}
-                    mask={`${countryCode || '+231'} [000] [000] [000]`}
+                    mask={`${countryCode} [000] [000] [000]`}
                   />
                 )}
               </View>

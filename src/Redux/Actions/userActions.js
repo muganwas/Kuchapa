@@ -64,22 +64,22 @@ export const updateProviderAuthToken = payload => {
   };
 };
 
-export const fetchProviderProfile = (userId, fcmToken) => {
+export const fetchProviderProfile = (userId, fcmToken, callBack) => {
   return async dispatch => {
     try {
       dispatch(fetchingProviderDetails());
-      fetchProviderProfileFunc(userId, fcmToken, updateProviderDetails, dispatch);
+      fetchProviderProfileFunc(userId, fcmToken, updateProviderDetails, dispatch, callBack);
     } catch (e) {
       dispatch(messagesError(e.message));
     }
   };
 };
 
-export const fetchUserProfile = (userId, fcmToken) => {
+export const fetchUserProfile = (userId, fcmToken, callBack) => {
   return dispatch => {
     try {
       dispatch(fetchingUserDetails());
-      fetchUserProfileFunc(userId, fcmToken, updateUserDetails, dispatch);
+      fetchUserProfileFunc(userId, fcmToken, updateUserDetails, dispatch, callBack);
     } catch (e) {
       dispatch(messagesError(e.message));
     }

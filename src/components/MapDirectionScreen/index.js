@@ -194,6 +194,12 @@ class MapDirectionScreen extends Component {
         dialogLeftText: 'Cancel',
         dialogRightText: 'Retry',
       });
+      const destination =
+        usersCoordinates.latitude + ',' + usersCoordinates.longitude;
+      this.getDirectionsLocal(
+        employeeLatitude + ',' + employeeLongitude,
+        destination,
+      );
     }
   };
 
@@ -201,27 +207,8 @@ class MapDirectionScreen extends Component {
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
-    const {
-      generalInfo: { othersCoordinates, usersCoordinates },
-      jobsInfo: {
-        selectedJobRequest: { employee_id },
-      }
-    } = this.props;
-    const employeeLatitude = othersCoordinates[employee_id]
-      ? othersCoordinates[employee_id].latitude
-      : usersCoordinates.latitude;
-    const employeeLongitude = othersCoordinates[employee_id]
-      ? othersCoordinates[employee_id].longitude
-      : usersCoordinates.longitude;
-
-    const destination =
-      usersCoordinates.latitude + ',' + usersCoordinates.longitude;
-    this.getDirectionsLocal(
-      employeeLatitude + ',' + employeeLongitude,
-      destination,
-    );
     await this.reInit(this.props);
-    this.refetchDirections();
+    //this.refetchDirections();
   }
 
   componentWillUnmount() {
@@ -230,7 +217,7 @@ class MapDirectionScreen extends Component {
       this.handleBackButtonClick,
     );
   }
-
+  /** TODO: fix coordinate update */
   componentDidUpdate(oldProps) {
     const {
       generalInfo: { usersCoordinates, othersCoordinates },
@@ -249,62 +236,50 @@ class MapDirectionScreen extends Component {
         !isEqual(usersCoordinates, oldProps?.generalInfo?.usersCoordinates))
     ) {
       this.reInit(this.props);
-      const employeeLatitude = othersCoordinates[employee_id]
-        ? othersCoordinates[employee_id]?.latitude
-        : usersCoordinates.latitude;
-      const employeeLongitude = othersCoordinates[employee_id]
-        ? othersCoordinates[employee_id]?.longitude
-        : usersCoordinates.longitude;
-      const destination =
-        usersCoordinates.latitude + ',' + usersCoordinates.longitude;
-      this.getDirectionsLocal(
-        employeeLatitude + ',' + employeeLongitude,
-        destination,
-      );
     }
   }
 
-  refetchDirections = async () => {
-    const {
-      generalInfo: { usersCoordinates, othersCoordinates },
-      jobsInfo: {
-        selectedJobRequest: { employee_id },
-      },
-    } = this.props;
-    const { latitude, longitude } = othersCoordinates[employee_id] || {};
-    const { destinationLat, destinationLng, coords } = this.state;
-    if (latitude !== undefined && longitude !== undefined) {
-      if (
-        Math.floor(parseInt(latitude)) !==
-        Math.floor(parseInt(destinationLat)) ||
-        Math.floor(parseInt(longitude)) !== Math.floor(parseInt(destinationLng))
-      ) {
-        this.setState({
-          sourceLocation: latitude + ',' + longitude,
-          sourceLat: parseFloat(latitude),
-          sourceLng: parseFloat(longitude),
-          destinationLocation:
-            usersCoordinates.latitude + ',' + usersCoordinates.longitude,
-          destinationLat: parseFloat(usersCoordinates.latitude),
-          destinationLng: parseFloat(usersCoordinates.longitude),
-        });
-        const destination =
-          usersCoordinates.latitude + ',' + usersCoordinates.longitude;
-        await this.getDirectionsLocal(latitude + ',' + longitude, destination);
-      }
-    }
-    if (this.state.coords.length === 0) {
-      await this.getDirectionsLocal(
-        latitude + ',' + longitude,
-        this.state.destinationLocation,
-      );
-    } else {
-      let actualLat1 = coords[0].latitude;
-      let actualLong1 = coords[0].longitude;
-      if (actualLat1 && actualLong1 && !this.state.keyReset)
-        this.setState({ mapKey: Math.random(2), keyReset: true });
-    }
-  };
+  // refetchDirections = async () => {
+  //   const {
+  //     generalInfo: { usersCoordinates, othersCoordinates },
+  //     jobsInfo: {
+  //       selectedJobRequest: { employee_id },
+  //     },
+  //   } = this.props;
+  //   const { latitude, longitude } = othersCoordinates[employee_id] || {};
+  //   const { destinationLat, destinationLng, coords } = this.state;
+  //   if (latitude !== undefined && longitude !== undefined) {
+  //     if (
+  //       Math.floor(parseInt(latitude)) !==
+  //       Math.floor(parseInt(destinationLat)) ||
+  //       Math.floor(parseInt(longitude)) !== Math.floor(parseInt(destinationLng))
+  //     ) {
+  //       this.setState({
+  //         sourceLocation: latitude + ',' + longitude,
+  //         sourceLat: parseFloat(latitude),
+  //         sourceLng: parseFloat(longitude),
+  //         destinationLocation:
+  //           usersCoordinates.latitude + ',' + usersCoordinates.longitude,
+  //         destinationLat: parseFloat(usersCoordinates.latitude),
+  //         destinationLng: parseFloat(usersCoordinates.longitude),
+  //       });
+  //       const destination =
+  //         usersCoordinates.latitude + ',' + usersCoordinates.longitude;
+  //       await this.getDirectionsLocal(latitude + ',' + longitude, destination);
+  //     }
+  //   }
+  //   if (this.state.coords.length === 0) {
+  //     await this.getDirectionsLocal(
+  //       latitude + ',' + longitude,
+  //       this.state.destinationLocation,
+  //     );
+  //   } else {
+  //     let actualLat1 = coords[0].latitude;
+  //     let actualLong1 = coords[0].longitude;
+  //     if (actualLat1 && actualLong1 && !this.state.keyReset)
+  //       this.setState({ mapKey: Math.random(2), keyReset: true });
+  //   }
+  // };
 
   handleBackButtonClick = () => {
     this.props.navigation.navigate('Home');

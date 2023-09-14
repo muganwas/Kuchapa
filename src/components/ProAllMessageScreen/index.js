@@ -28,7 +28,6 @@ import {
   setSelectedJobRequest,
 } from '../../Redux/Actions/jobsActions';
 import { updateLatestChats } from '../../Redux/Actions/messageActions';
-import { getAllRecentChats } from '../../controllers/chats';
 import { colorBg, white, themeRed, lightGray } from '../../Constants/colors';
 
 const screenWidth = Dimensions.get('window').width;
@@ -68,14 +67,13 @@ class ProAllMessageScreen extends Component {
   componentDidMount() {
     const {
       messagesInfo: { latestChats },
-      navigation
+      // navigation
     } = this.props;
     this.setState({ dataSource: latestChats, isLoading: false });
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    this._unsubscribe = navigation.addListener('focus', this.updateDataSource);
   }
 
   componentDidUpdate() {
@@ -92,20 +90,6 @@ class ProAllMessageScreen extends Component {
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    this._unsubscribe();
-  }
-
-  updateDataSource = async () => {
-    this.setState({ isLoading: true });
-    await getAllRecentChats({
-      id: this.props?.userInfo?.providerDetails?.providerId,
-      dataSource: this.props?.messagesInfo?.latestChats,
-      onSuccess: data => {
-        this.props.updateLatestChats(data);
-        this.setState({ isLoading: false });
-      },
-      onError: () => this.setState({ isLoading: false })
-    });
   }
 
   handleBackButtonClick = () => {

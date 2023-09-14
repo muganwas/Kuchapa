@@ -9,14 +9,18 @@ import {
   Platform,
   StyleSheet,
 } from 'react-native';
+import { connect } from 'react-redux';
 import RNExitApp from 'react-native-exit-app';
 import { themeRed, white, black } from '../../Constants/colors';
+import { fetchCountryCodes } from '../../Redux/Actions/validationActions';
 
 class AfterSplashScreen extends Component {
-  componentDidMount() {
+  async componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
+    const { fetchCodes } = this.props;
+    await fetchCodes();
   }
 
   componentWillUnmount() {
@@ -61,7 +65,26 @@ class AfterSplashScreen extends Component {
   }
 }
 
-export default AfterSplashScreen;
+const mapStateToProps = state => {
+  return {
+    userInfo: state.userInfo,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    fetchCodes: () => {
+      dispatch(fetchCountryCodes())
+    }
+  };
+};
+
+const AfterSplashScreenContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(AfterSplashScreen);
+
+export default AfterSplashScreenContainer;
 
 const styles = StyleSheet.create({
   container: {

@@ -150,7 +150,7 @@ class FacebookGoogleScreen extends Component {
       registerUrl: REGISTER_URL,
       fetchProfileUrl: PRO_GET_PROFILE,
       loginType,
-      updateAppUserDetails: this.props.fetchProviderProfile,
+      updateAppUserDetails: this.props.updateProviderDetails,
       fetchAppUserJobRequests: this.props.fetchProvidersJobRequests,
       fetchJobRequestHistory: this.props.fetchJobRequestHistory,
       toggleLoading: this.changeWaitingDialogVisibility,
@@ -180,7 +180,7 @@ class FacebookGoogleScreen extends Component {
       authURL: AUTHENTICATE_URL,
       fetchAppUserJobRequests: this.props.fetchProvidersJobRequests,
       fetchJobRequestHistory: this.props.fetchJobRequestHistory,
-      updateAppUserDetails: this.props.fetchProviderProfile,
+      updateAppUserDetails: this.props.updateProviderDetails,
       toggleLoading: this.changeWaitingDialogVisibility,
       onError: message => {
         this.showDialogAction(

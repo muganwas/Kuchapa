@@ -20,7 +20,7 @@ import WaitingDialog from '../WaitingDialog';
 import images from '../../Constants/images';
 import { font_size } from '../../Constants/metrics';
 import { colorBg, white, themeRed } from '../../Constants/colors';
-import { calculateDistance, getAllProviders } from '../../controllers/users';
+import { getAllProviders } from '../../controllers/users';
 
 const screenWidth = Dimensions.get('window').width;
 

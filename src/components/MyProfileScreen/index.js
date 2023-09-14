@@ -100,10 +100,10 @@ class MyProfileScreen extends Component {
 
   componentDidMount = async () => {
     const {
-      validationInfo: { countryCode },
+      userInfo: { userDetails },
     } = this.props;
     const { mobile } = this.state;
-    let newMobile = await sanitizeMobileNumber(mobile, countryCode, false);
+    let newMobile = await sanitizeMobileNumber(mobile, userDetails.country_code, false);
     this.setState({ mobile: newMobile });
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
@@ -271,7 +271,6 @@ class MyProfileScreen extends Component {
   render() {
     const {
       userInfo: { userDetails },
-      validationInfo: { countryCode },
     } = this.props;
     const {
       mobile,
@@ -453,13 +452,13 @@ class MyProfileScreen extends Component {
                     this.input = ref;
                   }}
                   keyboardType="phone-pad"
-                  placeholder={`${countryCode} 000 000 000`}
+                  placeholder={`${userDetails.country_code} 000 000 000`}
                   value={mobile}
                   editable={!mobileDisabled}
                   onChangeText={mobileInput =>
                     this.setState({ error: '', mobile: mobileInput })
                   }
-                  mask={`${countryCode} [000] [000] [000]`}
+                  mask={`${userDetails.country_code} [000] [000] [000]`}
                 />
               </View>
 

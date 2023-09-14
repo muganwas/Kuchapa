@@ -386,6 +386,7 @@ class ProHamburger extends React.Component {
     } = this.props;
     const senderId = providerDetails.providerId;
     senderId && deregisterOnlineStatusListener(senderId);
+
     geolocation.clearWatch();
   }
 
@@ -419,41 +420,47 @@ class ProHamburger extends React.Component {
     const {
       jobsInfo: { allJobRequestsProviders },
       fetchedOthersCoordinates,
-      fetchOthersCoordinatesError,
     } = this.props;
     await allJobRequestsProviders.map(async obj => {
       const { user_id } = obj;
-      /**fetch users current position */
       database()
-        .ref(`liveLocation/${user_id}`)
-        .once('value', result => {
-          const {
-            generalInfo: { othersCoordinates },
-          } = this.props;
-          let newOthersCoordinates = Object.assign({}, othersCoordinates);
-          newOthersCoordinates[user_id] = result.val();
-          fetchedOthersCoordinates(newOthersCoordinates);
-        })
-        .catch(e => {
-          fetchOthersCoordinatesError(e.message);
-        });
-      /** lookout for users changed position */
-      database()
-        .ref(`liveLocation/${user_id}`)
-        .on('child_changed', () => {
+        .ref(`liveLocation/${user_id}/address`)
+        .on('value', (changeData) => {
           const {
             generalInfo: { othersCoordinates, },
           } = this.props;
-          let newOthersCoordinates = Object.assign({}, othersCoordinates);
-          database()
-            .ref(`liveLocation/${user_id}`)
-            .once('value', result => {
-              newOthersCoordinates[user_id] = result.val();
-              fetchedOthersCoordinates(newOthersCoordinates);
-            })
-            .catch(e => {
-              fetchOthersCoordinatesError(e.message);
-            });
+          const newAddress = changeData.val();
+          if (!othersCoordinates[user_id] || othersCoordinates[user_id]?.address != newAddress) {
+            let newOthersCoordinates = Object.assign({}, othersCoordinates);
+            newOthersCoordinates[user_id] = Object.assign(newOthersCoordinates[user_id] || {}, { address: newAddress });
+            fetchedOthersCoordinates(newOthersCoordinates);
+          }
+        });
+      database()
+        .ref(`liveLocation/${user_id}/latitude`)
+        .on('value', (changeData) => {
+          const {
+            generalInfo: { othersCoordinates, },
+          } = this.props;
+          const newLat = changeData.val();
+          if (!othersCoordinates[user_id] || othersCoordinates[user_id]?.latitude != newLat) {
+            let newOthersCoordinates = Object.assign({}, othersCoordinates);
+            newOthersCoordinates[user_id] = Object.assign(newOthersCoordinates[user_id] || {}, { latitude: newLat });
+            fetchedOthersCoordinates(newOthersCoordinates);
+          }
+        });
+      database()
+        .ref(`liveLocation/${user_id}/longitude`)
+        .on('value', (changeData) => {
+          const {
+            generalInfo: { othersCoordinates, },
+          } = this.props;
+          const newLong = changeData.val();
+          if (!othersCoordinates[user_id] || othersCoordinates[user_id]?.longitude != newLong) {
+            let newOthersCoordinates = Object.assign({}, othersCoordinates);
+            newOthersCoordinates[user_id] = Object.assign(newOthersCoordinates[user_id] || {}, { longitude: newLong });
+            fetchedOthersCoordinates(newOthersCoordinates);
+          }
         });
     });
   };

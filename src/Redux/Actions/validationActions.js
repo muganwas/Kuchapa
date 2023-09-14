@@ -1,4 +1,5 @@
-import database from '@react-native-firebase/database';
+import { Config } from '../../components';
+import SimpleToast from 'react-native-simple-toast';
 import {
   UPDATE_VALIDATION_CODE,
   UPDATE_NUMBER_SENT,
@@ -59,31 +60,16 @@ export const resetValidateon = () => {
 
 export const fetchCountryCodes = () => {
   return dispatch => {
-    const countryCodeRef = database().ref('constants/countryCode');
-    const countryAlpha2Ref = database().ref('constants/countryAlpha2');
     try {
-      countryCodeRef
-        .once('value')
-        .then(code => {
-          dispatch(updateCountryCode(code.val()));
-        })
-        .catch(e => {
-          console.log(e?.code, e?.message);
+      fetch(Config.baseURL + 'service/countryCodes/all').then(res => res.json())
+        .then(responseJson => {
+          const { country_code, country_alpha } = responseJson.data;
+          dispatch(updateCountryCode(country_code));
+          dispatch(updateCountryAlpha2(country_alpha));
         });
     } catch (e) {
-      console.log('fetch country code err ', e);
-    }
-    try {
-      countryAlpha2Ref
-        .once('value')
-        .then(code => {
-          dispatch(updateCountryAlpha2(code.val()));
-        })
-        .catch(e => {
-          console.log(e?.code, e?.message);
-        });
-    } catch (e) {
-      console.log('fetch country alpha ', e);
+      SimpleToast.show('Failed to fetch country information');
+      console.log('fetch country codes', e);
     }
   };
 };

@@ -64,7 +64,7 @@ import {
 } from '../../misc/helpers';
 import { checkForUserType } from '../../controllers/users';
 import { updateLatestChats } from '../../Redux/Actions/messageActions';
-import { deregisterOnlineStatusListener, getAllRecentChats } from '../../controllers/chats';
+import { deregisterOnlineStatusListener } from '../../controllers/chats';
 import { getAllNotifications } from '../../controllers/notifications';
 import { getAllBookings } from '../../controllers/bookings';
 import { white } from '../../Constants/colors';
@@ -462,42 +462,48 @@ class Hamburger extends React.Component {
   fetchEmployeeLocations = () => {
     const {
       fetchedOthersCoordinates,
-      fetchOthersCoordinatesError,
       jobsInfo: { allJobRequestsClient },
     } = this.props;
     allJobRequestsClient.map(obj => {
       const { employee_id } = obj;
       database()
-        .ref(`liveLocation/${employee_id}`)
-        .once('value', result => {
+        .ref(`liveLocation/${employee_id}/address`)
+        .on('value', (changeData) => {
           const {
-            generalInfo: { othersCoordinates },
+            generalInfo: { othersCoordinates, },
           } = this.props;
-          let newOthersCoordinates = Object.assign({}, othersCoordinates);
-          const loc = result.val();
-          newOthersCoordinates[employee_id] = loc;
-          fetchedOthersCoordinates(newOthersCoordinates);
-        })
-        .catch(e => {
-          fetchOthersCoordinatesError(e.message);
+          const newAddress = changeData.val();
+          if (!othersCoordinates[employee_id] || othersCoordinates[employee_id]?.address != newAddress) {
+            let newOthersCoordinates = Object.assign({}, othersCoordinates);
+            newOthersCoordinates[employee_id] = Object.assign(newOthersCoordinates[employee_id] || {}, { address: newAddress });
+            fetchedOthersCoordinates(newOthersCoordinates);
+          }
         });
-
       database()
-        .ref(`liveLocation/${employee_id}`)
-        .on('child_changed', result => {
+        .ref(`liveLocation/${employee_id}/latitude`)
+        .on('value', (changeData) => {
           const {
-            generalInfo: { othersCoordinates },
+            generalInfo: { othersCoordinates, },
           } = this.props;
-          let newOthersCoordinates = Object.assign({}, othersCoordinates);
-          database()
-            .ref(`liveLocation/${employee_id}`)
-            .once('value', result => {
-              newOthersCoordinates[employee_id] = result.val();
-              fetchedOthersCoordinates(newOthersCoordinates);
-            })
-            .catch(e => {
-              fetchOthersCoordinatesError(e.message);
-            });
+          const newLat = changeData.val();
+          if (othersCoordinates[employee_id] || othersCoordinates[employee_id]?.latitude != newLat) {
+            let newOthersCoordinates = Object.assign({}, othersCoordinates);
+            newOthersCoordinates[employee_id] = Object.assign(newOthersCoordinates[employee_id] || {}, { latitude: newLat });
+            fetchedOthersCoordinates(newOthersCoordinates);
+          }
+        });
+      database()
+        .ref(`liveLocation/${employee_id}/longitude`)
+        .on('value', (changeData) => {
+          const {
+            generalInfo: { othersCoordinates, },
+          } = this.props;
+          const newLong = changeData.val();
+          if (othersCoordinates[employee_id] || othersCoordinates[employee_id]?.longitude != newLong) {
+            let newOthersCoordinates = Object.assign({}, othersCoordinates);
+            newOthersCoordinates[employee_id] = Object.assign(newOthersCoordinates[employee_id] || {}, { longitude: newLong })
+            fetchedOthersCoordinates(newOthersCoordinates);
+          }
         });
     });
   };
