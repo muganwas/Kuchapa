@@ -106,7 +106,7 @@ class ProAllMessageScreen extends Component {
     const currentPos = allJobRequestsProviders.findIndex(el => el.user_id === item.id);
     const selectedJobReq = allJobRequestsProviders[currentPos];
 
-    if (selectedJobReq?.user_details)
+    if (selectedJobReq?.user_details && (currentPos !== undefined && currentPos !== -1))
       return (
         <TouchableOpacity
           key={index}

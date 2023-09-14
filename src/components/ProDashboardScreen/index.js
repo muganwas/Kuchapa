@@ -88,10 +88,11 @@ class ProDashboardScreen extends Component {
     const {
       generalInfo: { online, connectivityAvailable },
       userInfo: { providerDetails },
+      messagesInfo: { fetchedLatestChats }
     } = props;
     this.state = {
       isLoading: true,
-      isLoadingLatestChats: true,
+      isLoadingLatestChats: !fetchedLatestChats,
       isErrorToast: false,
       mainId: '',
       reviewData: '',
@@ -209,7 +210,7 @@ class ProDashboardScreen extends Component {
       const currentPos = allJobRequestsProviders.findIndex(el => el.user_id === item.id);
       const selectedJobReq = allJobRequestsProviders[currentPos];
 
-      if (selectedJobReq && selectedJobReq.user_details)
+      if (selectedJobReq && selectedJobReq.user_details && (currentPos !== undefined && currentPos !== -1))
         return (
           <TouchableOpacity
             key={index}
@@ -409,7 +410,6 @@ class ProDashboardScreen extends Component {
       generalInfo: { online, connectivityAvailable },
       userInfo: { providerDetails },
     } = this.props;
-    console.log('online status ', { connectivityAvailable, online }, 'pro ', providerDetails.online);
     if (!connectivityAvailable) return false;
     this.setState({
       isLoading: true,
@@ -861,7 +861,7 @@ class ProDashboardScreen extends Component {
                   )}
                 </View>
                 <ScrollView>
-                  {fetchedLatestChats && latestChats && <View style={styles.listView}>
+                  {<View style={styles.listView}>
                     {latestChats.map(this.renderRecentMessageItem)}
                   </View>}
                 </ScrollView>

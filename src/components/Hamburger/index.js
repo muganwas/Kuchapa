@@ -169,13 +169,10 @@ class Hamburger extends React.Component {
             });
         }
         let newJobRequests = cloneDeep(jobRequests);
-        let pos;
-        await jobRequests.map((obj, i) => {
-          if (orderId === obj.order_id) pos = i;
-        });
-        title !== 'Message Recieved' && this.getAllNotificationsCustomer();
+        let pos = jobRequests.findIndex(obj => orderId === obj.orderId);
+        // title !== 'Message Recieved' && this.getAllNotificationsCustomer();
         if (title.toLowerCase() === 'chat request rejected') {
-          if (pos !== undefined) {
+          if (pos !== undefined && pos !== -1) {
             newJobRequests.splice(pos, 1);
             fetchedPendingJobInfo(newJobRequests);
             navigation.navigate('Home');
@@ -190,7 +187,7 @@ class Hamburger extends React.Component {
           this.getAllBookingsCustomer();
           this.showToast('Your job has been accepted.');
         } else if (title.toLowerCase() === 'job rejected') {
-          if (pos !== undefined) {
+          if (pos !== undefined && pos !== -1) {
             newJobRequests.splice(pos, 1);
             fetchedPendingJobInfo(newJobRequests);
             navigation.navigate('Home');
@@ -198,7 +195,7 @@ class Hamburger extends React.Component {
           this.getAllBookingsCustomer();
           this.showToast('Your job has been rejected. please try again later');
         } else if (title.toLowerCase() === 'job completed') {
-          if (pos !== undefined) {
+          if (pos !== undefined && pos !== -1) {
             newJobRequests.splice(pos, 1);
             fetchedPendingJobInfo(newJobRequests);
             navigation.navigate('Home');
@@ -216,7 +213,7 @@ class Hamburger extends React.Component {
           title.toLowerCase() === 'cancelled' ||
           title.toLowerCase() === 'job cancelled'
         ) {
-          if (pos !== undefined) {
+          if (pos !== undefined && pos !== -1) {
             newJobRequests.splice(pos, 1);
             fetchedPendingJobInfo(newJobRequests);
             navigation.navigate('Home');
@@ -240,51 +237,50 @@ class Hamburger extends React.Component {
       } = this.props;
       //use db info first
       fetchingCoordinates();
-      if (userDetails.lat && userDetails.lang) {
-        fetchedCoordinates({
-          latitude: userDetails.lat,
-          longitude: userDetails.lang,
-        });
-      } else
-        geolocation.getCurrentPosition(
-          async info => {
-            const {
-              coords: { latitude, longitude },
-            } = info;
-            fetchingCoordinates();
-            fetchedCoordinates({
+      fetchedCoordinates({
+        latitude: userDetails.lat,
+        longitude: userDetails.lang,
+      });
+      geolocation.getCurrentPosition(
+        async info => {
+          const {
+            coords: { latitude, longitude },
+          } = info;
+          fetchingCoordinates();
+          fetchedCoordinates({
+            latitude,
+            longitude,
+          });
+          const addressInfo = await returnCoordDetails({
+            lat: latitude.toString(),
+            lng: longitude.toString(),
+          });
+          locationRef
+            .update({
               latitude,
               longitude,
-            });
-            const addressInfo = await returnCoordDetails({
-              lat: latitude.toString(),
-              lng: longitude.toString(),
-            });
-            locationRef
-              .update({
-                latitude,
-                longitude,
-                address: addressInfo.msg === 'ok' && addressInfo.address,
-              })
-              .then(() => {
+              address: addressInfo.msg === 'ok' && addressInfo.address,
+            })
+            .then(() => {
+              if (userDetails.lat != latitude || userDetails.lang != longitude)
                 fetchedCoordinates({
                   latitude,
                   longitude,
                 });
-              })
-              .catch(e => {
-                SimpleToast.show('Location could not be uploaded');
-                fetchCoordinatesError(e.message);
-              });
-          },
-          error => {
-            SimpleToast.show('Location could not be retrieved');
-            fetchCoordinatesError(error.message);
-          },
-          {
-            enableHighAccuracy: true,
-          },
-        );
+            })
+            .catch(e => {
+              SimpleToast.show('Location could not be uploaded');
+              fetchCoordinatesError(e.message);
+            });
+        },
+        error => {
+          SimpleToast.show('Location could not be retrieved');
+          fetchCoordinatesError(error.message);
+        },
+        {
+          enableHighAccuracy: true,
+        },
+      );
 
       /** lookout for users changing position start */
       geolocation.watchPosition(
@@ -433,19 +429,19 @@ class Hamburger extends React.Component {
     senderId && deregisterOnlineStatusListener(senderId);
   }
 
-  getAllNotificationsCustomer = () =>
-    getAllNotifications({
-      userId: this.props?.userInfo?.userDetails?.userId,
-      userType: 'Customer',
-      toggleIsLoading: () => { },
-      onSuccess: dataSource => {
-        this.props.updateNotifications(dataSource);
-      },
-      onError: () => {
-        /** Do something on error */
-      },
-      notificationsURL: NOTIFICATION_URL,
-    });
+  // getAllNotificationsCustomer = () =>
+  //   getAllNotifications({
+  //     userId: this.props?.userInfo?.userDetails?.userId,
+  //     userType: 'Customer',
+  //     toggleIsLoading: () => { },
+  //     onSuccess: dataSource => {
+  //       this.props.updateNotifications(dataSource);
+  //     },
+  //     onError: () => {
+  //       /** Do something on error */
+  //     },
+  //     notificationsURL: NOTIFICATION_URL,
+  //   });
 
   getAllBookingsCustomer = () =>
     getAllBookings({

@@ -117,6 +117,7 @@ class ProHamburger extends React.Component {
     if (!currentUser) this.logout();
     const receiverId = providerDetails.providerId;
     messaging().setBackgroundMessageHandler(message => {
+      console.log('message received b', message);
       if (message && message.data) {
         const data = JSON.parse(message.data.data);
         if (data && data.title && data.body)
@@ -124,6 +125,7 @@ class ProHamburger extends React.Component {
       }
     });
     messaging().onMessage(async message => {
+      console.log('message received ', message);
       const data = JSON.parse(message.data.data);
       const {
         notificationsInfo,
@@ -145,19 +147,16 @@ class ProHamburger extends React.Component {
           });
       }
       const orderId = data.order_id;
-      let pos;
-      await jobRequestsProviders.map((obj, key) => {
-        if (orderId === obj.order_id) pos = key;
-      });
+      let pos = jobRequestsProviders.findIndex(obj => orderId === obj.order_id);
       let newJobRequestsProviders = cloneDeep(jobRequestsProviders);
-      if (pos !== undefined) {
+      if (pos !== undefined && pos !== -1) {
         newJobRequestsProviders.splice(pos, 1);
         dispatchFetchedProJobRequests(newJobRequestsProviders);
         navigation.navigate('ProHome');
       } else getPendingJobRequests(this.props, receiverId);
       getAllWorkRequestPro(receiverId);
       this.getAllBookingsProvider();
-      title !== 'Message Recieved' && this.getAllNotificationsProvider();
+      //title !== 'Message Recieved' && this.getAllNotificationsProvider();
       if (title.toLowerCase() === 'booking request') {
         navigation.navigate('ProChatAccept', {
           userId: data.userId,
@@ -242,23 +241,27 @@ class ProHamburger extends React.Component {
       }
     });
     socket.on('chat-message', data => {
-      const { sender } = cloneDeep(data);
-      const { notificationsInfo, messagesInfo, dbMessagesFetched } = this.props;
-      let newMessages = cloneDeep(messagesInfo.messages);
-      const currentMessagesCount = notificationsInfo.messages;
-      let prevMessages = newMessages[sender]
-        ? cloneDeep(newMessages[sender])
-        : [];
-      let prevMessage = prevMessages.pop();
-      if (JSON.stringify(prevMessage) === JSON.stringify(data))
-        console.log('repeated message');
-      else {
-        const newMessagesCount = currentMessagesCount + 1;
-        fetchedNotifications({ type: 'messages', value: newMessagesCount });
-        newMessages[sender]
-          ? newMessages[sender].push(data)
-          : (newMessages[sender] = [data]);
-        dbMessagesFetched(newMessages);
+      try {
+        const { sender } = cloneDeep(data);
+        const { notificationsInfo, messagesInfo, dbMessagesFetched } = this.props;
+        let newMessages = cloneDeep(messagesInfo.messages);
+        const currentMessagesCount = notificationsInfo.messages;
+        let prevMessages = newMessages[sender]
+          ? cloneDeep(newMessages[sender])
+          : [];
+        let prevMessage = prevMessages.pop();
+        if (JSON.stringify(prevMessage) === JSON.stringify(data))
+          console.log('repeated message');
+        else {
+          const newMessagesCount = currentMessagesCount + 1;
+          fetchedNotifications({ type: 'messages', value: newMessagesCount });
+          newMessages[sender]
+            ? newMessages[sender].push(data)
+            : (newMessages[sender] = [data]);
+          dbMessagesFetched(newMessages);
+        }
+      } catch (e) {
+        SimpleToast.show(e.message);
       }
     });
     socket.connect();
@@ -268,8 +271,13 @@ class ProHamburger extends React.Component {
         fetchingCoordinates,
         fetchedCoordinates,
         fetchCoordinatesError,
+        userInfo: { providerDetails },
       } = this.props;
       fetchingCoordinates();
+      fetchedCoordinates({
+        latitude: providerDetails.lat,
+        longitude: providerDetails.lang,
+      });
       /** get pros current position and upload it to db */
       geolocation.getCurrentPosition(
         async info => {
@@ -287,10 +295,11 @@ class ProHamburger extends React.Component {
               address: addressInfo.msg === 'ok' && addressInfo.address,
             })
             .then(() => {
-              fetchedCoordinates({
-                latitude,
-                longitude,
-              });
+              if (providerDetails.lat != latitude || providerDetails.lang != longitude)
+                fetchedCoordinates({
+                  latitude,
+                  longitude,
+                });
             })
             .catch(e => {
               SimpleToast.show(e.message);
@@ -379,23 +388,22 @@ class ProHamburger extends React.Component {
     } = this.props;
     const senderId = providerDetails.providerId;
     senderId && deregisterOnlineStatusListener(senderId);
-
     geolocation.clearWatch();
   }
 
-  getAllNotificationsProvider = () =>
-    getAllNotifications({
-      userId: this.props?.userInfo?.providerDetails?.providerId,
-      userType: 'Provider',
-      toggleIsLoading: () => { },
-      onSuccess: dataSource => {
-        this.props.updateNotifications(dataSource);
-      },
-      onError: () => {
-        /** Do something on error */
-      },
-      notificationsURL: NOTIFICATION_URL,
-    });
+  // getAllNotificationsProvider = () =>
+  //   getAllNotifications({
+  //     userId: this.props?.userInfo?.providerDetails?.providerId,
+  //     userType: 'Provider',
+  //     toggleIsLoading: () => { },
+  //     onSuccess: dataSource => {
+  //       this.props.updateNotifications(dataSource);
+  //     },
+  //     onError: () => {
+  //       /** Do something on error */
+  //     },
+  //     notificationsURL: NOTIFICATION_URL,
+  //   });
 
   getAllBookingsProvider = () =>
     getAllBookings({

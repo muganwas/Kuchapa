@@ -233,27 +233,29 @@ export const updateAvailabilityInDB = async ({
 //Recent Chat Message
 export const getAllRecentChats = async ({ id, dataSource, onSuccess, onError }) => {
   if (!id) return onError();
+  try {
+    const dbRef = database()
+      .ref('recentMessage')
+      .child(id);
+    dbRef.on('value', async resp => {
+      const messages = resp.val();
+      if (!messages) return onError();
+      let msgsArr = Object.values(messages);
+      const ex = dataSource.findIndex(m => m.time === msgsArr[0].time && m.id === msgsArr[0].id);
+      if (ex === -1)
+        onSuccess(msgsArr);
+    })
+  } catch (e) {
+    onError(e.message);
+  }
+};
+
+export const setMessageChangeListeners = async ({ id, dataSource, onSuccess, onError }) => {
+  if (!id) return onError();
   const dbRef = database()
     .ref('recentMessage')
     .child(id);
   let newDataSource = cloneDeep(dataSource);
-  dbRef.on('value', async resp => {
-    const messages = resp.val();
-    if (!messages) return onError();
-    let newMsgs = [];
-    let msgsArr = Object.values(messages);
-    msgsArr.map(async message => {
-      let present = false;
-      await newDataSource.map(obj => {
-        if (JSON.stringify(obj) === JSON.stringify(message)) present = true;
-      });
-      if (!present) {
-        newMsgs.push(message);
-      }
-    });
-    newMsgs && onSuccess(newMsgs);
-    !newMsgs && onError();
-  });
   dbRef.on('child_changed', async resp => {
     let message = resp.val();
     let present = false;
@@ -279,7 +281,7 @@ export const getAllRecentChats = async ({ id, dataSource, onSuccess, onError }) 
     }
     onError();
   });
-};
+}
 
 export const attachFile = async ({
   senderId,
@@ -475,7 +477,7 @@ export const setOnlineStatusListener = ({ OnlineUsers, userId, setStatus }) => {
         const onlineStatus = result.val() === '1';
         setStatus(selectedStatus, onlineStatus);
       }
-    } else console.log('provider id unavailable');
+    } else SimpleToast.show('Provider id unavailable');
   });
 };
 

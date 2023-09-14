@@ -134,6 +134,10 @@ class ProviderDetailsScreen extends Component {
       onError: (simple, msg) => {
         if (simple) {
           this.showToast(msg);
+          this.setState({
+            requestStatus: 'No Response',
+            isLoading: false,
+          });
         } else {
           this.setState({
             requestStatus: 'No Response',

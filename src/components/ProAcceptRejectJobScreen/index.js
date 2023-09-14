@@ -98,9 +98,7 @@ class ProAcceptRejectJobScreen extends Component {
   }
 
   async componentDidMount() {
-    BackHandler.addEventListener('hardwareBackPress', () =>
-      this.handleBackButtonClick(),
-    );
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     const { fetchEmployeeMessages, userInfo: { providerDetails } } = this.props
     await fetchEmployeeMessages(providerDetails.providerId);
     this.init(this.props);
@@ -114,7 +112,7 @@ class ProAcceptRejectJobScreen extends Component {
     } = this.props;
     BackHandler.removeEventListener(
       'hardwareBackPress',
-      this.handleBackButtonClick,
+      this.handleBackButtonClick
     );
     deregisterOnlineStatusListener(user_id);
   }
