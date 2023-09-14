@@ -10,14 +10,12 @@ import firebaseAuth from '@react-native-firebase/auth';
 import rNES from 'react-native-encrypted-storage';
 import SimpleToast from 'react-native-simple-toast';
 import { cloneDeep } from 'lodash';
-import database from '@react-native-firebase/database';
 import storage from '@react-native-firebase/storage';
 import Config from '../components/Config';
 import {
   emailCheck,
   passwordCheck,
   sanitizeMobileNumber,
-  getDistance,
 } from '../misc/helpers';
 
 const GET_ALL_PROVIDER_URL = Config.baseURL + 'job/serviceprovider/';

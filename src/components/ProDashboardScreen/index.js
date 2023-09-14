@@ -122,13 +122,14 @@ class ProDashboardScreen extends Component {
 
   //Get All Bookings
   componentDidMount = () => {
-    const { generalInfo: { online, connectivityAvailable }, } = this.props;
+    const { generalInfo: { online, connectivityAvailable }, messagesInfo: { fetchedLatestChats } } = this.props;
     if (!online && connectivityAvailable) Config.socket.connect();
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    this.getAllRecentChatsPro();
+    if (!fetchedLatestChats)
+      this.getAllRecentChatsPro();
   };
 
   componentWillUnmount() {
@@ -145,7 +146,8 @@ class ProDashboardScreen extends Component {
       jobsInfo: {
         dataWorkSource,
         dataWorkSourceFetched
-      }
+      },
+      messagesInfo: { fetchedLatestChats }
     } = this.props;
     const { status, isLoading } = this.state;
     if (dataWorkSource && dataWorkSourceFetched && isLoading) this.setState({ isLoading: false, isWorkRequest: true });
@@ -164,6 +166,7 @@ class ProDashboardScreen extends Component {
         availBackground: 'green',
       });
     }
+    if (!fetchedLatestChats) this.getAllRecentChatsPro();
   }
 
   onRefresh = async () => {
@@ -767,7 +770,7 @@ class ProDashboardScreen extends Component {
       messagesInfo: { latestChats, fetchedLatestChats },
       navigation,
     } = this.props;
-    const { status } = this.state;
+    const { status, isLoadingLatestChats } = this.state;
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
@@ -777,24 +780,6 @@ class ProDashboardScreen extends Component {
             { borderBottomWidth: 1, borderBottomColor: themeRed },
           ]}>
           <ProHamburger text="kuchapa" />
-          <TouchableOpacity
-            style={{
-              width: '85%',
-              justifyContent: 'center',
-              alignContent: 'center',
-            }}
-            onPress={() => navigation.navigate('ProAddAddress', { accountType: providerDetails.accountType })}>
-            <Image
-              style={{
-                width: 22,
-                tintColor: themeRed,
-                height: 22,
-                alignSelf: 'center',
-                marginLeft: 45,
-              }}
-              source={require('../../icons/maps_location.png')}
-            />
-          </TouchableOpacity>
         </View>
         <View style={styles.onlineOfflineHeader}>
           <Text
@@ -851,7 +836,7 @@ class ProDashboardScreen extends Component {
             />
           }>
           <View>
-            {latestChats && latestChats.length > 0 && (
+            {fetchedLatestChats && (
               <View style={styles.mainContainer}>
                 <View style={styles.recentMessageHeader}>
                   <Text
@@ -876,13 +861,13 @@ class ProDashboardScreen extends Component {
                   )}
                 </View>
                 <ScrollView>
-                  {fetchedLatestChats && <View style={styles.listView}>
+                  {fetchedLatestChats && latestChats && <View style={styles.listView}>
                     {latestChats.map(this.renderRecentMessageItem)}
                   </View>}
                 </ScrollView>
               </View>
             )}
-            {!fetchedLatestChats && <View style={styles.activityIncatorContainer}><ActivityIndicator size={'large'} color={themeRed} /></View>}
+            {isLoadingLatestChats && <View style={styles.activityIncatorContainer}><ActivityIndicator size={'large'} color={themeRed} /></View>}
             {this.state.isWorkRequest && dataWorkSourceFetched && (
               <View style={styles.mainContainer}>
                 <View style={styles.recentMessageHeader}>

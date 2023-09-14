@@ -375,20 +375,12 @@ class ProAddAddressScreen extends Component {
         });
 
         const userData = {
-          userId: response.data.id,
-          accountType: response.data.acc_type,
-          email: response.data.email,
-          password: response.data.password,
-          username: response.data.username,
-          image: response.data.image,
-          mobile: response.data.mobile,
-          dob: response.data.dob,
           address: response.data.address,
           lat: response.data.lat,
           lang: response.data.lang,
-          fcmId: response.data.fcm_id,
         };
-        updateProviderDetails(userData);
+        const newUserData = Object.assign(providerDetails, userData);
+        updateProviderDetails(newUserData);
         this.showToast(response.message);
       } else {
         this.setState({

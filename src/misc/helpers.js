@@ -437,7 +437,7 @@ export const fetchUserProfileFunc = async (userId, fcmToken, updateUserDetails, 
     dispatch(updateUserDetails(userData));
     return callBack();
   }
-  return SimpleToast.show('Could not fetch profile information');
+  return SimpleToast.show(responseJson.message || 'Could not fetch profile information');
 };
 
 export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderDetails, dispatch, callBack) => {
@@ -482,9 +482,8 @@ export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderD
     };
     dispatch(updateProviderDetails(providerData));
     return callBack();
-  } else {
-    return SimpleToast.show('Could not fetch profile information');
   }
+  return SimpleToast.show(responseJson.message || 'Could not fetch profile information');
 };
 
 export const getPendingJobRequestProviderFunc = async (providerId, navigation, navTo, fetchedJobProviderInfo, dispatch) => {
