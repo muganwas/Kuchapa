@@ -319,6 +319,10 @@ class DashboardScreen extends Component {
         this.props.updateLatestChats(data);
         this.setState({ isLoading: false, isRecentMessage: true });
       },
+      onError: (() => {
+        this.props.updateLatestChats(this.props?.messagesInfo?.latestChats || []);
+        this.setState({ isLoadingLatestChats: false, isLoading: false });
+      })
     });
 
   goToNextPage = (chat_status, jobInfo) => {

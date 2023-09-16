@@ -97,7 +97,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
     this.rightButtonAction = null;
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
@@ -106,14 +106,13 @@ class ProChatAfterBookingDetailsScreen extends Component {
         selectedJobRequest: { user_id },
       },
       generalInfo: { OnlineUsers },
-      userInfo: { providerDetails },
-      fetchEmployeeMessages,
-      fetchedNotifications
+      fetchedNotifications,
+      navigation
     } = this.props;
     if (!socket.connected) {
       socket.connect();
     }
-    fetchEmployeeMessages(providerDetails.providerId);
+    this._unsubscribe = navigation.addListener('focus', this.reInit);
     setOnlineStatusListener({
       OnlineUsers,
       userId: user_id,
@@ -135,23 +134,23 @@ class ProChatAfterBookingDetailsScreen extends Component {
       this.handleBackButtonClick,
     );
     deregisterOnlineStatusListener(user_id);
+    this._unsubscribe();
   }
 
-  reInit = async (props) => {
+  reInit = async () => {
     const {
       messagesInfo: { dataChatSource, fetched },
       jobsInfo: {
         selectedJobRequest: { user_id },
       },
-      generalInfo: { OnlineUsers },
       route,
       userInfo: { providerDetails },
       fetchEmployeeMessages,
-    } = props;
+    } = this.props;
     if (!socket.connected) {
       socket.connect();
     }
-    fetchEmployeeMessages(providerDetails.providerId);
+    await fetchEmployeeMessages(providerDetails.providerId);
     this.setState({
       showButton: false,
       senderId: providerDetails.providerId,
@@ -171,15 +170,6 @@ class ProChatAfterBookingDetailsScreen extends Component {
       pageTitle: route?.params?.pageTitle,
       client_FCM_id: route?.params?.fcm_id,
     });
-    // setOnlineStatusListener({
-    //   OnlineUsers,
-    //   userId: user_id,
-    //   setStatus: (selectedStatus, online) =>
-    //     this.setState({
-    //       selectedStatus,
-    //       online,
-    //     }),
-    // });
   };
 
   componentDidUpdate() {
@@ -211,13 +201,14 @@ class ProChatAfterBookingDetailsScreen extends Component {
 
   handleBackButtonClick = () => {
     const { pageTitle } = this.state;
+    const { navigation } = this.props;
     if (pageTitle === 'ProMapDirection')
-      this.props.navigation.navigate('ProMapDirection');
+      navigation.navigate('ProMapDirection');
     else if (pageTitle === 'ProHome')
-      this.props.navigation.navigate('ProDashboard');
+      navigation.navigate('ProDashboard');
     else if (pageTitle === 'ProAllMessage')
-      this.props.navigation.navigate('ProAllMessage');
-    else this.props.navigation.goBack();
+      navigation.goBack();
+    else navigation.goBack();
     return true;
   };
 

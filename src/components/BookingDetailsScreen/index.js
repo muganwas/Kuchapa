@@ -83,7 +83,7 @@ class BookingDetailsScreen extends Component {
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
-    this.init(this.props);
+    this.init();
   }
 
   componentWillUnmount() {
@@ -93,30 +93,31 @@ class BookingDetailsScreen extends Component {
     );
   }
 
-  init = props => {
+  init = () => {
+    const { route } = this.props;
     this.setState({
       isLoading: false,
       isErrorToast: false,
-      bookingDetails: props.route.params.bookingDetails,
+      bookingDetails: route.params.bookingDetails,
       isRatingDialogVisible: false,
       mainId: '',
-      username:
-        props.route.params.bookingDetails.employee_details.username,
-      fcm_id:
-        props.route.params.bookingDetails.employee_details.fcm_id,
-      customer_rating:
-        props.route.params.bookingDetails.customer_rating,
-      customer_review:
-        props.route.params.bookingDetails.customer_review,
-      employee_rating:
-        props.route.params.bookingDetails.employee_rating,
-      employee_review:
-        props.route.params.bookingDetails.employee_review,
+      username: route.params.bookingDetails.employee_details.username,
+      fcm_id: route.params.bookingDetails.employee_details.fcm_id,
+      customer_rating: route.params.bookingDetails.customer_rating,
+      customer_review: route.params.bookingDetails.customer_review,
+      employee_rating: route.params.bookingDetails.employee_rating,
+      employee_review: route.params.bookingDetails.employee_review,
     });
   };
 
   handleBackButtonClick = () => {
-    this.props.navigation.goBack();
+    const { route, navigation } = this.props;
+    const from = route.params.from;
+    if (from === 'Dashboard')
+      navigation.navigate('Home', { from: 'DetailsScreen' });
+    if (from === 'Booking')
+      navigation.goBack();
+    else navigation.goBack();
     return true;
   };
 
@@ -218,9 +219,7 @@ class BookingDetailsScreen extends Component {
                 alignSelf: 'center',
                 justifyContent: 'center',
               }}
-              onPress={() =>
-                navigation.navigate('Booking', { from: 'detailsScreen' })
-              }>
+              onPress={this.handleBackButtonClick}>
               <Image
                 style={{
                   width: 20,
@@ -576,6 +575,7 @@ class BookingDetailsScreen extends Component {
                     .surname,
                   providerImage: this.state.bookingDetails.employee_details
                     .image,
+                  imageAvailable: this.state.bookingDetails.employee_details.image_exists,
                   serviceName: this.state.bookingDetails.service_details
                     .service_name,
                   orderId: this.state.bookingDetails.order_id,

@@ -66,10 +66,9 @@ class ProAllMessageScreen extends Component {
 
   componentDidMount() {
     const {
-      messagesInfo: { latestChats },
-      // navigation
+      messagesInfo: { latestChats, fetchedLatestChats },
     } = this.props;
-    this.setState({ dataSource: latestChats, isLoading: false });
+    this.setState({ dataSource: latestChats, isLoading: !fetchedLatestChats });
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
@@ -111,8 +110,8 @@ class ProAllMessageScreen extends Component {
         <TouchableOpacity
           key={index}
           style={styles.itemMainContainer}
-          onPress={() => {
-            dispatchSelectedJobRequest(selectedJobReq);
+          onPress={async () => {
+            await dispatchSelectedJobRequest(selectedJobReq);
             if (selectedJobReq.status === 'Pending')
               navigation.navigate('ProAcceptRejectJob', {
                 currentPos: currentPos,

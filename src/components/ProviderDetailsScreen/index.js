@@ -41,6 +41,7 @@ import {
 } from '../../controllers/chats';
 import { requestForBooking } from '../../controllers/bookings';
 import { font_size } from '../../Constants/metrics';
+import { updateProfileInfo } from '../../controllers/users';
 import {
   lightGray,
   themeRed,
@@ -51,6 +52,7 @@ import {
 } from '../../Constants/colors';
 import DialogComponent from '../DialogComponent';
 import Availability from '../AvailabilityComponent';
+import Config from '../Config';
 
 const screenWidth = Dimensions.get('window').width;
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
@@ -149,7 +151,23 @@ class ProviderDetailsScreen extends Component {
       goBack: this.goBack,
     });
 
-  goBack = () => {
+  goBack = async (addressInfo) => {
+    const {
+      userInfo: { userDetails }
+    } = this.props;
+    if (addressInfo) {
+      const addressInfoArr = addressInfo.split("/");
+      const address = addressInfoArr[0]
+      const lat = addressInfoArr[1];
+      const lang = addressInfoArr[2];
+      const userData = { lat, lang, address };
+      await updateProfileInfo({
+        userId: userDetails.userId,
+        userData,
+        updateURL: Config.baseURL + 'users/',
+        onSuccess: this.props.updateUserDetails
+      });
+    }
     this.setState({ isLoading: false, requestStatus: '' });
     this.props.navigation.goBack();
   };

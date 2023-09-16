@@ -104,10 +104,26 @@ class ProChatScreen extends Component {
   }
 
   componentDidMount() {
-    this.reInit(this.props);
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
+    const {
+      navigation,
+      generalInfo: { OnlineUsers },
+      jobsInfo: {
+        selectedJobRequest: { user_id },
+      },
+    } = this.props;
+    this._unsubscribe = navigation.addListener('focus', this.reInit);
+    setOnlineStatusListener({
+      OnlineUsers,
+      userId: user_id,
+      setStatus: (selectedStatus, online) =>
+        this.setState({
+          selectedStatus,
+          online,
+        }),
+    });
   }
 
   componentWillUnmount() {
@@ -120,10 +136,11 @@ class ProChatScreen extends Component {
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
+    this._unsubscribe();
     deregisterOnlineStatusListener(user_id);
   }
 
-  reInit = (props) => {
+  reInit = async () => {
     const {
       messagesInfo: { dataChatSource, fetched },
       route,
@@ -132,13 +149,12 @@ class ProChatScreen extends Component {
         selectedJobRequest: { user_id },
       },
       userInfo: { providerDetails },
-      generalInfo: { OnlineUsers },
       fetchEmployeeMessages,
-    } = props;
+    } = this.props;
     if (!socket.connected) {
       socket.connect();
     }
-    fetchEmployeeMessages(providerDetails.providerId);
+    await fetchEmployeeMessages(providerDetails.providerId);
     const currentPos = route?.params?.currentPos;
     this.setState({
       showButton: false,
@@ -159,15 +175,6 @@ class ProChatScreen extends Component {
         allJobRequestsProviders[currentPos].service_details.service_name,
       userImageAvailable: allJobRequestsProviders[currentPos].imageAvailable,
       customer_FCM_id: allJobRequestsProviders[currentPos].user_details.fcm_id,
-    });
-    setOnlineStatusListener({
-      OnlineUsers,
-      userId: user_id,
-      setStatus: (selectedStatus, online) =>
-        this.setState({
-          selectedStatus,
-          online,
-        }),
     });
   };
 
@@ -200,12 +207,13 @@ class ProChatScreen extends Component {
 
   handleBackButtonClick = () => {
     const { pageTitle } = this.state;
+    const { navigation } = this.props;
     if (pageTitle === 'ProMapDirection')
-      this.props.navigation.navigate('ProMapDirection');
+      navigation.navigate('ProMapDirection');
     else if (pageTitle === 'ProHome')
-      this.props.navigation.navigate('ProHome', { from: 'ProChat' });
+      navigation.navigate('ProHome', { from: 'ProChat' });
     else if (pageTitle === 'ProAllMessage')
-      this.props.navigation.navigate('ProAllMessage');
+      navigation.goBack();
     else this.props.navigation.goBack();
     return true;
   };

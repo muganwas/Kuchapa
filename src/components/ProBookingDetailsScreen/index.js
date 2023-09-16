@@ -81,7 +81,7 @@ class ProBookingDetailsScreen extends Component {
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
-    this.init(this.props);
+    this.init();
   }
 
   componentWillUnmount() {
@@ -91,24 +91,25 @@ class ProBookingDetailsScreen extends Component {
     );
   }
 
-  init = props => {
+  init = () => {
+    const { route } = this.props;
     this.setState({
       isLoading: false,
       isErrorToast: false,
-      bookingDetails: props.route.params.bookingDetails,
+      bookingDetails: route.params.bookingDetails,
       isRatingDialogVisible: false,
       mainId: '',
-      fcm_id: props.route.params.bookingDetails.user_details.fcm_id,
+      fcm_id: route.params.bookingDetails.user_details.fcm_id,
       username:
-        props.route.params.bookingDetails.user_details.username,
+        route.params.bookingDetails.user_details.username,
       customer_rating:
-        props.route.params.bookingDetails.customer_rating,
+        route.params.bookingDetails.customer_rating,
       customer_review:
-        props.route.params.bookingDetails.customer_review,
+        route.params.bookingDetails.customer_review,
       employee_rating:
-        props.route.params.bookingDetails.employee_rating,
+        route.params.bookingDetails.employee_rating,
       employee_review:
-        props.route.params.bookingDetails.employee_review,
+        route.params.bookingDetails.employee_review,
     });
   };
 
@@ -118,7 +119,7 @@ class ProBookingDetailsScreen extends Component {
     if (from == 'ProDashboard')
       navigation.navigate('ProHome', { from: 'DetailsScreen' });
     if (from === 'ProBooking')
-      navigation.navigate('ProBooking', { from: 'DetailsScreen' });
+      navigation.goBack();
     else navigation.goBack();
     return true;
   };

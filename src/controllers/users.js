@@ -353,7 +353,7 @@ export const fbGmailLoginTask = async ({
         const message =
           responseJson.message === 'Email not found'
             ? "You're not registered, register then login"
-            : responseJson.data?.message?.indexOf('deactivated') > -1
+            : responseJson?.message?.indexOf('deactivated') > -1
               ? 'Your account is currently innactive, contact admin'
               : responseJson.message
                 ? responseJson.message
@@ -571,33 +571,32 @@ export const updateProfileImageTask = async ({
           const res = await response.json();
           let newUserDetails = cloneDeep(userDetails);
           /** cater for different names for user and client */
-          newUserDetails.image = newUserDetails.image = urlResult;
+          newUserDetails.image = urlResult;
           newUserDetails.imageAvailable = true;
           await updateUserDetails(newUserDetails);
           toggleIsLoading(false);
-          if (res && res.data.result) {
-            SimpleToast.show(res.data.message);
-          }
+          SimpleToast.show(res.message);
         });
       } else {
+        toggleIsLoading(false);
         SimpleToast.show('Upload failed, try again please.');
       }
     })
     .catch(error => {
-      SimpleToast.show('Something went wrong, try again later.');
+      toggleIsLoading(false);
+      SimpleToast.show(error.message);
     });
 };
 
 export const updateProfileInfo = async ({
   userId,
-  fcmId,
   userData,
-  fetchUserProfile,
   updateURL,
   onSuccess,
   toggleIsLoading,
 }) => {
   try {
+    const userType = await rNES.getItem('userType');
     const idToken = await firebaseAuth().currentUser.getIdToken();
     const resp = await fetch(updateURL + userId, {
       method: 'POST',
@@ -610,16 +609,58 @@ export const updateProfileInfo = async ({
     });
     const response = await resp.json();
     if (response.result) {
-      onSuccess(userData);
+      console.log('all coordinates ', { response })
+      const online = await synchroniseOnlineStatus(userId, response.data.online);
+      const newUserData = userType === 'User' ? {
+        userId: response.data.id,
+        accountType: response.data.acc_type,
+        email: response.data.email,
+        password: response.data.password,
+        username: response.data.username,
+        image: response.data.image,
+        mobile: response.data.mobile,
+        country_code: response.data.country_code,
+        country_alpha: response.data.country_alpha,
+        online,
+        imageAvailable: response.data.image_available,
+        dob: response.data.dob,
+        address: response.data.address,
+        lat: response.data.lat,
+        lang: response.data.lang,
+        firebaseId: response.data.id,
+        fcmId: response.data.fcm_id,
+      } : {
+        providerId: response.data.id,
+        name: response.data.username,
+        email: response.data.email,
+        password: response.data.password,
+        image: response.data.image,
+        surname: response.data.surname,
+        mobile: response.data.mobile,
+        country_code: response.data.country_code,
+        country_alpha: response.data.country_alpha,
+        services: response.data.services,
+        description: response.data.description,
+        online,
+        imageAvailable: response.data.image_available,
+        address: response.data.address,
+        lat: response.data.lat,
+        lang: response.data.lang,
+        invoice: response.data.invoice,
+        firebaseId: response.data.id,
+        status: response.data.status,
+        fcmId: response.data.fcm_id,
+        accountType: response.data.account_type,
+      };
+      onSuccess(newUserData);
       SimpleToast.show(response.message);
-      fetchUserProfile(userId, fcmId);
     } else {
-      toggleIsLoading(false);
+      toggleIsLoading && toggleIsLoading(false);
       SimpleToast.show(response.message);
     }
   } catch (e) {
-    toggleIsLoading(false);
-    SimpleToast.show('Something went wrong, try again later.');
+    toggleIsLoading && toggleIsLoading(false);
+    SimpleToast.show(e.message);
   }
 };
 

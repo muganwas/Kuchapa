@@ -86,7 +86,7 @@ class ChatAfterBookingDetailsScreen extends Component {
         ' ' +
         props.route.params.providerSurname,
       receiverImage: props.route.params.providerImage,
-      imageAvailable: props.route.params.imageAvailable || false,
+      imageAvailable: props.route.params.imageAvailable,
       serviceName: props.route.params.serviceName,
       orderId: props.route.params.orderId,
       titlePage: props.route.params.pageTitle,
@@ -103,22 +103,19 @@ class ChatAfterBookingDetailsScreen extends Component {
 
   componentDidMount() {
     const {
-      userInfo: { userDetails },
       jobsInfo: {
         selectedJobRequest: { employee_id },
       },
       generalInfo: { OnlineUsers },
-      fetchClientMessages,
+      navigation,
       fetchedNotifications
     } = this.props;
+    console.log('from info after bking screen')
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    if (!socket.connected) {
-      socket.connect();
-    }
-    fetchClientMessages(userDetails.userId);
+    this._unsubscribe = navigation.addListener('focus', this.reInit);
     setOnlineStatusListener({
       OnlineUsers,
       userId: employee_id,
@@ -142,52 +139,45 @@ class ChatAfterBookingDetailsScreen extends Component {
       this.handleBackButtonClick,
     );
     deregisterOnlineStatusListener(employee_id);
+    this._unsubscribe();
   }
 
-  reInit = (props) => {
+  reInit = async () => {
     const {
       userInfo: { userDetails },
       jobsInfo: {
         selectedJobRequest: { employee_id },
       },
-      generalInfo: { OnlineUsers },
       fetchClientMessages,
-    } = props;
+      messagesInfo: { dataChatSource, fetched },
+      route
+    } = this.props;
     if (!socket.connected) {
       socket.connect();
     }
-    fetchClientMessages(userDetails.userId);
+    await fetchClientMessages(userDetails.userId);
     this.setState({
       senderId: userDetails.userId,
       senderImage: userDetails.image,
       senderName: userDetails.username,
       inputMessage: '',
       showButton: false,
-      dataChatSource: props.messagesInfo.dataChatSource[employee_id],
-      isLoading: !props.messagesInfo.fetched,
+      dataChatSource: dataChatSource[employee_id],
+      isLoading: !fetched,
       isUpLoading: false,
-      receiverId: props.route.params.providerId,
+      receiverId: route.params.providerId,
       receiverName:
-        props.route.params.providerName +
+        route.params.providerName +
         ' ' +
-        props.route.params.providerSurname,
-      receiverImage: props.route.params.providerImage,
-      imageAvailable: props.route.params.imageAvailable,
-      serviceName: props.route.params.serviceName,
-      orderId: props.route.params.orderId,
-      titlePage: props.route.params.pageTitle,
-      isJobAccepted: props.route.params.isJobAccepted,
-      provider_FCM_id: props.route.params.fcmId,
+        route.params.providerSurname,
+      receiverImage: route.params.providerImage,
+      imageAvailable: route.params.imageAvailable,
+      serviceName: route.params.serviceName,
+      orderId: route.params.orderId,
+      titlePage: route.params.pageTitle,
+      isJobAccepted: route.params.isJobAccepted,
+      provider_FCM_id: route.params.fcmId,
     });
-    // setOnlineStatusListener({
-    //   OnlineUsers,
-    //   userId: employee_id,
-    //   setStatus: (selectedStatus, online) =>
-    //     this.setState({
-    //       selectedStatus,
-    //       online,
-    //     }),
-    // });
   };
 
   componentDidUpdate() {
@@ -230,7 +220,7 @@ class ChatAfterBookingDetailsScreen extends Component {
       navigation.navigate('Home');
     else if (titlePage === 'ProviderDetails')
       navigation.navigate('ProviderDetails');
-    else if (titlePage === 'AllMessage') navigation.navigate('AllMessage');
+    else if (titlePage === 'AllMessage') navigation.goBack();
     else navigation.goBack();
     return true;
   };

@@ -63,15 +63,13 @@ class AllMessageScreen extends Component {
       isDataMatch: true,
       backClickCount: 0,
     };
-
-    this.springValue = new Animated.Value(100);
   }
 
   componentDidMount() {
     const {
-      messagesInfo: { latestChats },
+      messagesInfo: { latestChats, fetchedLatestChats },
     } = this.props;
-    this.setState({ dataSource: latestChats, isLoading: false });
+    this.setState({ dataSource: latestChats, isLoading: !fetchedLatestChats });
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
@@ -98,12 +96,12 @@ class AllMessageScreen extends Component {
     this.props.navigation.goBack();
   };
 
-  goToChat = ({ selectedJobReq, item }, index) => {
+  goToChat = async ({ selectedJobReq, item }, index) => {
     const {
       dispatchSelectedJobRequest,
       navigation
     } = this.props;
-    dispatchSelectedJobRequest(selectedJobReq);
+    await dispatchSelectedJobRequest(selectedJobReq);
     if (selectedJobReq?.status.toLowerCase() === 'pending') {
       navigation.navigate('Chat', {
         providerId: item.id,
@@ -136,15 +134,14 @@ class AllMessageScreen extends Component {
     const {
       jobsInfo: { allJobRequestsClient },
     } = this.props;
-    const selectedJobReq = allJobRequestsClient.find(
-      jobInfo => jobInfo.employee_id === item.id,
-    );
-    if (selectedJobReq?.employee_details)
+    const currentPos = allJobRequestsClient.findIndex(jobInfo => jobInfo.employee_id === item.id);
+    const selectedJobReq = allJobRequestsClient[currentPos];
+    if (currentPos !== -1 && selectedJobReq?.employee_details)
       return (
         <TouchableOpacity
           key={index}
           style={styles.itemMainContainer}
-          onPress={() => this.goToChat({ selectedJobReq, item }, index)}>
+          onPress={() => this.goToChat({ selectedJobReq, item }, currentPos)}>
           <View style={styles.itemImageView}>
             <Image
               style={{ width: 40, height: 40, borderRadius: 100 }}
@@ -186,6 +183,7 @@ class AllMessageScreen extends Component {
           </View>
         </TouchableOpacity>
       );
+    return <View key={index}></View>
   };
 
   searchTask = textInput => {

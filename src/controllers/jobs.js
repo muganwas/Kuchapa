@@ -79,7 +79,7 @@ export const jobCancelTask = async ({
   navigate,
 }) => {
   toggleIsLoading(true);
-  const dash = userType === 'Provider' ? 'ProDashboard' : 'Dashboard';
+  const dash = userType === 'Provider' ? 'ProHome' : 'Home';
   try {
     let newJobRequests = cloneDeep(jobRequests);
     const idToken = await firebaseAuth().currentUser.getIdToken();
@@ -250,9 +250,8 @@ export const acceptJobTask = async ({
       SimpleToast.show('Something went wrong, please try again later');
     }
   } catch (e) {
-    console.log('Error >>> ' + e);
     toggleIsLoading(false);
-    SimpleToast.show('Something went wrong, please try again later');
+    SimpleToast.show(e.message);
   }
 };
 
@@ -324,15 +323,14 @@ export const rejectJobTask = async ({
       }
       newjobRequestsProviders.splice(currRequestPos, 1);
       fetchedPendingJobInfo(newjobRequestsProviders);
-      navigation.navigate('ProDashboard');
+      navigation.navigate('ProHome');
     } else {
       onError();
       SimpleToast.show('Something went wrong, please try again later');
     }
   } catch (e) {
-    console.log('Error >>> ' + e);
     toggleIsLoading(false);
-    SimpleToast.show('Something went wrong, please try again later');
+    SimpleToast.show(e.message);
   }
 };
 
@@ -349,7 +347,7 @@ export const jobCompleteTask = async ({
   rejectAcceptURL,
 }) => {
   toggleIsLoading(true);
-  const dash = userType === 'Provider' ? 'ProDashboard' : 'Dashboard';
+  const dash = userType === 'Provider' ? 'ProHome' : 'Home';
   try {
     let newJobRequests = cloneDeep(jobRequests);
     const idToken = await firebaseAuth().currentUser.getIdToken();

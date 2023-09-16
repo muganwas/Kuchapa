@@ -196,6 +196,10 @@ class ProDashboardScreen extends Component {
         this.props.updateLatestChats(data);
         this.setState({ isLoadingLatestChats: false });
       },
+      onError: (() => {
+        this.props.updateLatestChats(this.props?.messagesInfo?.latestChats || []);
+        this.setState({ isLoadingLatestChats: false });
+      })
     });
 
   renderRecentMessageItem = (item, index) => {
@@ -852,22 +856,29 @@ class ProDashboardScreen extends Component {
                     }}>
                     Recent Message
                   </Text>
-                  {true && (
-                    <TouchableOpacity
-                      style={styles.viewAll}
-                      onPress={() => navigation.navigate('ProAllMessage')}>
-                      <Text style={styles.textViewAll}>View All</Text>
-                    </TouchableOpacity>
-                  )}
+                  <TouchableOpacity
+                    style={styles.viewAll}
+                    onPress={() => navigation.navigate('ProAllMessage')}>
+                    <Text style={styles.textViewAll}>View All</Text>
+                  </TouchableOpacity>
                 </View>
-                <ScrollView>
-                  {<View style={styles.listView}>
-                    {latestChats.map(this.renderRecentMessageItem)}
-                  </View>}
-                </ScrollView>
+                {latestChats?.length > 0 ?
+                  <ScrollView>
+                    {<View style={styles.listView}>
+                      {latestChats.map(this.renderRecentMessageItem)}
+                    </View>}
+                  </ScrollView> :
+                  <View style={styles.listView}>
+                    <Text style={{ fontStyle: 'italic', color: darkGray }}>You have no chats to display</Text>
+                  </View>
+                }
               </View>
             )}
-            {isLoadingLatestChats && <View style={styles.activityIncatorContainer}><ActivityIndicator size={'large'} color={themeRed} /></View>}
+            {isLoadingLatestChats &&
+              <View style={styles.activityIncatorContainer}>
+                <ActivityIndicator size={'large'} color={themeRed} />
+              </View>
+            }
             {this.state.isWorkRequest && dataWorkSourceFetched && (
               <View style={styles.mainContainer}>
                 <View style={styles.recentMessageHeader}>

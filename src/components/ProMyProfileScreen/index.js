@@ -107,9 +107,7 @@ class ProMyProfileScreen extends Component {
           galleryCameraImage: 'galleryCamera',
           isLoading: true,
         });
-        const providerId = await rNES
-          .getItem('userId');
-        this.updateImageTask(providerId, imageDataObject);
+        this.updateImageTask(this.props.userInfo?.providerDetails?.providerId, imageDataObject);
       }
     } catch (e) {
       Toast.show(e.message, Toast.SHORT);
@@ -253,11 +251,10 @@ class ProMyProfileScreen extends Component {
         if (!this.state.error)
           await updateProfileInfo({
             userId: providerId,
-            fcmId,
             userData,
-            fetchUserProfile: fetchProviderProfile,
             updateURL: PRO_INFO_UPDATE,
             onSuccess: userData => {
+              this.props.updateProviderDetails(userData);
               this.setState({
                 emailSet: userData && userData.email,
                 isLoading: false,

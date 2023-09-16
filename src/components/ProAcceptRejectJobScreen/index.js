@@ -99,9 +99,9 @@ class ProAcceptRejectJobScreen extends Component {
 
   async componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
-    const { fetchEmployeeMessages, userInfo: { providerDetails } } = this.props
+    const { fetchEmployeeMessages, userInfo: { providerDetails }, navigation } = this.props
     await fetchEmployeeMessages(providerDetails.providerId);
-    this.init(this.props);
+    this._unsubscribe = navigation.addListener('focus', this.init);
   }
 
   componentWillUnmount() {
@@ -115,9 +115,10 @@ class ProAcceptRejectJobScreen extends Component {
       this.handleBackButtonClick
     );
     deregisterOnlineStatusListener(user_id);
+    this._unsubscribe();
   }
 
-  init = async props => {
+  init = async () => {
     const {
       userInfo: { providerDetails },
       jobsInfo: {
@@ -127,7 +128,7 @@ class ProAcceptRejectJobScreen extends Component {
       messagesInfo: { dataChatSource, fetchedDBMessages },
       generalInfo: { OnlineUsers },
       route
-    } = this.props || props;
+    } = this.props;
     if (!socket.connected) {
       socket.connect();
     }
@@ -202,13 +203,14 @@ class ProAcceptRejectJobScreen extends Component {
 
   handleBackButtonClick = () => {
     const { pageTitle } = this.state;
+    const { navigation } = this.props;
     if (pageTitle === 'ProMapDirection')
-      this.props.navigation.navigate('ProMapDirection');
+      navigation.navigate('ProMapDirection');
     else if (pageTitle === 'ProHome')
-      this.props.navigation.navigate('ProDashboard');
+      navigation.navigate('ProDashboard');
     else if (pageTitle === 'ProAllMessage')
-      this.props.navigation.navigate('ProAllMessage');
-    else this.props.navigation.goBack();
+      navigation.goBack();
+    else navigation.goBack();
     return true;
   };
 

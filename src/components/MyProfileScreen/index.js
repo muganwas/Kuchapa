@@ -158,9 +158,7 @@ class MyProfileScreen extends Component {
           galleryCameraImage: 'galleryCamera',
           isLoading: true,
         });
-        const customerId = await rNES
-          .getItem('userId');
-        this.updateImageTaskCustomer(customerId, imageDataObject);
+        this.updateImageTaskCustomer(this.props.userInfo?.userDetails?.userId, imageDataObject);
       }
     } catch (e) {
       Toast.show(e.message, Toast.SHORT);
@@ -192,15 +190,14 @@ class MyProfileScreen extends Component {
   checkValidation = () => {
     rNES
       .getItem('userId')
-      .then(providerId => this.updateInformation(providerId));
+      .then(userId => this.updateInformation(userId));
   };
 
   //Information Update
   updateInformation = userId => {
-    const { fcmId, username, email, mobile, dob } = this.state;
+    const { username, email, mobile, dob } = this.state;
     const {
       validationInfo: { countryAlpha2 },
-      fetchUserProfile,
     } = this.props;
     this.setState({
       isLoading: true,
@@ -229,13 +226,12 @@ class MyProfileScreen extends Component {
         if (!this.state.error)
           await updateProfileInfo({
             userId,
-            fcmId,
             userData,
-            fetchUserProfile,
             updateURL: USER_INFO_UPDATE,
             onSuccess: userData => {
+              this.props.updateUserDetails(userData);
               this.setState({
-                emailSet: userData && userData.email,
+                emailSet: !!userData?.email,
                 isLoading: false,
                 isErrorToast: false,
               });

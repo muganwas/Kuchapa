@@ -77,9 +77,9 @@ class ProNotificationsScreen extends Component {
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
-    const { fetchedNotifications, navigation } = this.props;
+    const { fetchedNotifications } = this.props;
+    this.getAllNotificationsProvider();
     fetchedNotifications({ type: 'generic', value: 0 });
-    this._unsubscribe = navigation.addListener('focus', this.getAllNotificationsProvider);
   }
 
   componentWillUnmount() {
@@ -87,7 +87,6 @@ class ProNotificationsScreen extends Component {
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    this._unsubscribe();
   }
 
   handleBackButtonClick = () => this.props.navigation.goBack();

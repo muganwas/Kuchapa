@@ -97,11 +97,28 @@ class ChatScreen extends Component {
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
+    console.log('from info chat screen')
     const {
-      fetchedNotifications
+      fetchedNotifications,
+      navigation,
+      route,
+      generalInfo: { OnlineUsers },
+      jobsInfo: {
+        selectedJobRequest: { employee_id },
+      },
     } = this.props;
-    this.reInit(this.props);
+    this._unsubscribe = navigation.addListener('focus', this.reInit);
     fetchedNotifications({ type: 'messages', value: 0 });
+    const providerId = route.params.providerId || employee_id;
+    setOnlineStatusListener({
+      OnlineUsers,
+      userId: providerId,
+      setStatus: (selectedStatus, online) =>
+        this.setState({
+          selectedStatus,
+          online,
+        }),
+    });
   }
 
   componentWillUnmount() {
@@ -115,9 +132,10 @@ class ChatScreen extends Component {
       this.handleBackButtonClick,
     );
     deregisterOnlineStatusListener(employee_id);
+    this._unsubscribe();
   }
 
-  reInit = async props => {
+  reInit = async () => {
     const {
       userInfo: { userDetails },
       jobsInfo: {
@@ -128,11 +146,11 @@ class ChatScreen extends Component {
       generalInfo: { OnlineUsers },
       fetchClientMessages,
       route,
-    } = props;
+    } = this.props;
     if (!socket.connected) {
       socket.connect();
     }
-    fetchClientMessages(userDetails.userId);
+    await fetchClientMessages(userDetails.userId);
     const currRequestPos = route.params.currentPosition || 0;
     const providerId = route.params.providerId || employee_id;
     this.setState({
@@ -183,15 +201,6 @@ class ChatScreen extends Component {
       dialogDesc: '',
       dialogLeftText: 'Cancel',
       dialogRightText: 'Retry',
-    });
-    setOnlineStatusListener({
-      OnlineUsers,
-      userId: providerId,
-      setStatus: (selectedStatus, online) =>
-        this.setState({
-          selectedStatus,
-          online,
-        }),
     });
   };
 
@@ -360,7 +369,7 @@ class ChatScreen extends Component {
       navigation.navigate('Home');
     else if (titlePage === 'ProviderDetails')
       navigation.navigate('ProviderDetails');
-    else if (titlePage === 'AllMessage') navigation.navigate('AllMessage');
+    else if (titlePage === 'AllMessage') navigation.goBack();
     else navigation.goBack();
     return true;
   };

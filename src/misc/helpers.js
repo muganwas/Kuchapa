@@ -546,21 +546,21 @@ export const getAllWorkRequestProFunc = async (providerId, fetchedDataWorkSource
     : [];
   const dataWorkSource = [];
   if (responseJson.result) {
-    for (let i = 0; i < responseJson.data.length; i++) {
-      if (responseJson.data[i].chat_status === '1') {
-        dataWorkSource.push(responseJson.data[i]);
-      } else if (responseJson.data[i].chat_status === '0') {
-        if (responseJson.data[i].status !== 'Pending') {
-          dataWorkSource.push(responseJson.data[i]);
-        }
+    await responseJson.data.map((dt, i) => {
+      if (dt?.status !== 'Pending') {
+        dataWorkSource.push(dt);
       }
-
-    }
-    dispatch(fetchedDataWorkSource(dataWorkSource));
-    dispatch(fetchedAllJobRequestsPro(newAllProvidersDetails));
-  } else {
-    SimpleToast.show('Could not fetch all work requests.');
+      // if (dt.chat_status === '1') {
+      //   dataWorkSource.push(dt);
+      // } else if (dt.chat_status === '0') {
+      //   if (dt.status !== 'Pending') {
+      //     dataWorkSource.push(dt);
+      //   }
+      // }
+    })
   }
+  dispatch(fetchedDataWorkSource(dataWorkSource));
+  dispatch(fetchedAllJobRequestsPro(newAllProvidersDetails));
 };
 
 export const getAllWorkRequestClientFunc = async (clientId, fetchedDataWorkSource, fetchedAllJobRequestsClient, dispatch) => {
@@ -576,22 +576,22 @@ export const getAllWorkRequestClientFunc = async (clientId, fetchedDataWorkSourc
     : [];
   const dataWorkSource = [];
   if (responseJson.result) {
-    for (let i = 0; i < responseJson.data.length; i++) {
-      if (responseJson.data[i]) {
-        if (responseJson.data[i].chat_status == '1') {
-          dataWorkSource.push(responseJson.data[i]);
-        } else if (responseJson.data[i].chat_status == '0') {
-          if (responseJson.data[i].status !== 'Pending') {
-            dataWorkSource.push(responseJson.data[i]);
-          }
-        }
-      }
-    }
-    dispatch(fetchedDataWorkSource(dataWorkSource));
-    dispatch(fetchedAllJobRequestsClient(newAllClientDetails));
-  } else {
-    SimpleToast.show('Could not fetch all work requests');
+    await responseJson.data.map((dt, i) => {
+      if (dt?.status !== 'Pending') {
+        dataWorkSource.push(dt);
+
+        // if (dt.chat_status == '1') {
+        //   dataWorkSource.push(dt);
+        // } else if (dt.chat_status == '0') {
+        //   if (dt.status !== 'Pending') {
+        //     dataWorkSource.push(dt);
+        //   }
+        // }
+      };
+    })
   }
+  dispatch(fetchedDataWorkSource(dataWorkSource));
+  dispatch(fetchedAllJobRequestsClient(newAllClientDetails));
 };
 
 export const getPendingJobRequestFunc = async (userId, navigation, navTo, fetchedJobCustomerInfo, dispatch) => {

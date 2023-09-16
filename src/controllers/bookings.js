@@ -117,6 +117,7 @@ export const requestForBooking = async ({
   onError,
   goBack,
 }) => {
+  console.log('user details info ', { userDetails })
   if (!userDetails.lang || !userDetails.lat) {
     onError(true, 'Please provide your address first');
     setTimeout(

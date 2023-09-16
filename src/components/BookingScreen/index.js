@@ -158,6 +158,7 @@ class BookingScreen extends Component {
             this.props.navigation.navigate('BookingDetails', {
               bookingDetails: item,
               position: index,
+              from: 'Booking'
             })
           }>
           <View style={styles.itemContainer}>

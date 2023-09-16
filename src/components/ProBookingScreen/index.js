@@ -157,6 +157,7 @@ class ProBookingScreen extends Component {
             this.props.navigation.navigate('ProBookingDetails', {
               bookingDetails: item,
               position: index,
+              from: 'ProBooking'
             })
           }>
           <View style={styles.itemContainer}>
