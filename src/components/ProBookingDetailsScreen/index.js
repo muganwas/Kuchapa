@@ -10,6 +10,7 @@ import {
   Modal,
   StatusBar,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { connect } from 'react-redux';
 import { AirbnbRating } from 'react-native-ratings';
@@ -23,7 +24,7 @@ import {
   setSelectedJobRequest,
   updateCompletedBookingData,
 } from '../../Redux/Actions/jobsActions';
-import { font_size } from '../../Constants/metrics';
+import metrics, { font_size } from '../../Constants/metrics';
 import {
   colorPrimary,
   colorBg,
@@ -201,7 +202,7 @@ class ProBookingDetailsScreen extends Component {
   };
 
   render() {
-    const { dispatchSelectedJobRequest, navigation } = this.props;
+    const { dispatchSelectedJobRequest } = this.props;
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
@@ -215,7 +216,8 @@ class ProBookingDetailsScreen extends Component {
             paddingRight: 20,
             paddingTop: 5,
             paddingBottom: 5,
-          }}>
+          }}
+        >
           <View style={{ flex: 1, flexDirection: 'row' }}>
             <TouchableOpacity
               style={{
@@ -247,24 +249,26 @@ class ProBookingDetailsScreen extends Component {
             </Text>
           </View>
         </View>
-
         <View style={styles.mainContainer}>
           <View
             style={{
-              flexDirection: 'row',
+              flexDirection: 'column',
               justifyContent: 'flex-start',
               alignContent: 'flex-start',
               marginTop: 15,
               paddingHorizontal: 10,
               borderBottomColor: lightGray,
               borderBottomWidth: 1,
-            }}>
+            }}
+          >
             <Text style={{ color: darkGray, fontWeight: 'bold', fontSize: 14 }}>
               Order number -{' '}
               {this.state.bookingDetails.order_id.replace('"', '')}
             </Text>
+            <Text>{this.state.bookingDetails.createdDate}</Text>
           </View>
-          <View style={styles.providerDetailsContainer}>
+          <View style={{ padding: metrics.spacing.medium }}><Text style={{ fontWeight: 'bold' }}>Customer</Text></View>
+          <View style={styles.clientDetailsContainer}>
             <View style={styles.profilePictureContainer}>
               <Image
                 style={styles.profilePicture}
@@ -318,6 +322,7 @@ class ProBookingDetailsScreen extends Component {
                   flexDirection: 'row',
                   marginLeft: 10,
                   marginTop: 5,
+                  marginRight: 50,
                 }}>
                 <Image
                   style={{
@@ -327,7 +332,7 @@ class ProBookingDetailsScreen extends Component {
                     alignContent: 'flex-start',
                     borderRadius: 100,
                   }}
-                  source={require('../../icons/calendar.png')}
+                  source={require('../../icons/maps_location.png')}
                 />
                 <Text
                   style={{
@@ -335,30 +340,13 @@ class ProBookingDetailsScreen extends Component {
                     fontSize: 12,
                     color: darkGray,
                     textAlignVertical: 'center',
-                    marginLeft: 5,
-                  }}>
-                  {this.state.bookingDetails.user_details.dob}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  marginLeft: 10,
-                  marginTop: 5,
-                  marginRight: 50,
-                }}>
-                <Text
-                  style={{
-                    color: black,
-                    fontSize: 12,
-                    color: darkGray,
-                    textAlignVertical: 'center',
+                    marginLeft: 5
                   }}>
                   {this.state.bookingDetails.user_details.address}
                 </Text>
               </View>
 
-              <View
+              {/* <View
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'flex-start',
@@ -374,179 +362,180 @@ class ProBookingDetailsScreen extends Component {
                   }}>
                   {this.state.bookingDetails.createdDate}
                 </Text>
-              </View>
+              </View> */}
             </View>
           </View>
-
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'flex-start',
-              alignContent: 'flex-start',
-              marginTop: 15,
-              paddingHorizontal: 10,
-              borderTopColor: lightGray,
-              borderTopWidth: 1,
-            }}>
-            <Text style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
-              Customer's rating of service
-            </Text>
-          </View>
-          <View style={styles.ratingSect}>
-            <AirbnbRating
-              type="custom"
-              ratingCount={5}
-              size={25}
-              defaultRating={this.state.customer_rating}
-              ratingBackgroundColor={colorBg}
-              showRating={false}
-              isDisabled={true}
-              onFinishRating={rating =>
-                console.log('Customer Rating : ' + rating)
-              }
-            />
-          </View>
-
-          {this.state.customer_review !== '' && (
-            <View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                  alignContent: 'flex-start',
-                  marginTop: 15,
-                  marginLeft: 10,
-                }}>
-                <Text style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
-                  Customer's review
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                  alignContent: 'flex-start',
-                  margin: 10,
-                }}>
-                <Text style={{ color: 'grey', fontSize: 14, padding: 10 }}>
-                  {this.state.customer_review}
-                </Text>
-              </View>
+          <ScrollView contentContainerStyle={{ backgroundColor: lightGray }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignContent: 'flex-start',
+                marginTop: 15,
+                paddingHorizontal: 10,
+                borderTopColor: lightGray,
+                borderTopWidth: 1,
+              }}>
+              <Text style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
+                Customer's rating of service
+              </Text>
             </View>
-          )}
+            <View style={styles.ratingSect}>
+              <AirbnbRating
+                type="custom"
+                ratingCount={5}
+                size={25}
+                defaultRating={this.state.customer_rating}
+                ratingBackgroundColor={colorBg}
+                showRating={false}
+                isDisabled={true}
+                onFinishRating={rating =>
+                  console.log('Customer Rating : ' + rating)
+                }
+              />
+            </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'flex-start',
-              alignContent: 'flex-start',
-              marginTop: 15,
-              paddingHorizontal: 10,
-              borderTopColor: lightGray,
-              borderTopWidth: 1,
-            }}>
-            <Text style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
-              Your rating of customer
-            </Text>
-          </View>
-          <View style={styles.ratingSect}>
-            <AirbnbRating
-              type="custom"
-              ratingCount={5}
-              size={25}
-              defaultRating={this.state.employee_rating}
-              ratingBackgroundColor={colorBg}
-              showRating={false}
-              isDisabled={this.state.employee_rating != '' ? true : false}
-              onFinishRating={rating => {
-                this.setState({
-                  employee_rating: rating,
+            {this.state.customer_review !== '' && (
+              <View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignContent: 'flex-start',
+                    marginTop: 15,
+                    marginLeft: 10,
+                  }}>
+                  <Text style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
+                    Customer's review
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignContent: 'flex-start',
+                    margin: 10,
+                  }}>
+                  <Text style={{ color: 'grey', fontSize: 14, padding: 10 }}>
+                    {this.state.customer_review}
+                  </Text>
+                </View>
+              </View>
+            )}
+
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignContent: 'flex-start',
+                marginTop: 15,
+                paddingHorizontal: 10,
+                borderTopColor: lightGray,
+                borderTopWidth: 1,
+              }}>
+              <Text style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
+                Your rating of customer
+              </Text>
+            </View>
+            <View style={styles.ratingSect}>
+              <AirbnbRating
+                type="custom"
+                ratingCount={5}
+                size={25}
+                defaultRating={this.state.employee_rating}
+                ratingBackgroundColor={colorBg}
+                showRating={false}
+                isDisabled={this.state.employee_rating != '' ? true : false}
+                onFinishRating={rating => {
+                  this.setState({
+                    employee_rating: rating,
+                  });
+                  this.changeDialogVisibility(true);
+                }}
+              />
+            </View>
+
+            {this.state.employee_review !== '' && (
+              <View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignContent: 'flex-start',
+                    marginTop: 15,
+                    marginLeft: 10,
+                  }}>
+                  <Text style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
+                    Your customer review
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignContent: 'flex-start',
+                    margin: 10,
+                  }}>
+                  <Text style={{ color: 'grey', fontSize: 14, padding: 10 }}>
+                    {this.state.employee_review}
+                  </Text>
+                </View>
+              </View>
+            )}
+
+
+            <TouchableOpacity
+              style={styles.chatView}
+              onPress={() => {
+                dispatchSelectedJobRequest({
+                  user_id: this.state.bookingDetails.user_id,
                 });
-                this.changeDialogVisibility(true);
-              }}
-            />
-          </View>
-
-          {this.state.employee_review !== '' && (
-            <View>
-              <View
+                this.props.navigation.navigate('ProChatAfterBookingDetails', {
+                  receiverId: this.state.bookingDetails.user_id,
+                  receiverName: this.state.bookingDetails.user_details.username,
+                  receiverImage: this.state.bookingDetails.user_details.image,
+                  receiverImageAvailable: this.state.bookingDetails.user_details.image_exists,
+                  orderId: this.state.bookingDetails.order_id,
+                  serviceName: this.state.bookingDetails.service_details
+                    .service_name,
+                  pageTitle: 'ProBookingDetails',
+                  fcm_id: this.state.fcm_id,
+                });
+              }}>
+              <Image
                 style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                  alignContent: 'flex-start',
-                  marginTop: 15,
+                  width: 20,
+                  height: 20,
+                  marginLeft: 20,
+                  tintColor: white,
+                }}
+                source={require('../../icons/chatting.png')}
+              />
+              <Text
+                style={{
+                  color: white,
+                  fontWeight: 'bold',
+                  fontSize: font_size.sub_header,
+                  textAlign: 'center',
                   marginLeft: 10,
                 }}>
-                <Text style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
-                  Your customer review
-                </Text>
-              </View>
-              <View
+                Chat history
+              </Text>
+              <Image
                 style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                  alignContent: 'flex-start',
-                  margin: 10,
-                }}>
-                <Text style={{ color: 'grey', fontSize: 14, padding: 10 }}>
-                  {this.state.employee_review}
-                </Text>
-              </View>
-            </View>
-          )}
+                  width: 20,
+                  height: 20,
+                  marginLeft: 20,
+                  tintColor: white,
+                  position: 'absolute',
+                  end: 0,
+                  marginRight: 15,
+                }}
+                source={require('../../icons/right_arrow.png')}
+              />
+            </TouchableOpacity>
+          </ScrollView>
         </View>
-
-        <TouchableOpacity
-          style={styles.chatView}
-          onPress={() => {
-            dispatchSelectedJobRequest({
-              user_id: this.state.bookingDetails.user_id,
-            });
-            this.props.navigation.navigate('ProChatAfterBookingDetails', {
-              receiverId: this.state.bookingDetails.user_id,
-              receiverName: this.state.bookingDetails.user_details.username,
-              receiverImage: this.state.bookingDetails.user_details.image,
-              receiverImageAvailable: this.state.bookingDetails.user_details.image_exists,
-              orderId: this.state.bookingDetails.order_id,
-              serviceName: this.state.bookingDetails.service_details
-                .service_name,
-              pageTitle: 'ProBookingDetails',
-              fcm_id: this.state.fcm_id,
-            });
-          }}>
-          <Image
-            style={{
-              width: 20,
-              height: 20,
-              marginLeft: 20,
-              tintColor: white,
-            }}
-            source={require('../../icons/chatting.png')}
-          />
-          <Text
-            style={{
-              color: white,
-              fontWeight: 'bold',
-              fontSize: font_size.sub_header,
-              textAlign: 'center',
-              marginLeft: 10,
-            }}>
-            Chat history
-          </Text>
-          <Image
-            style={{
-              width: 20,
-              height: 20,
-              marginLeft: 20,
-              tintColor: white,
-              position: 'absolute',
-              end: 0,
-              marginRight: 15,
-            }}
-            source={require('../../icons/right_arrow.png')}
-          />
-        </TouchableOpacity>
-
         <Modal
           transparent={true}
           visible={this.state.isRatingDialogVisible}
@@ -608,34 +597,35 @@ const styles = StyleSheet.create({
     backgroundColor: colorBg,
   },
   mainContainer: {
+    flex: 1,
     width: screenWidth,
-    backgroundColor: 'white',
+    backgroundColor: white,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
     elevation: 5,
-    backgroundColor: 'white',
+    backgroundColor: white,
     borderRadius: 2,
     marginTop: 10,
   },
   providerDetailContainer: {
     width: screenWidth,
     flexDirection: 'row',
-    backgroundColor: 'white',
+    backgroundColor: white,
     padding: 10,
   },
   profilePicture: {
-    height: 100,
-    width: 100,
+    height: 60,
+    width: 60,
     alignSelf: 'flex-start',
     alignContent: 'flex-start',
-    borderRadius: 100,
+    borderRadius: 60,
   },
-  providerDetailsContainer: {
+  clientDetailsContainer: {
     width: screenWidth,
     flexDirection: 'row',
-    backgroundColor: 'white',
+    backgroundColor: white,
     margin: 10,
     padding: 10,
   },

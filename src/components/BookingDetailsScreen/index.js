@@ -24,7 +24,7 @@ import {
   setSelectedJobRequest,
   updateCompletedBookingData,
 } from '../../Redux/Actions/jobsActions';
-import { font_size } from '../../Constants/metrics';
+import metrics, { font_size } from '../../Constants/metrics';
 import {
   black,
   colorBg,
@@ -242,325 +242,254 @@ class BookingDetailsScreen extends Component {
             </Text>
           </View>
         </View>
-
-        <ScrollView>
-          <View style={{ marginBottom: 10 }}>
-            <View style={styles.mainContainer}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                  alignContent: 'flex-start',
-                  marginTop: 15,
-                  paddingHorizontal: 10,
-                  borderBottomColor: lightGray,
-                  borderBottomWidth: 1,
-                }}>
-                <Text
-                  style={{ color: darkGray, fontWeight: 'bold', fontSize: 14 }}>
-                  Order number -{' '}
-                  {this.state.bookingDetails.order_id.replace('"', '')}
-                </Text>
-              </View>
-              <View style={styles.providerDetailsContainer}>
-                <View styles={styles.profilePictureContainer}>
-                  <Image
-                    style={styles.profilePicture}
-                    source={
-                      this.state.bookingDetails.employee_details.image_exists
-                        ? {
-                          uri: this.state.bookingDetails.employee_details
-                            .image,
-                        }
-                        : require('../../images/generic_avatar.png')
+        <View style={styles.mainContainer}>
+          <View
+            style={{
+              flexDirection: 'column',
+              justifyContent: 'flex-start',
+              alignContent: 'flex-start',
+              paddingHorizontal: 10,
+              borderBottomColor: lightGray,
+              borderBottomWidth: 1,
+            }}>
+            <Text
+              style={{ color: darkGray, fontWeight: 'bold', fontSize: 14 }}>
+              Order number -{' '}
+              {this.state.bookingDetails.order_id.replace('"', '')}
+            </Text>
+            <Text>{this.state.bookingDetails.createdDate}</Text>
+          </View>
+          <View style={{ padding: metrics.spacing.medium }}><Text style={{ fontWeight: 'bold' }}>Service Provider</Text></View>
+          <View style={styles.providerDetailsContainer}>
+            <View styles={styles.profilePictureContainer}>
+              <Image
+                style={styles.profilePicture}
+                source={
+                  this.state.bookingDetails.employee_details.image_exists
+                    ? {
+                      uri: this.state.bookingDetails.employee_details
+                        .image,
                     }
-                  />
-                </View>
-                <View style={styles.addressContainer}>
-                  <Text
-                    style={{
-                      color: black,
-                      fontSize: 14,
-                      fontWeight: 'bold',
-                      textAlignVertical: 'center',
-                      marginLeft: 10,
-                    }}>
-                    {this.state.bookingDetails.employee_details.username +
-                      ' ' +
-                      this.state.bookingDetails.employee_details.surname}
-                  </Text>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginLeft: 10,
-                      marginTop: 5,
-                    }}>
-                    <Image
-                      style={{
-                        height: 15,
-                        width: 15,
-                        alignSelf: 'center',
-                        alignContent: 'flex-start',
-                        borderRadius: 100,
-                      }}
-                      source={require('../../icons/mobile.png')}
-                    />
-                    <Text
-                      style={{
-                        color: black,
-                        fontSize: 12,
-                        color: darkGray,
-                        textAlignVertical: 'center',
-                        marginLeft: 5,
-                      }}>
-                      {this.state.bookingDetails.employee_details.mobile}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginLeft: 10,
-                      marginTop: 5,
-                      marginRight: 50,
-                    }}>
-                    <Text
-                      style={{
-                        color: black,
-                        fontSize: 12,
-                        color: black,
-                        textAlignVertical: 'center',
-                      }}>
-                      {this.state.bookingDetails.employee_details.description}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginLeft: 10,
-                      marginTowhitp: 5,
-                      marginRight: 50,
-                    }}>
-                    <Text
-                      style={{
-                        color: black,
-                        fontSize: 12,
-                        color: darkGray,
-                        textAlignVertical: 'center',
-                      }}>
-                      {this.state.bookingDetails.employee_details.address}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                  alignContent: 'flex-start',
-                  marginTop: 15,
-                  paddingHorizontal: 10,
-                  borderTopColor: lightGray,
-                  borderTopWidth: 1,
-                }}>
-                <Text style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
-                  Service provider's rating
-                </Text>
-              </View>
-              <View style={styles.ratingSect}>
-                <AirbnbRating
-                  type="custom"
-                  ratingCount={5}
-                  size={25}
-                  defaultRating={this.state.employee_rating}
-                  ratingBackgroundColor={colorBg}
-                  showRating={false}
-                  isDisabled={true}
-                  onFinishRating={rating =>
-                    console.log('Employee Rating : ' + rating)
-                  }
-                />
-              </View>
-
-              {this.state.employee_review !== '' && (
-                <View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'flex-start',
-                      alignContent: 'flex-start',
-                      marginTop: 15,
-                      marginLeft: 10,
-                    }}>
-                    <Text
-                      style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
-                      Service provider's review
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'flex-start',
-                      alignContent: 'flex-start',
-                      margin: 10,
-                    }}>
-                    <Text style={{ color: darkGray, fontSize: 14, padding: 10 }}>
-                      {this.state.employee_review}
-                    </Text>
-                  </View>
-                </View>
-              )}
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                  alignContent: 'flex-start',
-                  marginTop: 15,
-                  paddingHorizontal: 10,
-                  borderTopColor: lightGray,
-                  borderTopWidth: 1,
-                }}>
-                <Text style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
-                  Your rating of service
-                </Text>
-              </View>
-              <View style={styles.ratingSect}>
-                <AirbnbRating
-                  type="custom"
-                  ratingCount={5}
-                  size={25}
-                  defaultRating={this.state.customer_rating}
-                  ratingBackgroundColor={colorBg}
-                  showRating={false}
-                  isDisabled={this.state.customer_rating != '' ? true : false}
-                  onFinishRating={rating => {
-                    this.setState({
-                      customer_rating: rating,
-                    });
-                    this.changeDialogVisibility(true);
-                  }}
-                />
-              </View>
-
-              {this.state.customer_review !== '' && (
-                <View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'flex-start',
-                      alignContent: 'flex-start',
-                      marginTop: 15,
-                      marginLeft: 10,
-                    }}>
-                    <Text
-                      style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
-                      Your service review
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'flex-start',
-                      alignContent: 'flex-start',
-                      margin: 10,
-                    }}>
-                    <Text style={{ color: darkGray, fontSize: 14, padding: 10 }}>
-                      {this.state.customer_review}
-                    </Text>
-                  </View>
-                </View>
-              )}
+                    : require('../../images/generic_avatar.png')
+                }
+              />
             </View>
-
-            <View style={styles.mainContainer}>
-              <View
+            <View style={styles.addressContainer}>
+              <Text
                 style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                  alignContent: 'flex-start',
-                  marginTop: 15,
+                  color: black,
+                  fontSize: 14,
+                  fontWeight: 'bold',
+                  textAlignVertical: 'center',
                   marginLeft: 10,
                 }}>
+                {this.state.bookingDetails.employee_details.username +
+                  ' ' +
+                  this.state.bookingDetails.employee_details.surname}
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  marginLeft: 10,
+                  marginTop: 5,
+                }}>
+                <Image
+                  style={{
+                    height: 15,
+                    width: 15,
+                    alignSelf: 'center',
+                    alignContent: 'flex-start',
+                    borderRadius: 100,
+                  }}
+                  source={require('../../icons/mobile.png')}
+                />
                 <Text
-                  style={{ color: darkGray, fontWeight: 'bold', fontSize: 14 }}>
-                  Service address
+                  style={{
+                    color: black,
+                    fontSize: 12,
+                    color: darkGray,
+                    textAlignVertical: 'center',
+                    marginLeft: 5,
+                  }}>
+                  {this.state.bookingDetails.employee_details.mobile}
                 </Text>
               </View>
-              <View style={styles.proInfo}>
-                <View style={{ flexDirection: 'column' }}>
-                  <Text
-                    style={{
-                      color: black,
-                      fontSize: 14,
-                      fontWeight: 'bold',
-                      textAlignVertical: 'center',
-                      marginLeft: 10,
-                    }}>
-                    {userDetails.username}
-                  </Text>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginLeft: 10,
-                      marginTop: 5,
-                    }}>
-                    <Image
-                      style={{
-                        height: 15,
-                        width: 15,
-                        alignSelf: 'center',
-                        alignContent: 'flex-start',
-                        borderRadius: 100,
-                      }}
-                      source={require('../../icons/mobile.png')}
-                    />
-                    <Text
-                      style={{
-                        color: black,
-                        fontSize: 12,
-                        color: darkGray,
-                        textAlignVertical: 'center',
-                        marginLeft: 5,
-                      }}>
-                      {userDetails.mobile}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginLeft: 10,
-                      marginTop: 5,
-                      marginRight: 50,
-                    }}>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        color: darkGray,
-                        textAlignVertical: 'center',
-                      }}>
-                      {this.state.bookingDetails.delivery_address}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginLeft: 10,
-                      marginTop: 5,
-                      marginRight: 50,
-                    }}>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        color: darkGray,
-                        textAlignVertical: 'center',
-                        fontWeight: 'bold',
-                      }}>
-                      {this.state.bookingDetails.createdDate}
-                    </Text>
-                  </View>
-                </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  marginLeft: 10,
+                  marginTop: 5,
+                  marginRight: 50,
+                }}>
+                <Image
+                  style={{
+                    height: 15,
+                    width: 15,
+                    alignSelf: 'center',
+                    alignContent: 'flex-start',
+                    borderRadius: 100,
+                  }}
+                  source={require('../../icons/description.png')}
+                />
+                <Text
+                  style={{
+                    color: black,
+                    fontSize: 12,
+                    color: black,
+                    textAlignVertical: 'center',
+                    marginLeft: 5
+                  }}>
+                  {this.state.bookingDetails.employee_details.description}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  marginLeft: 10,
+                  marginTop: 5,
+                  marginRight: 50,
+                }}>
+                <Image
+                  style={{
+                    height: 15,
+                    width: 15,
+                    alignSelf: 'center',
+                    alignContent: 'flex-start',
+                    borderRadius: 100,
+                  }}
+                  source={require('../../icons/maps_location.png')}
+                />
+                <Text
+                  style={{
+                    color: black,
+                    fontSize: 12,
+                    color: darkGray,
+                    textAlignVertical: 'center',
+                    marginLeft: 5
+                  }}>
+                  {this.state.bookingDetails.employee_details.address}
+                </Text>
               </View>
             </View>
+          </View>
+          <ScrollView contentContainerStyle={{ backgroundColor: lightGray }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignContent: 'flex-start',
+                marginTop: 15,
+                paddingHorizontal: 10,
+                borderTopColor: lightGray,
+                borderTopWidth: 1,
+              }}>
+              <Text style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
+                Service provider's rating
+              </Text>
+            </View>
+            <View style={styles.ratingSect}>
+              <AirbnbRating
+                type="custom"
+                ratingCount={5}
+                size={25}
+                defaultRating={this.state.employee_rating}
+                ratingBackgroundColor={colorBg}
+                showRating={false}
+                isDisabled={true}
+                onFinishRating={rating =>
+                  console.log('Employee Rating : ' + rating)
+                }
+              />
+            </View>
 
+            {this.state.employee_review !== '' && (
+              <View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignContent: 'flex-start',
+                    marginTop: 15,
+                    marginLeft: 10,
+                  }}>
+                  <Text
+                    style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
+                    Service provider's review
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignContent: 'flex-start',
+                    margin: 10,
+                  }}>
+                  <Text style={{ color: darkGray, fontSize: 14, padding: 10 }}>
+                    {this.state.employee_review}
+                  </Text>
+                </View>
+              </View>
+            )}
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignContent: 'flex-start',
+                marginTop: 15,
+                paddingHorizontal: 10,
+                borderTopColor: lightGray,
+                borderTopWidth: 1,
+              }}>
+              <Text style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
+                Your rating of service
+              </Text>
+            </View>
+            <View style={styles.ratingSect}>
+              <AirbnbRating
+                type="custom"
+                ratingCount={5}
+                size={25}
+                defaultRating={this.state.customer_rating}
+                ratingBackgroundColor={colorBg}
+                showRating={false}
+                isDisabled={this.state.customer_rating != '' ? true : false}
+                onFinishRating={rating => {
+                  this.setState({
+                    customer_rating: rating,
+                  });
+                  this.changeDialogVisibility(true);
+                }}
+              />
+            </View>
+
+            {this.state.customer_review !== '' && (
+              <View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignContent: 'flex-start',
+                    marginTop: 15,
+                    marginLeft: 10,
+                  }}>
+                  <Text
+                    style={{ color: black, fontWeight: 'bold', fontSize: 14 }}>
+                    Your service review
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignContent: 'flex-start',
+                    margin: 10,
+                  }}>
+                  <Text style={{ color: darkGray, fontSize: 14, padding: 10 }}>
+                    {this.state.customer_review}
+                  </Text>
+                </View>
+              </View>
+            )}
             <TouchableOpacity
               style={styles.chatView}
               onPress={() => {
@@ -615,34 +544,33 @@ class BookingDetailsScreen extends Component {
                 source={require('../../icons/right_arrow.png')}
               />
             </TouchableOpacity>
-
-            <Modal
-              transparent={true}
-              visible={this.state.isRatingDialogVisible}
-              animationType="fade"
-              onRequestClose={() => this.changeDialogVisibility(false)}>
-              <ReviewDialogCustomer
-                style={{
-                  shadowColor: black,
-                  shadowOffset: { width: 0, height: 3 },
-                  shadowOpacity: 0.75,
-                  shadowRadius: 5,
-                  elevation: 5,
-                }}
-                rating={this.state.customer_rating}
-                review={this.state.customer_review}
-                changeDialogVisibility={this.changeDialogVisibility}
-                updateReview={review =>
-                  this.setState({ customer_review: review })
-                }
-                updateRating={rating =>
-                  this.setState({ customer_rating: rating })
-                }
-                data={this.state.bookingDetails}
-              />
-            </Modal>
-          </View>
-        </ScrollView>
+          </ScrollView>
+          <Modal
+            transparent={true}
+            visible={this.state.isRatingDialogVisible}
+            animationType="fade"
+            onRequestClose={() => this.changeDialogVisibility(false)}>
+            <ReviewDialogCustomer
+              style={{
+                shadowColor: black,
+                shadowOffset: { width: 0, height: 3 },
+                shadowOpacity: 0.75,
+                shadowRadius: 5,
+                elevation: 5,
+              }}
+              rating={this.state.customer_rating}
+              review={this.state.customer_review}
+              changeDialogVisibility={this.changeDialogVisibility}
+              updateReview={review =>
+                this.setState({ customer_review: review })
+              }
+              updateRating={rating =>
+                this.setState({ customer_rating: rating })
+              }
+              data={this.state.bookingDetails}
+            />
+          </Modal>
+        </View>
         <Modal
           transparent={true}
           visible={this.state.isLoading}
@@ -690,9 +618,10 @@ const styles = StyleSheet.create({
     backgroundColor: colorBg,
   },
   mainContainer: {
+    flex: 1,
     width: screenWidth,
     backgroundColor: white,
-    shadowColor: '#000',
+    shadowColor: black,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
     shadowRadius: 5,
@@ -721,11 +650,11 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   profilePicture: {
-    height: 100,
-    width: 100,
+    height: 60,
+    width: 60,
     alignSelf: 'flex-start',
     alignContent: 'flex-start',
-    borderRadius: 100,
+    borderRadius: 60,
   },
   profilePictureContainer: {
     display: 'flex',
@@ -763,6 +692,5 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    marginTop: 10,
   },
 });
