@@ -13,6 +13,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import firebaseAuth from '@react-native-firebase/auth';
 import rNES from 'react-native-encrypted-storage';
+import SimpleToast from 'react-native-simple-toast';
 import RNExitApp from 'react-native-exit-app';
 import HomeScreen from '../HomeScreen';
 import DashboardScreen from '../DashboardScreen';
@@ -152,16 +153,20 @@ class SplashScreen extends Component {
 
   logout = async () => {
     const { resetUserDetails, navigation: { navigate } } = this.props;
-    if (firebaseAuth().currentUser) firebaseAuth().signOut();
-    await rNES.removeItem('userId');
-    await rNES.removeItem('auth');
-    await rNES.removeItem('firebaseId');
-    await rNES.removeItem('email');
-    await rNES.removeItem('idToken');
-    await rNES.removeItem('userType');
-    resetUserDetails();
-    Config.socket.close();
-    navigate('AfterSplash');
+    try {
+      if (firebaseAuth().currentUser) firebaseAuth().signOut();
+      await rNES.removeItem('userId');
+      await rNES.removeItem('auth');
+      await rNES.removeItem('firebaseId');
+      await rNES.removeItem('email');
+      await rNES.removeItem('idToken');
+      await rNES.removeItem('userType');
+      resetUserDetails();
+      Config.socket.close();
+      navigate('AfterSplash');
+    } catch (e) {
+      SimpleToast.show(e.message);
+    }
   }
 
   splashTimeOut = async () => {
@@ -259,7 +264,7 @@ class SplashScreen extends Component {
               if (Android) BackHandler.exitApp();
               else RNExitApp.exitApp();
             },
-          ),
+          )
       );
     } catch (e) {
       this.showDialogAction(
@@ -344,8 +349,8 @@ const mapDispatchToProps = dispatch => {
     fetchPendingJobProviderInfo: (props, proId, navigateTo) => {
       dispatch(getPendingJobRequestProvider(props, proId, navigateTo));
     },
-    fetchJobRequestHistoryPro: providerId => {
-      dispatch(getAllWorkRequestPro(providerId));
+    fetchJobRequestHistoryPro: (providerId, only) => {
+      dispatch(getAllWorkRequestPro(providerId, only));
     },
     fetchJobRequestHistoryClient: clientId => {
       dispatch(getAllWorkRequestClient(clientId));

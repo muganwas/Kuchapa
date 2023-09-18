@@ -32,21 +32,22 @@ export const getFCMToken = async (
   onSuccess = () => { },
   onError = () => { },
 ) => {
-  messaging()
-    .getToken()
-    .then(async fcmToken => {
-      if (fcmToken) {
-        try {
-          const userType = await rNES.getItem('userType');
-          onSuccess(userId, userType, fcmToken);
-        } catch (e) {
-          SimpleToast.show('Something went wrong, please try again.');
+  try {
+    messaging()
+      .getToken()
+      .then(async fcmToken => {
+        if (fcmToken) {
+          try {
+            const userType = await rNES.getItem('userType');
+            onSuccess(userId, userType, fcmToken);
+          } catch (e) {
+            SimpleToast.show('Something went wrong, please try again.');
+          }
         }
-      }
-    })
-    .catch(error => {
-      onError(error);
-    });
+      });
+  } catch (error) {
+    onError(error);
+  };
 };
 
 export const checkValidation = async (
@@ -75,21 +76,22 @@ export const getUserType = async (
   onMessagingEnabled = () => { },
   onError = () => { },
 ) => {
-  messaging()
-    .requestPermission()
-    .then(authStatus => {
-      const enabled =
-        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-      if (enabled) {
-        onMessagingEnabled();
-      } else {
-        onError();
-      }
-    })
-    .catch(error => {
-      onError(error);
-    });
+  try {
+    messaging()
+      .requestPermission()
+      .then(authStatus => {
+        const enabled =
+          authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+          authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+        if (enabled) {
+          onMessagingEnabled();
+        } else {
+          onError();
+        }
+      });
+  } catch (error) {
+    onError(error);
+  };
 };
 
 export const googleLoginTask = async (
@@ -164,17 +166,18 @@ export const autoLogin = async (
       const firebaseId = await rNES.getItem('firebaseId');
       if (currentEmail === email && firebaseId === currentFirebaseId)
         return inhouseLogin(userId, userType, fcmToken);
-      firebaseAuth()
-        .signInWithEmailAndPassword(email, password)
-        .then(() => {
-          inhouseLogin(userId, userType, fcmToken);
-        })
-        .catch(error => {
-          if (error.message.includes('no user record')) logout();
-          SimpleToast.show(
-            'Something went wrong, try closing and reopening app.',
-          );
-        });
+      try {
+        firebaseAuth()
+          .signInWithEmailAndPassword(email, password)
+          .then(() => {
+            inhouseLogin(userId, userType, fcmToken);
+          });
+      } catch (error) {
+        if (error.message.includes('no user record')) logout();
+        SimpleToast.show(
+          'Something went wrong, try closing and reopening app.',
+        );
+      };
     } else inhouseLogin(userId, userType, fcmToken);
   } else {
     goTo('AfterSplash');
@@ -208,7 +211,7 @@ export const inhouseLogin = async ({
   try {
     const home = userType === 'Provider' ? 'ProHome' : 'Home';
     updateAppUserDetails(userId, fcmToken, () => {
-      fetchJobRequestHistory(userId);
+      fetchJobRequestHistory(userId, 'Pending,Completed');
       fetchPendingJobInfo(props, userId, home);
     });
   } catch (e) {

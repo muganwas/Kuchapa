@@ -354,7 +354,6 @@ class ProChatScreen extends Component {
             </View>
           )}
           <View style={styles.footerContainer}>
-            {/*<View style={{ width: screenWidth, height: 1, backgroundColor: lightGray }}></View>*/}
             <MessagesFooter
               inputMesage={this.state.inputMessage}
               textChangeAction={inputMesage => this.showHideButton(inputMesage)}

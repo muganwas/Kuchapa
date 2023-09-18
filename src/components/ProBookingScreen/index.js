@@ -58,7 +58,7 @@ class ProBookingScreen extends Component {
     super();
     this.state = {
       currentPage: 0,
-      isLoading: true,
+      isLoading: false,
       isErrorToast: false,
       backClickCount: 0,
     };
@@ -70,7 +70,7 @@ class ProBookingScreen extends Component {
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    this.getAllBookingsProvider();
+    this.fetchCompletedRejectedJobs();
   }
 
   componentWillUnmount() {
@@ -105,10 +105,12 @@ class ProBookingScreen extends Component {
     });
   };
 
-  getAllBookingsProvider = async () =>
+  getAllBookingsProvider = async (only, limit) =>
     await getAllBookings({
       userId: this.props?.userInfo?.providerDetails?.providerId,
       userType: 'Provider',
+      only,
+      limit,
       bookingHistoryURL: BOOKING_HISTORY,
       toggleIsLoading: this.changeWaitingDialogVisibility,
       onSuccess: (bookingCompleteData, bookingRejectData) => {
@@ -119,6 +121,8 @@ class ProBookingScreen extends Component {
         });
       },
     });
+
+  fetchCompletedRejectedJobs = () => this.getAllBookingsProvider('Completed,Rejected', 20);
 
   onPageSelected = event => {
     const currentPage = event.nativeEvent.position;
@@ -138,7 +142,6 @@ class ProBookingScreen extends Component {
   };
 
   renderBookingHistoryItem = (item, index) => {
-    console.log('booking history item ', { item })
     if (item.user_details)
       return (
         <TouchableOpacity

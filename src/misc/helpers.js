@@ -533,9 +533,9 @@ export const getPendingJobRequestProviderFunc = async (providerId, navigation, n
   }
 };
 
-export const getAllWorkRequestProFunc = async (providerId, fetchedDataWorkSource, fetchedAllJobRequestsPro, dispatch) => {
+export const getAllWorkRequestProFunc = async (providerId, fetchedDataWorkSource, fetchedAllJobRequestsPro, dispatch, only = '') => {
   const idToken = await firebaseAuth().currentUser.getIdToken();
-  const response = await fetch(BOOKING_HISTORY + providerId + '/Cancelled', {
+  const response = await fetch(BOOKING_HISTORY + providerId + '/Cancelled?only=' + only, {
     headers: {
       Authorization: 'Bearer ' + idToken
     }
@@ -550,14 +550,7 @@ export const getAllWorkRequestProFunc = async (providerId, fetchedDataWorkSource
       if (dt?.status !== 'Pending') {
         dataWorkSource.push(dt);
       }
-      // if (dt.chat_status === '1') {
-      //   dataWorkSource.push(dt);
-      // } else if (dt.chat_status === '0') {
-      //   if (dt.status !== 'Pending') {
-      //     dataWorkSource.push(dt);
-      //   }
-      // }
-    })
+    });
   }
   dispatch(fetchedDataWorkSource(dataWorkSource));
   dispatch(fetchedAllJobRequestsPro(newAllProvidersDetails));
@@ -579,14 +572,6 @@ export const getAllWorkRequestClientFunc = async (clientId, fetchedDataWorkSourc
     await responseJson.data.map((dt, i) => {
       if (dt?.status !== 'Pending') {
         dataWorkSource.push(dt);
-
-        // if (dt.chat_status == '1') {
-        //   dataWorkSource.push(dt);
-        // } else if (dt.chat_status == '0') {
-        //   if (dt.status !== 'Pending') {
-        //     dataWorkSource.push(dt);
-        //   }
-        // }
       };
     })
   }

@@ -7,6 +7,8 @@ const BOOKING_REQUEST = Config.baseURL + 'jobrequest/addjobrequest';
 
 export const getAllBookings = async ({
   userId,
+  only = '',
+  limit,
   userType, /** TODO: Refactor userType */
   toggleIsLoading,
   bookingHistoryURL,
@@ -17,7 +19,7 @@ export const getAllBookings = async ({
     let bookingCompleteData = [];
     let bookingRejectData = [];
     const idToken = await firebaseAuth().currentUser.getIdToken();
-    const response = await fetch(bookingHistoryURL + userId + '/bookings', {
+    const response = await fetch(bookingHistoryURL + userId + '/bookings?only=' + only + '&limit=' + limit, {
       headers: {
         Authorization: 'Bearer ' + idToken
       }
@@ -117,7 +119,6 @@ export const requestForBooking = async ({
   onError,
   goBack,
 }) => {
-  console.log('user details info ', { userDetails })
   if (!userDetails.lang || !userDetails.lat) {
     onError(true, 'Please provide your address first');
     setTimeout(

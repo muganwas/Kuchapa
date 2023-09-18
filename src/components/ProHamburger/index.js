@@ -59,14 +59,11 @@ import {
   returnCoordDetails,
   checkNoficationsAvailability,
 } from '../../misc/helpers';
-import { getAllNotifications } from '../../controllers/notifications';
 import { deregisterOnlineStatusListener } from '../../controllers/chats';
 import { getAllBookings } from '../../controllers/bookings';
 import { checkForUserType } from '../../controllers/users';
 
 const socket = Config.socket;
-const NOTIFICATION_URL =
-  Config.baseURL + 'notification/get-employee-notification/';
 const BOOKING_HISTORY = Config.baseURL + 'jobrequest/employee_request/';
 const Android = Platform.OS === 'android';
 let notifications = [];
@@ -117,7 +114,6 @@ class ProHamburger extends React.Component {
     if (!currentUser) this.logout();
     const receiverId = providerDetails.providerId;
     messaging().setBackgroundMessageHandler(message => {
-      console.log('message received b', message);
       if (message && message.data) {
         const data = JSON.parse(message.data.data);
         if (data && data.title && data.body)
@@ -125,7 +121,6 @@ class ProHamburger extends React.Component {
       }
     });
     messaging().onMessage(async message => {
-      console.log('message received ', message);
       const data = JSON.parse(message.data.data);
       const {
         notificationsInfo,
@@ -390,20 +385,6 @@ class ProHamburger extends React.Component {
     senderId && deregisterOnlineStatusListener(senderId);
     geolocation.clearWatch();
   }
-
-  // getAllNotificationsProvider = () =>
-  //   getAllNotifications({
-  //     userId: this.props?.userInfo?.providerDetails?.providerId,
-  //     userType: 'Provider',
-  //     toggleIsLoading: () => { },
-  //     onSuccess: dataSource => {
-  //       this.props.updateNotifications(dataSource);
-  //     },
-  //     onError: () => {
-  //       /** Do something on error */
-  //     },
-  //     notificationsURL: NOTIFICATION_URL,
-  //   });
 
   getAllBookingsProvider = () =>
     getAllBookings({

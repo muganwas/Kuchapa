@@ -147,10 +147,10 @@ export const getAllWorkRequestClient = clientId => {
   };
 };
 
-export const getAllWorkRequestPro = providerId => {
+export const getAllWorkRequestPro = (providerId, only) => {
   return dispatch => {
     try {
-      getAllWorkRequestProFunc(providerId, fetchedDataWorkSource, fetchedAllJobRequestsPro, dispatch);
+      getAllWorkRequestProFunc(providerId, fetchedDataWorkSource, fetchedAllJobRequestsPro, dispatch, only);
     } catch (e) {
       dispatch(fetchDataWorkSourceError());
       dispatch(fetchAllJobRequestsProError());

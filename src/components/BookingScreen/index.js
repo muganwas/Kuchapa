@@ -68,11 +68,11 @@ class BookingScreen extends Component {
   }
 
   componentDidMount() {
-    this.getAllBookingsCustomer();
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
+    this.fetchCompletedRejectedJobs();
   }
 
   componentWillUnmount() {
@@ -109,10 +109,12 @@ class BookingScreen extends Component {
     });
   };
 
-  getAllBookingsCustomer = async () =>
+  getAllBookingsCustomer = async (only, limit) =>
     await getAllBookings({
       userId: this.props?.userInfo?.userDetails?.userId,
       userType: 'Customer',
+      only,
+      limit,
       toggleIsLoading: this.changeWaitingDialogVisibility,
       bookingHistoryURL: BOOKING_HISTORY,
       onSuccess: (bookingCompleteData, bookingRejectData) => {
@@ -121,6 +123,8 @@ class BookingScreen extends Component {
         this.setState({ isLoading: false });
       },
     });
+
+  fetchCompletedRejectedJobs = () => this.getAllBookingsCustomer('Completed,Rejected', 20);
 
   onPageSelected = event => {
     let currentPage = event.nativeEvent.position;
