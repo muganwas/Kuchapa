@@ -65,7 +65,7 @@ class ProChatScreen extends Component {
   constructor(props) {
     super();
     const {
-      messagesInfo: { dataChatSource, fetched },
+      messagesInfo: { dataChatSource, fetchedDBMessages },
       route: {
         params: { currentPos },
       },
@@ -85,8 +85,7 @@ class ProChatScreen extends Component {
       inputMessage: '',
       showButton: false,
       dataChatSource: dataChatSource[user_id] || [],
-      isLoading: !fetched,
-      //From ProDashboardScreen && ProMapDirection
+      isLoading: !fetchedDBMessages,
       pageTitle: route.params.pageTitle,
       receiverId: allJobRequestsProviders[currentPos].user_id,
       receiverName: allJobRequestsProviders[currentPos].user_details.username,
@@ -142,7 +141,7 @@ class ProChatScreen extends Component {
 
   reInit = async () => {
     const {
-      messagesInfo: { dataChatSource, fetched },
+      messagesInfo: { dataChatSource, fetchedDBMessages },
       route,
       jobsInfo: {
         allJobRequestsProviders,
@@ -164,7 +163,7 @@ class ProChatScreen extends Component {
       inputMessage: '',
       showButton: false,
       dataChatSource: dataChatSource[user_id] || [],
-      isLoading: !fetched,
+      isLoading: !fetchedDBMessages,
       //From ProDashboardScreen && ProMapDirection
       pageTitle: route.params.pageTitle,
       receiverId: allJobRequestsProviders[currentPos].user_id,
@@ -291,6 +290,10 @@ class ProChatScreen extends Component {
       Toast.show(message, duration);
     else Toast.show(message);
   };
+
+  loadMoreMessages = () => {
+    const { messagesInfo } = this.props;
+  }
 
   renderSeparator = () => {
     return <View style={{ height: 5, width: '100%' }} />;

@@ -303,7 +303,6 @@ class BookingScreen extends Component {
           ]}>
           <Hamburger text="Bookings" />
         </View>
-
         <View
           style={{
             width: screenWidth,

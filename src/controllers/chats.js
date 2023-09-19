@@ -451,7 +451,7 @@ export const sendMessageTask = async ({
 
 export const setOnlineStatusListener = ({ OnlineUsers, userId, setStatus }) => {
   const userRef = database().ref(`users/${userId}`);
-  userRef.once('value', data => {
+  userRef.on('value', data => {
     if (data) {
       const { status } = data.val();
       if (userId) {
@@ -466,18 +466,6 @@ export const setOnlineStatusListener = ({ OnlineUsers, userId, setStatus }) => {
         }
       }
     }
-  });
-  userRef.on('child_changed', result => {
-    if (result && result.key === 'status' && userId) {
-      const selectedStatus = result.val();
-      if (OnlineUsers[userId] && result.val() === '1') {
-        const onlineStatus = OnlineUsers[userId].status === '1';
-        setStatus(selectedStatus, onlineStatus);
-      } else {
-        const onlineStatus = result.val() === '1';
-        setStatus(selectedStatus, onlineStatus);
-      }
-    } else SimpleToast.show('Provider id unavailable');
   });
 };
 

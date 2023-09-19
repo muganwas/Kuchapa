@@ -296,7 +296,9 @@ class ProBookingScreen extends Component {
           style={[
             styles.header,
             { borderBottomWidth: 1, borderBottomColor: themeRed },
-          ]}><ProHamburger text="Bookings" /></View>
+          ]}>
+          <ProHamburger text="Bookings" />
+        </View>
         <View
           style={{
             width: screenWidth,
@@ -447,6 +449,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     color: 'black',
+  },
+  header: {
+    width: '100%',
+    height: 50,
+    flexDirection: 'row',
+    backgroundColor: white,
+    shadowColor: black,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.75,
+    shadowRadius: 5,
+    elevation: 5,
   },
   buttonGreen: {
     flex: 1,

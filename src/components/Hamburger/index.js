@@ -429,20 +429,6 @@ class Hamburger extends React.Component {
     senderId && deregisterOnlineStatusListener(senderId);
   }
 
-  // getAllNotificationsCustomer = () =>
-  //   getAllNotifications({
-  //     userId: this.props?.userInfo?.userDetails?.userId,
-  //     userType: 'Customer',
-  //     toggleIsLoading: () => { },
-  //     onSuccess: dataSource => {
-  //       this.props.updateNotifications(dataSource);
-  //     },
-  //     onError: () => {
-  //       /** Do something on error */
-  //     },
-  //     notificationsURL: NOTIFICATION_URL,
-  //   });
-
   getAllBookingsCustomer = () =>
     getAllBookings({
       userId: this.props?.userInfo?.userDetails?.userId,

@@ -32,9 +32,10 @@ import { white } from '../../Constants/colors';
 const screenWidth = Dimensions.get('window').width;
 const Android = Platform.OS === 'android';
 
-const ProMessagesComponent = ({
+const MessagesComponent = ({
   senderId,
   receiverId,
+  loadMoreMessages,
   messagesInfo,
   uploadingImage,
 }) => {
@@ -206,7 +207,6 @@ const ProMessagesComponent = ({
                     } = messageInfo;
                     const file_name = file && file.name;
                     const ext = file && file.ext;
-                    //console.log('message --', messageInfo);
                     if (String(sender) === String(receiverId)) {
                       return (
                         <View key={index} style={style.recievedContainer}>
@@ -398,8 +398,8 @@ const mapDispatchToProps = dispatch => {
   return {};
 };
 
-const ProMessagesComponentContainter = connect(
+const MessagesComponentContainter = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(ProMessagesComponent);
-export default ProMessagesComponentContainter;
+)(MessagesComponent);
+export default MessagesComponentContainter;

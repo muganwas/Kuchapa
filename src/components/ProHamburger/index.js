@@ -472,7 +472,6 @@ class ProHamburger extends React.Component {
             <Text style={styles.noticationsCount}>{notificationTotal}</Text>
           ) : null}
         </TouchableOpacity>
-
         <View style={styles.textView}>
           <Text style={styles.titleText}>{text}</Text>
         </View>
@@ -575,11 +574,13 @@ export default connect(
 
 const styles = StyleSheet.create({
   touchableHighlight: {
+    display: 'flex',
+    flexDirection: 'row',
     width: 50,
     height: 50,
     borderRadius: 50,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
     marginLeft: 15,
   },
   noticationsCount: {
@@ -601,15 +602,21 @@ const styles = StyleSheet.create({
   textView: {
     display: 'flex',
     flexDirection: 'column',
-    textAlignVertical: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: !Android ? 13 : 0,
   },
-  image: { width: 25, height: 25 },
+  image: {
+    width: 25,
+    height: 25,
+  },
   titleText: {
     fontSize: 20,
     fontWeight: 'bold',
     color: black,
     textAlignVertical: 'center',
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

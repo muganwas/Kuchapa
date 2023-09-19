@@ -99,9 +99,23 @@ class ProAcceptRejectJobScreen extends Component {
 
   async componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
-    const { fetchEmployeeMessages, userInfo: { providerDetails }, navigation } = this.props
-    await fetchEmployeeMessages(providerDetails.providerId);
+    const {
+      navigation,
+      generalInfo: { OnlineUsers },
+      jobsInfo: {
+        selectedJobRequest: { user_id },
+      }
+    } = this.props
     this._unsubscribe = navigation.addListener('focus', this.init);
+    setOnlineStatusListener({
+      OnlineUsers,
+      userId: user_id,
+      setStatus: (selectedStatus, online) =>
+        this.setState({
+          selectedStatus,
+          online,
+        }),
+    });
   }
 
   componentWillUnmount() {
@@ -120,6 +134,7 @@ class ProAcceptRejectJobScreen extends Component {
 
   init = async () => {
     const {
+      fetchEmployeeMessages,
       userInfo: { providerDetails },
       jobsInfo: {
         jobRequestsProviders,
@@ -132,6 +147,7 @@ class ProAcceptRejectJobScreen extends Component {
     if (!socket.connected) {
       socket.connect();
     }
+    await fetchEmployeeMessages(providerDetails.providerId);
     const currRequestPos = route.params.currentPos || 0;
     this.setState({
       senderId: providerDetails?.providerId,
@@ -169,15 +185,6 @@ class ProAcceptRejectJobScreen extends Component {
       liveChatStatus: OnlineUsers[user_id] ? OnlineUsers[user_id].status : '0',
       online: false,
     });
-    setOnlineStatusListener({
-      OnlineUsers,
-      userId: user_id,
-      setStatus: (selectedStatus, online) =>
-        this.setState({
-          selectedStatus,
-          online,
-        }),
-    });
   };
 
   componentDidUpdate() {
@@ -186,10 +193,16 @@ class ProAcceptRejectJobScreen extends Component {
       jobsInfo: {
         selectedJobRequest: { user_id },
       },
-      messagesInfo: { fetchedDBMessages }
+      messagesInfo: { dataChatSource, fetchedDBMessages }
     } = this.props;
     const { liveChatStatus, selectedStatus, isLoading } = this.state;
     if (isLoading && fetchedDBMessages) this.setState({ isLoading: false });
+    const localDataChatSource = this.state.dataChatSource;
+    if (
+      JSON.stringify(dataChatSource[user_id]) !==
+      JSON.stringify(localDataChatSource)
+    )
+      this.setState({ dataChatSource: dataChatSource[user_id] });
     if (
       OnlineUsers[user_id] &&
       liveChatStatus !== OnlineUsers[user_id].status
@@ -343,6 +356,10 @@ class ProAcceptRejectJobScreen extends Component {
       Toast.show(message, duration);
     else Toast.show(message);
   };
+
+  loadMoreMessages = () => {
+    const { messagesInfo } = this.props;
+  }
 
   changeWaitingDialogVisibility = bool => {
     this.setState(prevState => ({

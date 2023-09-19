@@ -61,7 +61,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
   constructor(props) {
     super();
     const {
-      messagesInfo: { dataChatSource, fetched },
+      messagesInfo: { dataChatSource, fetchedDBMessages },
       jobsInfo: {
         selectedJobRequest: { user_id },
       },
@@ -78,7 +78,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
       inputMessage: '',
       showButton: false,
       dataChatSource: dataChatSource[user_id] || [],
-      isLoading: !fetched,
+      isLoading: !fetchedDBMessages,
       isUploading: false,
       receiverId: route?.params?.receiverId,
       receiverName: route?.params?.receiverName,
@@ -139,7 +139,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
 
   reInit = async () => {
     const {
-      messagesInfo: { dataChatSource, fetched },
+      messagesInfo: { dataChatSource, fetchedDBMessages },
       jobsInfo: {
         selectedJobRequest: { user_id },
       },
@@ -159,7 +159,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
       inputMessage: '',
       showButton: false,
       dataChatSource: dataChatSource[user_id] || [],
-      isLoading: !fetched,
+      isLoading: !fetchedDBMessages,
       isUploading: false,
       imageAvailable: route?.params?.receiverImageAvailable,
       receiverId: route?.params?.receiverId,
@@ -290,6 +290,10 @@ class ProChatAfterBookingDetailsScreen extends Component {
     return <View style={{ height: 5, width: '100%' }} />;
   };
 
+  loadMoreMessages = () => {
+    const { messagesInfo } = this.props;
+  }
+
   render() {
     const {
       showButton,
@@ -332,6 +336,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
               <MessagesView
                 senderId={senderId}
                 receiverId={receiverId}
+                loadMoreMessages={this.loadMoreMessages}
                 uploadingImage={uploadingImage}
                 messagesInfo={this.props.messagesInfo}
               />

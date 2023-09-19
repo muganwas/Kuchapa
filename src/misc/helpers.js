@@ -1,7 +1,6 @@
 import { PermissionsAndroid, Platform } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import Polyline from '@mapbox/polyline';
-import database from '@react-native-firebase/database';
 import firebaseAuth from '@react-native-firebase/auth';
 import messaging from '@react-native-firebase/messaging';
 import { exitApp } from 'react-native-exit-app';
@@ -17,7 +16,7 @@ const phoneUtil = PhoneNumberUtil.getInstance();
 const emailRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
 const passwordRegex = /[^\w\d]*(([0-9]+.*[A-Z]+.*)|[A-Z]+.*([0-9]+.*))/;
 
-const FETCH_MESSAGES = Config.baseURL + 'chat/fetchChats';
+const FETCH_MESSAGES = Config.baseURL + 'chat/fetchAllChats';
 const PRO_GET_PROFILE = Config.baseURL + 'employee/';
 const USER_GET_PROFILE = Config.baseURL + 'users/';
 const PENDING_JOB_PROVIDER =
