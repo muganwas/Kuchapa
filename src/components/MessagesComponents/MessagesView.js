@@ -27,7 +27,8 @@ import TextIcon from '../../images/svg/txt.svg';
 import ZipIcon from '../../images/svg/zip.svg';
 import style from './styles';
 import SimpleToast from 'react-native-simple-toast';
-import { white } from '../../Constants/colors';
+import { white, darkGray } from '../../Constants/colors';
+import metrics from '../../Constants/metrics';
 
 const screenWidth = Dimensions.get('window').width;
 const Android = Platform.OS === 'android';
@@ -35,7 +36,7 @@ const Android = Platform.OS === 'android';
 const MessagesComponent = ({
   senderId,
   receiverId,
-  loadMoreMessages,
+  meta = {},
   messagesInfo,
   uploadingImage,
 }) => {
@@ -131,7 +132,7 @@ const MessagesComponent = ({
           }
           updateDownloading(newDownloading);
           SimpleToast.show(
-            'Something went wrong with the download, try again later.',
+            err.message,
             SimpleToast.SHORT,
           );
         });
@@ -195,14 +196,17 @@ const MessagesComponent = ({
             if (String(key) === String(receiverId)) {
               return (
                 <View key={key} style={style.messagesSubContainer}>
+                  {meta.pages > 1 ? <View style={{ display: 'flex', flex: 1, padding: metrics.spacing.small, alignItems: 'center' }}>
+                    <Text style={{ fontSize: metrics.font_size.small, color: darkGray, textAlign: 'center' }}>Pull down to load more</Text>
+                  </View> : <></>}
                   {usersMessages.map((messageInfo, index) => {
+                    const sender = messageInfo.senderId;
                     const {
-                      sender,
                       local,
                       type,
                       notUploaded,
                       file,
-                      message,
+                      textMessage: message,
                       time,
                     } = messageInfo;
                     const file_name = file && file.name;

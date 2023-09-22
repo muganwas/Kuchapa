@@ -8,6 +8,7 @@ import {
   Text,
   Dimensions,
   ActivityIndicator,
+  RefreshControl,
   BackHandler,
   ImageBackground,
   StatusBar,
@@ -15,6 +16,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from 'react-native';
+import { cloneDeep } from 'lodash';
 import {
   dbMessagesFetched,
   fetchClientMessages,
@@ -38,6 +40,7 @@ import {
   setOnlineStatusListener,
   deregisterOnlineStatusListener,
 } from '../../controllers/chats';
+import { fetchEmployeeUserChats } from '../../misc/helpers';
 import SimpleToast from 'react-native-simple-toast';
 
 const screenWidth = Dimensions.get('window').width;
@@ -76,7 +79,6 @@ class ChatAfterBookingDetailsScreen extends Component {
       senderName: userDetails.username,
       inputMessage: '',
       showButton: false,
-      dataChatSource: props.messagesInfo.dataChatSource[employee_id],
       messages,
       isLoading: !props.messagesInfo.fetched,
       isUpLoading: false,
@@ -96,6 +98,7 @@ class ChatAfterBookingDetailsScreen extends Component {
       liveChatStatus: '0',
       uploadingImage: false,
       online: false,
+      metaData: {}
     };
     this.leftButtonActon = null;
     this.rightButtonAction = null;
@@ -110,12 +113,11 @@ class ChatAfterBookingDetailsScreen extends Component {
       navigation,
       fetchedNotifications
     } = this.props;
-    console.log('from info after bking screen')
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    this._unsubscribe = navigation.addListener('focus', this.reInit);
+    this._unsubscribe = navigation.addListener('focus', this.init);
     setOnlineStatusListener({
       OnlineUsers,
       userId: employee_id,
@@ -142,27 +144,21 @@ class ChatAfterBookingDetailsScreen extends Component {
     this._unsubscribe();
   }
 
-  reInit = async () => {
+  init = async (refetchMessages = true) => {
     const {
       userInfo: { userDetails },
-      jobsInfo: {
-        selectedJobRequest: { employee_id },
-      },
-      fetchClientMessages,
-      messagesInfo: { dataChatSource, fetched },
+      messagesInfo: { fetched },
       route
     } = this.props;
     if (!socket.connected) {
       socket.connect();
     }
-    await fetchClientMessages(userDetails.userId);
     this.setState({
       senderId: userDetails.userId,
       senderImage: userDetails.image,
       senderName: userDetails.username,
       inputMessage: '',
       showButton: false,
-      dataChatSource: dataChatSource[employee_id],
       isLoading: !fetched,
       isUpLoading: false,
       receiverId: route.params.providerId,
@@ -178,25 +174,55 @@ class ChatAfterBookingDetailsScreen extends Component {
       isJobAccepted: route.params.isJobAccepted,
       provider_FCM_id: route.params.fcmId,
     });
+    refetchMessages && this.fetchUserChatsLocal(1, 10);
   };
 
-  componentDidUpdate() {
+  fetchUserChatsLocal = async (page, limit) => {
     const {
-      messagesInfo: { dataChatSource, fetchedDBMessages },
+      dbMessagesFetched,
+      userInfo: { userDetails },
+      jobsInfo: {
+        selectedJobRequest: { employee_id },
+      },
+      messagesInfo,
+    } = this.props;
+    await fetchEmployeeUserChats({ primary: userDetails.userId, page, secondary: employee_id, limit }, (chatData, metaData) => {
+      const newMessages = cloneDeep(messagesInfo.messages);
+      newMessages[employee_id] = chatData;
+      this.setState({ metaData, isLoading: false });
+      dbMessagesFetched(newMessages);
+    });
+  }
+
+  updateUserChatsLocal = async (page, limit) => {
+    const {
+      dbMessagesFetched,
+      userInfo: { userDetails },
+      jobsInfo: {
+        selectedJobRequest: { employee_id },
+      },
+      messagesInfo,
+    } = this.props;
+    await fetchEmployeeUserChats({ primary: userDetails.userId, secondary: employee_id, page, limit }, (chatData, metaData) => {
+      const newMessages = cloneDeep(messagesInfo.messages);
+      newMessages[employee_id] = [...chatData, ...newMessages[employee_id]];
+      this.setState({ metaData, isLoading: false });
+      dbMessagesFetched(newMessages);
+    });
+  }
+
+  async componentDidUpdate() {
+    const {
+      messagesInfo: { fetchedDBMessages },
       jobsInfo: {
         selectedJobRequest: { employee_id },
       },
       generalInfo: { OnlineUsers },
     } = this.props;
-    const { liveChatStatus, selectedStatus, isLoading } = this.state;
+    const { liveChatStatus, selectedStatus, isLoading, receiverId } = this.state;
     const providerId = employee_id;
-    const localDataChatSource = this.state.dataChatSource;
     if (fetchedDBMessages && isLoading) this.setState({ isLoading: false });
-    if (
-      JSON.stringify(dataChatSource[employee_id]) !==
-      JSON.stringify(localDataChatSource)
-    )
-      this.setState({ dataChatSource: dataChatSource[employee_id] });
+    if (!isLoading && !receiverId) await this.init(false);
     if (
       OnlineUsers[providerId] &&
       liveChatStatus !== OnlineUsers[providerId].status
@@ -289,6 +315,14 @@ class ChatAfterBookingDetailsScreen extends Component {
         }),
     });
 
+  loadMoreMessages = async () => {
+    const { metaData: { page, pages, limit } } = this.state;
+    if (pages > 1) {
+      this.setState({ isLoading: true });
+      await this.updateUserChatsLocal((Number(page)) + 1, limit);
+    }
+  }
+
   showToast = (message, duration) => {
     if (
       typeof duration === 'number' ||
@@ -304,7 +338,7 @@ class ChatAfterBookingDetailsScreen extends Component {
   };
 
   render() {
-    console.log('after booking');
+    const { messagesInfo } = this.props;
     const {
       showButton,
       receiverImage,
@@ -315,6 +349,7 @@ class ChatAfterBookingDetailsScreen extends Component {
       online,
       isLoading,
       uploadingImage,
+      metaData
     } = this.state;
     return (
       <KeyboardAvoidingView
@@ -333,6 +368,11 @@ class ChatAfterBookingDetailsScreen extends Component {
           />
           <ScrollView
             ref={ref => (this.scrollView = ref)}
+            refreshControl={
+              <RefreshControl
+                refreshing={isLoading}
+                onRefresh={this.loadMoreMessages}
+              />}
             contentContainerStyle={{
               justifyContent: 'center',
               alignItems: 'center',
@@ -346,19 +386,11 @@ class ChatAfterBookingDetailsScreen extends Component {
             <MessagesView
               receiverId={receiverId}
               senderId={senderId}
+              meta={metaData}
               uploadingImage={uploadingImage}
-              messagesInfo={this.props.messagesInfo}
+              messagesInfo={messagesInfo}
             />
           </ScrollView>
-          {isLoading && (
-            <View style={styles.loaderStyle}>
-              <ActivityIndicator
-                style={{ height: 80 }}
-                color="red"
-                size="large"
-              />
-            </View>
-          )}
           <View style={styles.footerContainer}>
             <MessagesFooter
               sendMessageTask={this.sendMessageTask}

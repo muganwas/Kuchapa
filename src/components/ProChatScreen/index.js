@@ -6,13 +6,14 @@ import {
   ScrollView,
   Dimensions,
   BackHandler,
-  ActivityIndicator,
   ImageBackground,
+  RefreshControl,
   StatusBar,
   Platform,
   KeyboardAvoidingView,
 } from 'react-native';
 import Toast from 'react-native-simple-toast';
+import { cloneDeep } from 'lodash';
 import {
   dbMessagesFetched,
   fetchEmployeeMessages,
@@ -40,6 +41,7 @@ import {
   MessagesHeader,
   MessagesFooter,
 } from '../ProMessagesComponents';
+import { fetchEmployeeUserChats } from '../../misc/helpers';
 
 const screenWidth = Dimensions.get('window').width;
 const socket = Config.socket;
@@ -65,7 +67,7 @@ class ProChatScreen extends Component {
   constructor(props) {
     super();
     const {
-      messagesInfo: { dataChatSource, fetchedDBMessages },
+      messagesInfo: { fetchedDBMessages },
       route: {
         params: { currentPos },
       },
@@ -84,7 +86,6 @@ class ProChatScreen extends Component {
       senderImage: providerDetails.image,
       inputMessage: '',
       showButton: false,
-      dataChatSource: dataChatSource[user_id] || [],
       isLoading: !fetchedDBMessages,
       pageTitle: route.params.pageTitle,
       receiverId: allJobRequestsProviders[currentPos].user_id,
@@ -98,7 +99,9 @@ class ProChatScreen extends Component {
       selectedStatus: '0',
       liveChatStatus: OnlineUsers[user_id] ? OnlineUsers[user_id].status : '0',
       online: false,
+      filteredMessages: undefined,
       uploadingImage: false,
+      metaData: {}
     };
   }
 
@@ -113,7 +116,7 @@ class ProChatScreen extends Component {
         selectedJobRequest: { user_id },
       },
     } = this.props;
-    this._unsubscribe = navigation.addListener('focus', this.reInit);
+    this._unsubscribe = navigation.addListener('focus', this.init);
     setOnlineStatusListener({
       OnlineUsers,
       userId: user_id,
@@ -139,21 +142,18 @@ class ProChatScreen extends Component {
     deregisterOnlineStatusListener(user_id);
   }
 
-  reInit = async () => {
+  init = async (refetchMessages = true) => {
     const {
-      messagesInfo: { dataChatSource, fetchedDBMessages },
+      messagesInfo: { fetchedDBMessages },
       route,
       jobsInfo: {
         allJobRequestsProviders,
-        selectedJobRequest: { user_id },
       },
       userInfo: { providerDetails },
-      fetchEmployeeMessages,
     } = this.props;
     if (!socket.connected) {
       socket.connect();
     }
-    await fetchEmployeeMessages(providerDetails.providerId);
     const currentPos = route?.params?.currentPos;
     this.setState({
       showButton: false,
@@ -162,7 +162,6 @@ class ProChatScreen extends Component {
       senderImage: providerDetails.image,
       inputMessage: '',
       showButton: false,
-      dataChatSource: dataChatSource[user_id] || [],
       isLoading: !fetchedDBMessages,
       //From ProDashboardScreen && ProMapDirection
       pageTitle: route.params.pageTitle,
@@ -175,24 +174,20 @@ class ProChatScreen extends Component {
       userImageAvailable: allJobRequestsProviders[currentPos].imageAvailable,
       customer_FCM_id: allJobRequestsProviders[currentPos].user_details.fcm_id,
     });
+    refetchMessages && await this.fetchUserChatsLocal(1, 10);
   };
 
-  componentDidUpdate() {
+  async componentDidUpdate() {
     const {
-      messagesInfo: { dataChatSource, fetchedDBMessages },
+      messagesInfo: { fetchedDBMessages },
       jobsInfo: {
         selectedJobRequest: { user_id },
       },
       generalInfo: { OnlineUsers },
     } = this.props;
-    const { liveChatStatus, selectedStatus, isLoading } = this.state;
-    const localDataChatSource = this.state.dataChatSource;
+    const { liveChatStatus, selectedStatus, isLoading, receiverId } = this.state;
     if (fetchedDBMessages && isLoading) this.setState({ isLoading: false });
-    if (
-      JSON.stringify(dataChatSource[user_id]) !==
-      JSON.stringify(localDataChatSource)
-    )
-      this.setState({ dataChatSource: dataChatSource[user_id] });
+    if (!isLoading && !receiverId) await this.init(false);
     if (
       OnlineUsers[user_id] &&
       liveChatStatus !== OnlineUsers[user_id].status
@@ -202,6 +197,40 @@ class ProChatScreen extends Component {
         liveChatStatus: OnlineUsers[user_id].status,
       });
     }
+  }
+
+  fetchUserChatsLocal = async (page, limit) => {
+    const {
+      dbMessagesFetched,
+      userInfo: { providerDetails },
+      jobsInfo: {
+        selectedJobRequest: { user_id },
+      },
+      messagesInfo,
+    } = this.props;
+    await fetchEmployeeUserChats({ primary: providerDetails.providerId, page, secondary: user_id, limit }, (chatData, metaData) => {
+      const newMessages = cloneDeep(messagesInfo.messages);
+      newMessages[user_id] = chatData;
+      this.setState({ metaData, isLoading: false });
+      dbMessagesFetched(newMessages);
+    });
+  }
+
+  updateUserChatsLocal = async (page, limit) => {
+    const {
+      dbMessagesFetched,
+      userInfo: { providerDetails },
+      jobsInfo: {
+        selectedJobRequest: { user_id },
+      },
+      messagesInfo,
+    } = this.props;
+    await fetchEmployeeUserChats({ primary: providerDetails.providerId, secondary: user_id, page, limit }, (chatData, metaData) => {
+      const newMessages = cloneDeep(messagesInfo.messages);
+      newMessages[user_id] = [...chatData, ...newMessages[user_id]];
+      this.setState({ metaData, isLoading: false });
+      dbMessagesFetched(newMessages);
+    });
   }
 
   handleBackButtonClick = () => {
@@ -307,9 +336,11 @@ class ProChatScreen extends Component {
       receiverId,
       receiverName,
       uploadingImage,
+      filteredMessages,
       receiverImage,
       isLoading,
       userImageAvailable,
+      metaData,
     } = this.state;
     return (
       <KeyboardAvoidingView
@@ -333,6 +364,11 @@ class ProChatScreen extends Component {
               alignItems: 'center',
               alwaysBounceVertical: true,
             }}
+            refreshControl={
+              <RefreshControl
+                refreshing={isLoading}
+                onRefresh={this.loadMoreMessages}
+              />}
             onContentSizeChange={(contentWidth, contentHeight) => {
               this.scrollView.scrollToEnd({ animated: true });
             }}
@@ -342,20 +378,13 @@ class ProChatScreen extends Component {
               <MessagesView
                 senderId={senderId}
                 receiverId={receiverId}
+                filteredMessages={filteredMessages}
+                meta={metaData}
                 uploadingImage={uploadingImage}
                 messagesInfo={this.props.messagesInfo}
               />
             </View>
           </ScrollView>
-          {isLoading && (
-            <View style={styles.loaderStyle}>
-              <ActivityIndicator
-                style={{ height: 80 }}
-                color="red"
-                size="large"
-              />
-            </View>
-          )}
           <View style={styles.footerContainer}>
             <MessagesFooter
               inputMesage={this.state.inputMessage}

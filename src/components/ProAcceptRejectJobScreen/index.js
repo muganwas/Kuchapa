@@ -10,9 +10,9 @@ import {
   Dimensions,
   BackHandler,
   ImageBackground,
+  RefreshControl,
   StatusBar,
   Platform,
-  Modal,
   KeyboardAvoidingView,
 } from 'react-native';
 import { withNavigation } from '@react-navigation/compat';
@@ -21,6 +21,7 @@ import {
   dbMessagesFetched,
   fetchEmployeeMessages,
 } from '../../Redux/Actions/messageActions';
+import { cloneDeep } from 'lodash';
 import {
   startFetchingNotification,
   notificationsFetched,
@@ -39,6 +40,7 @@ import {
   MessagesHeader,
   MessagesFooter,
 } from '../ProMessagesComponents';
+import { fetchEmployeeUserChats } from '../../misc/helpers';
 import {
   attachFile,
   sendMessageTask,
@@ -46,7 +48,6 @@ import {
   deregisterOnlineStatusListener,
 } from '../../controllers/chats';
 import { acceptJobTask, rejectJobTask } from '../../controllers/jobs';
-import WaitingDialog from '../WaitingDialog';
 import Config from '../Config';
 import { font_size } from '../../Constants/metrics';
 import {
@@ -90,14 +91,16 @@ class ProAcceptRejectJobScreen extends Component {
       imageAvailable: false,
       isLoading: true,
       receiverId: '',
+      filteredMessages: undefined,
       receiverFcmId: '',
       senderId: '',
       showButton: false,
       uploadingImage: false,
+      metaData: {}
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     const {
       navigation,
@@ -105,7 +108,7 @@ class ProAcceptRejectJobScreen extends Component {
       jobsInfo: {
         selectedJobRequest: { user_id },
       }
-    } = this.props
+    } = this.props;
     this._unsubscribe = navigation.addListener('focus', this.init);
     setOnlineStatusListener({
       OnlineUsers,
@@ -132,22 +135,54 @@ class ProAcceptRejectJobScreen extends Component {
     this._unsubscribe();
   }
 
-  init = async () => {
+  fetchUserChatsLocal = async (page, limit) => {
     const {
-      fetchEmployeeMessages,
+      dbMessagesFetched,
+      userInfo: { providerDetails },
+      jobsInfo: {
+        selectedJobRequest: { user_id },
+      },
+      messagesInfo,
+    } = this.props;
+    await fetchEmployeeUserChats({ primary: providerDetails.providerId, page, secondary: user_id, limit }, (chatData, metaData) => {
+      const newMessages = cloneDeep(messagesInfo.messages);
+      newMessages[user_id] = chatData;
+      this.setState({ metaData, isLoading: false });
+      dbMessagesFetched(newMessages);
+    });
+  }
+
+  updateUserChatsLocal = async (page, limit) => {
+    const {
+      dbMessagesFetched,
+      userInfo: { providerDetails },
+      jobsInfo: {
+        selectedJobRequest: { user_id },
+      },
+      messagesInfo,
+    } = this.props;
+    await fetchEmployeeUserChats({ primary: providerDetails.providerId, secondary: user_id, page, limit }, (chatData, metaData) => {
+      const newMessages = cloneDeep(messagesInfo.messages);
+      newMessages[user_id] = [...chatData, ...newMessages[user_id]];
+      this.setState({ metaData, isLoading: false });
+      dbMessagesFetched(newMessages);
+    });
+  }
+
+  init = async (refetchMessages = true) => {
+    const {
       userInfo: { providerDetails },
       jobsInfo: {
         jobRequestsProviders,
         selectedJobRequest: { user_id },
       },
-      messagesInfo: { dataChatSource, fetchedDBMessages },
+      messagesInfo: { fetchedDBMessages },
       generalInfo: { OnlineUsers },
       route
     } = this.props;
     if (!socket.connected) {
       socket.connect();
     }
-    await fetchEmployeeMessages(providerDetails.providerId);
     const currRequestPos = route.params.currentPos || 0;
     this.setState({
       senderId: providerDetails?.providerId,
@@ -158,7 +193,6 @@ class ProAcceptRejectJobScreen extends Component {
       showButton: false,
       isAcceptJob: jobRequestsProviders[currRequestPos]?.status === 'Accepted',
       isRejectJob: false,
-      dataChatSource: dataChatSource[user_id] || [],
       isLoading: !fetchedDBMessages,
       isErrorToast: false,
       receiverId: jobRequestsProviders[currRequestPos]?.user_id,
@@ -185,24 +219,22 @@ class ProAcceptRejectJobScreen extends Component {
       liveChatStatus: OnlineUsers[user_id] ? OnlineUsers[user_id].status : '0',
       online: false,
     });
+    refetchMessages && await this.fetchUserChatsLocal(1, 10);
   };
 
-  componentDidUpdate() {
+  async componentDidUpdate() {
     const {
       generalInfo: { OnlineUsers },
       jobsInfo: {
         selectedJobRequest: { user_id },
       },
-      messagesInfo: { dataChatSource, fetchedDBMessages }
+      messagesInfo: { fetchedDBMessages }
     } = this.props;
-    const { liveChatStatus, selectedStatus, isLoading } = this.state;
-    if (isLoading && fetchedDBMessages) this.setState({ isLoading: false });
-    const localDataChatSource = this.state.dataChatSource;
-    if (
-      JSON.stringify(dataChatSource[user_id]) !==
-      JSON.stringify(localDataChatSource)
-    )
-      this.setState({ dataChatSource: dataChatSource[user_id] });
+    const { liveChatStatus, selectedStatus, isLoading, receiverId } = this.state;
+    if (isLoading && fetchedDBMessages)
+      this.setState({ isLoading: false });
+
+    if (!isLoading && !receiverId) await this.init(false);
     if (
       OnlineUsers[user_id] &&
       liveChatStatus !== OnlineUsers[user_id].status
@@ -357,8 +389,12 @@ class ProAcceptRejectJobScreen extends Component {
     else Toast.show(message);
   };
 
-  loadMoreMessages = () => {
-    const { messagesInfo } = this.props;
+  loadMoreMessages = async () => {
+    const { metaData: { page, pages, limit } } = this.state;
+    if (pages > 1) {
+      this.setState({ isLoading: true });
+      await this.updateUserChatsLocal((Number(page)) + 1, limit);
+    }
   }
 
   changeWaitingDialogVisibility = bool => {
@@ -376,6 +412,9 @@ class ProAcceptRejectJobScreen extends Component {
       receiverImage,
       receiverName,
       uploadingImage,
+      filteredMessages,
+      isLoading,
+      metaData
     } = this.state;
     const {
       messagesInfo,
@@ -404,6 +443,11 @@ class ProAcceptRejectJobScreen extends Component {
               alignItems: 'center',
               alwaysBounceVertical: true,
             }}
+            refreshControl={
+              <RefreshControl
+                refreshing={isLoading}
+                onRefresh={this.loadMoreMessages}
+              />}
             onContentSizeChange={(contentWidth, contentHeight) => {
               this.scrollView.scrollToEnd({ animated: true });
             }}
@@ -412,7 +456,9 @@ class ProAcceptRejectJobScreen extends Component {
             <View style={{ flexDirection: 'column', marginBottom: 45 }}>
               <MessagesView
                 senderId={senderId}
+                filteredMessages={filteredMessages}
                 receiverId={receiverId}
+                meta={metaData}
                 uploadingImage={uploadingImage}
                 messagesInfo={messagesInfo}
               />
@@ -523,15 +569,6 @@ class ProAcceptRejectJobScreen extends Component {
             )}
           </View>
         </ImageBackground>
-        <Modal
-          transparent={true}
-          visible={this.state.isLoading}
-          animationType="fade"
-          onRequestClose={() => this.changeWaitingDialogVisibility(false)}>
-          <WaitingDialog
-            changeWaitingDialogVisibility={this.changeWaitingDialogVisibility}
-          />
-        </Modal>
       </KeyboardAvoidingView>
     );
   }

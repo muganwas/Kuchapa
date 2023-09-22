@@ -315,10 +315,10 @@ export const attachFile = async ({
       };
       if (newMessages[receiverId])
         newMessages[receiverId].push({
-          message: urlText,
+          textMessage: urlText,
           file: altMessage,
-          recipient: receiverId,
-          sender: senderId,
+          receiverId,
+          senderId,
           local: true,
           notUploaded: true,
           time,
@@ -328,10 +328,10 @@ export const attachFile = async ({
       else {
         newMessages[receiverId] = [];
         newMessages[receiverId].push({
-          message: urlText,
+          textMessage: urlText,
           file: altMessage,
-          recipient: receiverId,
-          sender: senderId,
+          receiverId,
+          senderId,
           notUploaded: true,
           local: true,
           type: 'image',
@@ -340,7 +340,6 @@ export const attachFile = async ({
         });
       }
       dbMessagesFetched(newMessages);
-      //SetTimeout(() => this.setState({uploadingImage: false}), 500);
       const newUrlText = await uploadAttachment(response);
       altMessage.uri = newUrlText;
       if (newUrlText) {
@@ -412,24 +411,10 @@ export const sendMessageTask = async ({
     };
     if (type === 'text') {
       if (newMessages[receiverId])
-        newMessages[receiverId].push({
-          message: inputMessage,
-          recipient: receiverId,
-          sender: senderId,
-          type,
-          time,
-          date,
-        });
+        newMessages[receiverId].push(messageObj);
       else {
         newMessages[receiverId] = [];
-        newMessages[receiverId].push({
-          message: inputMessage,
-          recipient: receiverId,
-          sender: senderId,
-          type,
-          time,
-          date,
-        });
+        newMessages[receiverId].push(messageObj);
       }
     } else {
       newMessages[receiverId][

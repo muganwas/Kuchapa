@@ -7,12 +7,13 @@ import {
   Dimensions,
   BackHandler,
   ImageBackground,
+  RefreshControl,
   StatusBar,
   Platform,
   KeyboardAvoidingView,
-  ActivityIndicator,
 } from 'react-native';
 import Toast from 'react-native-simple-toast';
+import { cloneDeep } from 'lodash';
 import {
   dbMessagesFetched,
   fetchEmployeeMessages,
@@ -35,6 +36,7 @@ import {
   MessagesHeader,
   MessagesFooter,
 } from '../ProMessagesComponents';
+import { fetchEmployeeUserChats } from '../../misc/helpers';
 
 const screenWidth = Dimensions.get('window').width;
 const socket = Config.socket;
@@ -61,7 +63,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
   constructor(props) {
     super();
     const {
-      messagesInfo: { dataChatSource, fetchedDBMessages },
+      messagesInfo: { fetchedDBMessages },
       jobsInfo: {
         selectedJobRequest: { user_id },
       },
@@ -77,13 +79,13 @@ class ProChatAfterBookingDetailsScreen extends Component {
       senderImage: providerDetails.image,
       inputMessage: '',
       showButton: false,
-      dataChatSource: dataChatSource[user_id] || [],
       isLoading: !fetchedDBMessages,
       isUploading: false,
       receiverId: route?.params?.receiverId,
       receiverName: route?.params?.receiverName,
       receiverImage: route?.params?.receiverImage,
       imageAvailable: route?.params?.receiverImageAvailable,
+      filteredMessages: undefined,
       orderId: route?.params?.orderId,
       serviceName: route?.params?.serviceName,
       pageTitle: route?.params?.pageTitle,
@@ -92,6 +94,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
       liveChatStatus: OnlineUsers[user_id] ? OnlineUsers[user_id].status : '0',
       online: false,
       uploadingImage: false,
+      metaData: {}
     };
     this.leftButtonActon = null;
     this.rightButtonAction = null;
@@ -112,7 +115,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
     if (!socket.connected) {
       socket.connect();
     }
-    this._unsubscribe = navigation.addListener('focus', this.reInit);
+    this._unsubscribe = navigation.addListener('focus', this.init);
     setOnlineStatusListener({
       OnlineUsers,
       userId: user_id,
@@ -137,20 +140,15 @@ class ProChatAfterBookingDetailsScreen extends Component {
     this._unsubscribe();
   }
 
-  reInit = async () => {
+  init = async (refetchMessages) => {
     const {
-      messagesInfo: { dataChatSource, fetchedDBMessages },
-      jobsInfo: {
-        selectedJobRequest: { user_id },
-      },
+      messagesInfo: { fetchedDBMessages },
       route,
       userInfo: { providerDetails },
-      fetchEmployeeMessages,
     } = this.props;
     if (!socket.connected) {
       socket.connect();
     }
-    await fetchEmployeeMessages(providerDetails.providerId);
     this.setState({
       showButton: false,
       senderId: providerDetails.providerId,
@@ -158,7 +156,6 @@ class ProChatAfterBookingDetailsScreen extends Component {
       senderImage: providerDetails.image,
       inputMessage: '',
       showButton: false,
-      dataChatSource: dataChatSource[user_id] || [],
       isLoading: !fetchedDBMessages,
       isUploading: false,
       imageAvailable: route?.params?.receiverImageAvailable,
@@ -170,24 +167,18 @@ class ProChatAfterBookingDetailsScreen extends Component {
       pageTitle: route?.params?.pageTitle,
       client_FCM_id: route?.params?.fcm_id,
     });
+    refetchMessages && await this.fetchUserChatsLocal(1, 10);
   };
 
-  componentDidUpdate() {
+  async componentDidUpdate() {
     const {
-      messagesInfo: { dataChatSource, fetchedDBMessages },
       jobsInfo: {
         selectedJobRequest: { user_id },
       },
       generalInfo: { OnlineUsers },
     } = this.props;
-    const { liveChatStatus, selectedStatus, isLoading } = this.state;
-    const localDataChatSource = this.state.dataChatSource;
-    if (fetchedDBMessages && isLoading) this.setState({ isLoading: false });
-    if (
-      JSON.stringify(dataChatSource[user_id]) !==
-      JSON.stringify(localDataChatSource)
-    )
-      this.setState({ dataChatSource: dataChatSource[user_id] });
+    const { liveChatStatus, selectedStatus, isLoading, receiverId } = this.state;
+    if (!isLoading && !receiverId) await this.init(false);
     if (
       OnlineUsers[user_id] &&
       liveChatStatus !== OnlineUsers[user_id].status
@@ -197,6 +188,40 @@ class ProChatAfterBookingDetailsScreen extends Component {
         liveChatStatus: OnlineUsers[user_id].status,
       });
     }
+  }
+
+  fetchUserChatsLocal = async (page, limit) => {
+    const {
+      dbMessagesFetched,
+      userInfo: { providerDetails },
+      jobsInfo: {
+        selectedJobRequest: { user_id },
+      },
+      messagesInfo,
+    } = this.props;
+    await fetchEmployeeUserChats({ primary: providerDetails.providerId, page, secondary: user_id, limit }, (chatData, metaData) => {
+      const newMessages = cloneDeep(messagesInfo.messages);
+      newMessages[user_id] = chatData;
+      this.setState({ metaData, isLoading: false });
+      dbMessagesFetched(newMessages);
+    });
+  }
+
+  updateUserChatsLocal = async (page, limit) => {
+    const {
+      dbMessagesFetched,
+      userInfo: { providerDetails },
+      jobsInfo: {
+        selectedJobRequest: { user_id },
+      },
+      messagesInfo,
+    } = this.props;
+    await fetchEmployeeUserChats({ primary: providerDetails.providerId, secondary: user_id, page, limit }, (chatData, metaData) => {
+      const newMessages = cloneDeep(messagesInfo.messages);
+      newMessages[user_id] = [...chatData, ...newMessages[user_id]];
+      this.setState({ metaData, isLoading: false });
+      dbMessagesFetched(newMessages);
+    });
   }
 
   handleBackButtonClick = () => {
@@ -290,8 +315,12 @@ class ProChatAfterBookingDetailsScreen extends Component {
     return <View style={{ height: 5, width: '100%' }} />;
   };
 
-  loadMoreMessages = () => {
-    const { messagesInfo } = this.props;
+  loadMoreMessages = async () => {
+    const { metaData: { page, pages, limit } } = this.state;
+    if (pages > 1) {
+      this.setState({ isLoading: true });
+      await this.updateUserChatsLocal((Number(page)) + 1, limit);
+    }
   }
 
   render() {
@@ -304,6 +333,10 @@ class ProChatAfterBookingDetailsScreen extends Component {
       receiverImage,
       receiverName,
       uploadingImage,
+      filteredMessages,
+      isLoading,
+      metaData,
+      messagesInfo
     } = this.state;
     return (
       <KeyboardAvoidingView
@@ -327,6 +360,11 @@ class ProChatAfterBookingDetailsScreen extends Component {
               alignItems: 'center',
               alwaysBounceVertical: true,
             }}
+            refreshControl={
+              <RefreshControl
+                refreshing={isLoading}
+                onRefresh={this.loadMoreMessages}
+              />}
             onContentSizeChange={(contentWidth, contentHeight) => {
               this.scrollView.scrollToEnd({ animated: true });
             }}
@@ -336,23 +374,14 @@ class ProChatAfterBookingDetailsScreen extends Component {
               <MessagesView
                 senderId={senderId}
                 receiverId={receiverId}
-                loadMoreMessages={this.loadMoreMessages}
+                filteredMessages={filteredMessages}
+                meta={metaData}
                 uploadingImage={uploadingImage}
-                messagesInfo={this.props.messagesInfo}
+                messagesInfo={messagesInfo}
               />
             </View>
           </ScrollView>
-          {this.state.isLoading && (
-            <View style={styles.loaderStyle}>
-              <ActivityIndicator
-                style={{ height: 80 }}
-                color="red"
-                size="large"
-              />
-            </View>
-          )}
           <View style={styles.footerContainer}>
-            {/*<View style={{ width: screenWidth, height: 1, backgroundColor: lightGray }}></View>*/}
             <MessagesFooter
               inputMesage={this.state.inputMessage}
               textChangeAction={inputMesage => this.showHideButton(inputMesage)}

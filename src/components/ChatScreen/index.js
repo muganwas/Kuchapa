@@ -24,8 +24,10 @@ import {
   Platform,
   KeyboardAvoidingView,
   ScrollView,
+  RefreshControl
 } from 'react-native';
 import Toast from 'react-native-simple-toast';
+import { cloneDeep } from 'lodash';
 import DialogComponent from '../DialogComponent';
 import {
   dbMessagesFetched,
@@ -44,6 +46,7 @@ import {
   MessagesHeader,
   MessagesView,
 } from '../MessagesComponents';
+import { fetchEmployeeUserChats } from '../../misc/helpers';
 import { font_size } from '../../Constants/metrics';
 import {
   colorBg,
@@ -87,6 +90,7 @@ class ChatScreen extends Component {
       imageAvailable: false,
       dialogRightText: 'Retry',
       uploadingImage: false,
+      metaData: {}
     };
     this.leftButtonActon = null;
     this.rightButtonAction = null;
@@ -97,7 +101,6 @@ class ChatScreen extends Component {
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
-    console.log('from info chat screen')
     const {
       fetchedNotifications,
       navigation,
@@ -107,7 +110,7 @@ class ChatScreen extends Component {
         selectedJobRequest: { employee_id },
       },
     } = this.props;
-    this._unsubscribe = navigation.addListener('focus', this.reInit);
+    this._unsubscribe = navigation.addListener('focus', this.init);
     fetchedNotifications({ type: 'messages', value: 0 });
     const providerId = route.params.providerId || employee_id;
     setOnlineStatusListener({
@@ -135,22 +138,20 @@ class ChatScreen extends Component {
     this._unsubscribe();
   }
 
-  reInit = async () => {
+  init = async (refetchMessages = true) => {
     const {
       userInfo: { userDetails },
       jobsInfo: {
         jobRequests,
         selectedJobRequest: { employee_id },
       },
-      messagesInfo: { dataChatSource, fetchedDBMessages },
+      messagesInfo: { fetchedDBMessages },
       generalInfo: { OnlineUsers },
-      fetchClientMessages,
       route,
     } = this.props;
     if (!socket.connected) {
       socket.connect();
     }
-    await fetchClientMessages(userDetails.userId);
     const currRequestPos = route.params.currentPosition || 0;
     const providerId = route.params.providerId || employee_id;
     this.setState({
@@ -159,7 +160,6 @@ class ChatScreen extends Component {
       senderName: userDetails.username,
       inputMessage: '',
       showButton: false,
-      dataChatSource: dataChatSource[employee_id] || [],
       isLoading: !fetchedDBMessages,
       isUploading: false,
       isJobAccepted:
@@ -187,7 +187,6 @@ class ChatScreen extends Component {
       provider_FCM_id:
         jobRequests[currRequestPos] &&
         jobRequests[currRequestPos].employee_details.fcm_id,
-      dataChatSourceSynced: false,
       liveChatStatus: OnlineUsers[providerId]
         ? OnlineUsers[providerId].status
         : '0',
@@ -202,13 +201,13 @@ class ChatScreen extends Component {
       dialogLeftText: 'Cancel',
       dialogRightText: 'Retry',
     });
+    refetchMessages && this.fetchUserChatsLocal(1, 10);
   };
 
-  componentDidUpdate() {
+  async componentDidUpdate() {
     const {
-      messagesInfo: { fetchedDBMessages, dataChatSource },
+      messagesInfo: { fetchedDBMessages },
       jobsInfo: {
-        selectedJobRequest: { employee_id },
         jobRequests,
       },
       generalInfo: { OnlineUsers },
@@ -220,22 +219,12 @@ class ChatScreen extends Component {
       jobRequests[currRequestPos].employee_id;
     const {
       isLoading,
-      dataChatSourceSynced,
       liveChatStatus,
       selectedStatus,
+      receiverId
     } = this.state;
-    const localDataChatSource = this.state.dataChatSource;
     if (fetchedDBMessages && isLoading) this.setState({ isLoading: false });
-
-    if (
-      JSON.stringify(dataChatSource[employee_id]) !==
-      JSON.stringify(localDataChatSource) &&
-      !dataChatSourceSynced
-    )
-      this.setState({
-        dataChatSource: dataChatSource[employee_id],
-        dataChatSourceSynced: true,
-      });
+    if (!isLoading && !receiverId) await this.init(false);
     if (
       OnlineUsers[providerId] &&
       liveChatStatus !== OnlineUsers[providerId].status
@@ -246,6 +235,50 @@ class ChatScreen extends Component {
         liveChatStatus: OnlineUsers[providerId].status,
       });
     }
+  }
+
+  fetchUserChatsLocal = async (page, limit) => {
+    const {
+      dbMessagesFetched,
+      userInfo: { userDetails },
+      jobsInfo: {
+        jobRequests
+      },
+      messagesInfo,
+      route
+    } = this.props;
+    const currRequestPos = route.params.currentPosition || 0;
+    const providerId =
+      route.params.providerId ||
+      jobRequests[currRequestPos].employee_id;
+    await fetchEmployeeUserChats({ primary: userDetails.userId, page, secondary: providerId, limit }, (chatData, metaData) => {
+      const newMessages = cloneDeep(messagesInfo.messages);
+      newMessages[providerId] = chatData;
+      this.setState({ metaData, isLoading: false });
+      dbMessagesFetched(newMessages);
+    });
+  }
+
+  updateUserChatsLocal = async (page, limit) => {
+    const {
+      dbMessagesFetched,
+      userInfo: { userDetails },
+      jobsInfo: {
+        jobRequests
+      },
+      messagesInfo,
+      route
+    } = this.props;
+    const currRequestPos = route.params.currentPosition || 0;
+    const providerId =
+      route.params.providerId ||
+      jobRequests[currRequestPos].employee_id;
+    await fetchEmployeeUserChats({ primary: userDetails.userId, secondary: providerId, page, limit }, (chatData, metaData) => {
+      const newMessages = cloneDeep(messagesInfo.messages);
+      newMessages[providerId] = [...chatData, ...newMessages[providerId]];
+      this.setState({ metaData, isLoading: false });
+      dbMessagesFetched(newMessages);
+    });
   }
 
   showHideButton = input => {
@@ -384,6 +417,14 @@ class ChatScreen extends Component {
     }));
   };
 
+  loadMoreMessages = async () => {
+    const { metaData: { page, pages, limit } } = this.state;
+    if (pages > 1) {
+      this.setState({ isLoading: true });
+      await this.updateUserChatsLocal((Number(page)) + 1, limit);
+    }
+  }
+
   changeDialogVisibility = () =>
     this.setState(prevState => ({ showDialog: !prevState.showDialog }));
 
@@ -405,6 +446,8 @@ class ChatScreen extends Component {
       receiverName,
       uploadingImage,
       isLoading,
+      metaData,
+      messagesInfo
     } = this.state;
     return (
       <KeyboardAvoidingView
@@ -438,6 +481,11 @@ class ChatScreen extends Component {
           <ScrollView
             style={{ marginBottom: requestStatus === 'Pending' ? 100 : 50 }}
             ref={ref => (this.scrollView = ref)}
+            refreshControl={
+              <RefreshControl
+                refreshing={isLoading}
+                onRefresh={this.loadMoreMessages}
+              />}
             contentContainerStyle={{
               justifyContent: 'center',
               alignItems: 'center',
@@ -451,25 +499,16 @@ class ChatScreen extends Component {
             <MessagesView
               senderId={senderId}
               receiverId={receiverId}
+              meta={metaData}
               uploadingImage={uploadingImage}
-              messagesInfo={this.props.messagesInfo}
+              messagesInfo={messagesInfo}
             />
           </ScrollView>
-          {isLoading && (
-            <View style={styles.loaderStyle}>
-              <ActivityIndicator
-                style={{ height: 80 }}
-                color="red"
-                size="large"
-              />
-            </View>
-          )}
           <View
             style={[
               styles.footerContainer,
               { minHeight: requestStatus === 'Pending' ? 120 : 50 },
             ]}>
-            {/*<View style={{ width: screenWidth, height: 1, backgroundColor: lightGray }}></View>*/}
             {requestStatus === 'Pending' ? (
               <View
                 style={{

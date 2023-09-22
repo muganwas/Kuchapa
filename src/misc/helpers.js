@@ -16,7 +16,8 @@ const phoneUtil = PhoneNumberUtil.getInstance();
 const emailRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
 const passwordRegex = /[^\w\d]*(([0-9]+.*[A-Z]+.*)|[A-Z]+.*([0-9]+.*))/;
 
-const FETCH_MESSAGES = Config.baseURL + 'chat/fetchAllChats';
+const FETCH_ALL_MESSAGES = Config.baseURL + 'chat/fetchAllChats';
+const FETCH_MESSAGES = Config.baseURL + 'chat/fetchChats';
 const PRO_GET_PROFILE = Config.baseURL + 'employee/';
 const USER_GET_PROFILE = Config.baseURL + 'users/';
 const PENDING_JOB_PROVIDER =
@@ -311,15 +312,36 @@ export const getDirections = async ({ startLoc, destinationLoc, onSuccess }) => 
   }
 };
 
+export const fetchEmployeeUserChats = async ({ primary, secondary, page, limit }, callBack) => {
+  try {
+    const idToken = await firebaseAuth().currentUser.getIdToken();
+    const res = await fetch(
+      FETCH_MESSAGES + '?primary=' + primary + '&secondary=' + secondary + '&limit=' + limit + '&page=' + page, {
+      headers: {
+        Authorization: 'Bearer ' + idToken
+      }
+    });
+    const response = await res.json();
+    if (response.result) {
+      if (typeof callBack === "function")
+        return callBack(response.data, response.metaData);
+      return response;
+    }
+    return SimpleToast.show(response.message);
+  } catch (e) {
+    SimpleToast.show(e.message);
+    return null;
+  }
+}
+
 export const fetchEmployeeMessagesFunc = async (receiverId, dispatch, dbMessagesFetched, callBack) => {
   const idToken = await firebaseAuth().currentUser.getIdToken();
   const res = await fetch(
-    FETCH_MESSAGES + '?sender=' + receiverId + '&userType=employee', {
+    FETCH_ALL_MESSAGES + '?sender=' + receiverId + '&userType=employee', {
     headers: {
       Authorization: 'Bearer ' + idToken
     }
-  }
-  );
+  });
   const resJson = await res.json();
   const { result, data, message } = resJson;
   let messages = {};
@@ -357,12 +379,11 @@ export const fetchEmployeeMessagesFunc = async (receiverId, dispatch, dbMessages
 export const fetchMessagesFunc = async (senderId, dispatch, dbMessagesFetched, callBack) => {
   const idToken = await firebaseAuth().currentUser.getIdToken();
   const res = await fetch(
-    FETCH_MESSAGES + '?sender=' + senderId + '&userType=client', {
+    FETCH_ALL_MESSAGES + '?sender=' + senderId + '&userType=client', {
     headers: {
       Authorization: 'Bearer ' + idToken
     }
-  }
-  );
+  });
   const resJosn = await res.json();
   const { data, result, message } = resJosn;
   let messages = {};

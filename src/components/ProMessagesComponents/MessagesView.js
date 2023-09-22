@@ -27,6 +27,8 @@ import TiffIcon from '../../images/svg/tiff.svg';
 import TextIcon from '../../images/svg/txt.svg';
 import ZipIcon from '../../images/svg/zip.svg';
 import style from './styles';
+import metrics from '../../Constants/metrics';
+import { colorGray, darkGray, lightGray } from '../../Constants/colors';
 
 const screenWidth = Dimensions.get('window').width;
 const Android = Platform.OS === 'android';
@@ -34,6 +36,7 @@ const Android = Platform.OS === 'android';
 const ProMessagesComponent = ({
   senderId,
   receiverId,
+  meta = {},
   messagesInfo,
   uploadingImage,
 }) => {
@@ -124,14 +127,13 @@ const ProMessagesComponent = ({
           });
         })
         .catch(err => {
-          console.log('download error', err);
           let newDownloading = _.cloneDeep(downloading);
           if (newDownloading[key]) {
             if (newDownloading[key][index]) delete newDownloading[key][index];
           }
           updateDownloading(newDownloading);
           SimpleToast.show(
-            'Something went wrong with the download, try again later.',
+            err.message,
             SimpleToast.SHORT,
           );
         });
@@ -195,14 +197,17 @@ const ProMessagesComponent = ({
             if (String(key) === String(receiverId)) {
               return (
                 <View key={key} style={style.messagesSubContainer}>
+                  {meta.pages > 1 ? <View style={{ display: 'flex', flex: 1, padding: metrics.spacing.small, alignItems: 'center' }}>
+                    <Text style={{ fontSize: metrics.font_size.small, color: darkGray, textAlign: 'center' }}>Pull down to load more</Text>
+                  </View> : <></>}
                   {usersMessages.map((messageInfo, index) => {
+                    const sender = messageInfo.senderId;
                     const {
-                      sender,
                       local,
                       type,
                       notUploaded,
                       file,
-                      message,
+                      textMessage: message,
                       time,
                     } = messageInfo;
                     const file_name = file && file.name;
