@@ -236,14 +236,18 @@ export const getAllRecentChats = async ({ id, dataSource, onSuccess, onError }) 
   try {
     const dbRef = database()
       .ref('recentMessage')
-      .child(id);
+      .child(id).limitToLast(3);
     dbRef.on('value', async resp => {
       const messages = resp.val();
       if (!messages) return onError();
       let msgsArr = Object.values(messages);
-      const ex = dataSource.findIndex(m => m.time === msgsArr[0].time && m.id === msgsArr[0].id);
-      if (ex === -1)
-        onSuccess(msgsArr);
+      let newMsgArr = [];
+      await msgsArr.map(msg => {
+        const ex = dataSource.findIndex(m => m.time === msg.time && m.id === msg.id);
+        if (ex === -1) newMsgArr.push(msg)
+      });
+      const newLatests = [...dataSource, ...newMsgArr];
+      onSuccess(newLatests);
     })
   } catch (e) {
     onError(e.message);

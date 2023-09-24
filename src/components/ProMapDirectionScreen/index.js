@@ -14,7 +14,6 @@ import {
   Modal,
   ActivityIndicator,
 } from 'react-native';
-import { isEqual } from 'lodash';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import SlidingPanel from '../SlidingPanel';
 import SimpleToast from 'react-native-simple-toast';
@@ -137,7 +136,7 @@ class ProMapDirectionScreen extends Component {
     );
   }
 
-  componentDidUpdate(oldProps) {
+  async componentDidUpdate() {
     const {
       generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
@@ -151,7 +150,7 @@ class ProMapDirectionScreen extends Component {
       (currentOtherCoordinates.latitude != destinationLat || currentOtherCoordinates.longitude != destinationLng) ||
       (usersCoordinates.latitude != sourceLat || usersCoordinates.longitude != sourceLng)
     )) {
-      this.upateLocations();
+      await this.upateLocations();
     }
   }
 
@@ -162,7 +161,7 @@ class ProMapDirectionScreen extends Component {
     );
   }
 
-  upateLocations = () => {
+  upateLocations = async () => {
     const {
       generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
@@ -215,7 +214,7 @@ class ProMapDirectionScreen extends Component {
         othersCoordinates[user_id]?.latitude +
         ',' +
         othersCoordinates[user_id]?.longitude;
-      this.getDirectionsLocal(
+      await this.getDirectionsLocal(
         usersCoordinates.latitude + ',' + usersCoordinates.longitude,
         destination,
       );

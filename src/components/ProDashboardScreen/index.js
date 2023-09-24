@@ -213,7 +213,7 @@ class ProDashboardScreen extends Component {
 
       const currentPos = allJobRequestsProviders.findIndex(el => el.user_id === item.id);
       const selectedJobReq = allJobRequestsProviders[currentPos];
-
+      /** Job should be completed or ongoing */
       if (selectedJobReq && selectedJobReq.user_details && (currentPos !== undefined && currentPos !== -1))
         return (
           <TouchableOpacity

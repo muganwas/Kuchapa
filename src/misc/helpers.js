@@ -576,9 +576,9 @@ export const getAllWorkRequestProFunc = async (providerId, fetchedDataWorkSource
   dispatch(fetchedAllJobRequestsPro(newAllProvidersDetails));
 };
 
-export const getAllWorkRequestClientFunc = async (clientId, fetchedDataWorkSource, fetchedAllJobRequestsClient, dispatch) => {
+export const getAllWorkRequestClientFunc = async (clientId, fetchedDataWorkSource, fetchedAllJobRequestsClient, dispatch, only = '') => {
   const idToken = await firebaseAuth().currentUser.getIdToken();
-  const response = await fetch(CUSTOMER_BOOKING_HISTORY + clientId + '/null', {
+  const response = await fetch(CUSTOMER_BOOKING_HISTORY + clientId + '/null?only=' + only, {
     headers: {
       Authorization: 'Bearer ' + idToken
     }

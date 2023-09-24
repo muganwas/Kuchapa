@@ -13,7 +13,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { connect } from 'react-redux';
-import { isEqual } from 'lodash';
 import SimpleToast from 'react-native-simple-toast';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import SlidingPanel from '../SlidingPanel';
@@ -196,7 +195,7 @@ class MapDirectionScreen extends Component {
       });
       const destination =
         usersCoordinates.latitude + ',' + usersCoordinates.longitude;
-      this.getDirectionsLocal(
+      await this.getDirectionsLocal(
         employeeLatitude + ',' + employeeLongitude,
         destination,
       );
@@ -218,7 +217,7 @@ class MapDirectionScreen extends Component {
     );
   }
 
-  componentDidUpdate(oldProps) {
+  async componentDidUpdate() {
     const {
       generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
@@ -232,7 +231,7 @@ class MapDirectionScreen extends Component {
       (currentOtherCoordinates.latitude != sourceLat || currentOtherCoordinates.longitude != sourceLng) ||
       (usersCoordinates.latitude != destinationLat || usersCoordinates.longitude != destinationLng)
     )) {
-      this.upateLocations(this.props);
+      await this.upateLocations(this.props);
     }
   }
 
