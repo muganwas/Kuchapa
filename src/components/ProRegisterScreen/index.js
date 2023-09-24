@@ -445,7 +445,7 @@ class ProRegisterScreen extends Component {
                   placeholder="Email"
                   onChangeText={email =>
                     emailCheck(
-                      email.trim(),
+                      email.trim().toLowerCase(),
                       email => this.setState({ email, error: '' }),
                       error => this.setState({ error }),
                     )

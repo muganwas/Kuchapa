@@ -228,7 +228,7 @@ export default class ForgotPasswordScreen extends Component {
                   placeholder="Email"
                   onChangeText={emailInput =>
                     this.setState({
-                      email: emailInput.trim(),
+                      email: emailInput.trim().toLowerCase(),
                     })
                   }
                 />
