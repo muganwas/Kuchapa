@@ -429,8 +429,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    fetchJobRequestHistory: (providerId, only) => {
-      dispatch(getAllWorkRequestPro(providerId, only));
+    fetchJobRequestHistory: ({ providerId, props, only = '' }) => {
+      dispatch(getAllWorkRequestPro({ providerId, props, only }));
     },
     fetchProvidersJobRequests: (props, id, to) => {
       dispatch(getPendingJobRequestProvider(props, id, to));

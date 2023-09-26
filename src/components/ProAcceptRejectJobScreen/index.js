@@ -32,7 +32,6 @@ import {
   fetchProviderJobInfoError,
   fetchedJobProviderInfo,
   setSelectedJobRequest,
-  getAllWorkRequestPro,
   fetchedDataWorkSource,
 } from '../../Redux/Actions/jobsActions';
 import {
@@ -336,7 +335,6 @@ class ProAcceptRejectJobScreen extends Component {
       fetchedDataWorkSource: this.props.fetchedDataWorkSource,
       fetchedPendingJobInfo: this.props.fetchedPendingJobInfo,
       jobRequestsProviders: this.props?.jobsInfo?.jobRequestsProviders,
-      getAllWorkRequestPro: this.props.getAllWorkRequestPro,
       toggleIsLoading: this.changeWaitingDialogVisibility,
       onSuccess: () =>
         this.setState({
@@ -363,7 +361,6 @@ class ProAcceptRejectJobScreen extends Component {
       fetchedDataWorkSource: this.props.fetchedDataWorkSource,
       fetchedPendingJobInfo: this.props.fetchedPendingJobInfo,
       jobRequestsProviders: this.props?.jobsInfo?.jobRequestsProviders,
-      getAllWorkRequestPro: this.props.getAllWorkRequestPro,
       navigation: this.props.navigation,
       toggleIsLoading: this.changeWaitingDialogVisibility,
       onSuccess: () =>
@@ -760,9 +757,6 @@ const mapDispatchToProps = dispatch => {
     },
     dispatchSelectedJobRequest: job => {
       dispatch(setSelectedJobRequest(job));
-    },
-    getAllWorkRequestPro: providerId => {
-      getAllWorkRequestPro(providerId);
     },
     dbMessagesFetched: messages => {
       dispatch(dbMessagesFetched(messages));

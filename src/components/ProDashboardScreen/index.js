@@ -50,7 +50,7 @@ import {
 } from '../../controllers/chats';
 import { requestClientForReview } from '../../controllers/jobs';
 import { reviewTask } from '../../controllers/bookings';
-import { font_size, spacing } from '../../Constants/metrics';
+import metrics, { font_size, spacing } from '../../Constants/metrics';
 import {
   colorBg,
   colorYellow,
@@ -87,12 +87,14 @@ class ProDashboardScreen extends Component {
     super();
     const {
       generalInfo: { online, connectivityAvailable },
+      jobsInfo: { dataWorkSourceFetched },
       userInfo: { providerDetails },
       messagesInfo: { fetchedLatestChats }
     } = props;
     this.state = {
       isLoading: true,
       isLoadingLatestChats: !fetchedLatestChats,
+      isLoadingDoneJobs: !dataWorkSourceFetched,
       isErrorToast: false,
       mainId: '',
       reviewData: '',
@@ -151,7 +153,7 @@ class ProDashboardScreen extends Component {
       messagesInfo: { fetchedLatestChats }
     } = this.props;
     const { status, isLoading } = this.state;
-    if (dataWorkSource && dataWorkSourceFetched && isLoading) this.setState({ isLoading: false, isWorkRequest: true });
+    if (dataWorkSource && dataWorkSourceFetched && isLoading) this.setState({ isLoading: false, isWorkRequest: true, isLoadingDoneJobs: false });
     if (!connectivityAvailable && status === 'ONLINE')
       this.setState({
         status: 'OFFLINE',
@@ -241,15 +243,15 @@ class ProDashboardScreen extends Component {
             }}>
             <View style={styles.itemImageView}>
               <Image
-                style={{ width: 40, height: 40, borderRadius: 100 }}
+                style={{ width: 25, height: 25, borderRadius: 100 }}
                 source={{ uri: item.image }}
               />
             </View>
             <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
               <Text
                 style={{
-                  fontSize: 14,
-                  color: 'black',
+                  fontSize: metrics.font_size.normal,
+                  color: black,
                   textAlignVertical: 'center',
                 }}>
                 {item.name}
@@ -257,8 +259,8 @@ class ProDashboardScreen extends Component {
               <Text
                 style={{
                   width: screenWidth - 150,
-                  fontSize: 10,
-                  color: 'black',
+                  fontSize: metrics.font_size.small,
+                  color: black,
                   textAlignVertical: 'center',
                   color: 'gray',
                   marginTop: 3,
@@ -290,17 +292,16 @@ class ProDashboardScreen extends Component {
         if (
           item &&
           String(item.employee_id) === String(providerDetails.providerId) &&
-          (item.status === 'Accepted' ||
-            item.status === 'Completed' ||
-            item.status === 'Cancelled')
-        ) {
+          (item.status != 'Pending')) {
           return (
             <TouchableOpacity
               key={index}
               style={{
                 width: screenWidth,
                 flexDirection: 'row',
-                backgroundColor: 'white',
+                backgroundColor: lightGray,
+                alignItems: 'center',
+                borderRadius: 3
               }}
               onPress={() =>
                 navigation.navigate('ProBookingDetails', {
@@ -317,7 +318,7 @@ class ProDashboardScreen extends Component {
                   paddingLeft: 5,
                   paddingRight: 5,
                 }}>
-                <Text style={{ fontSize: 12, fontWeight: 'bold' }}>
+                <Text style={{ fontSize: metrics.font_size.normal }}>
                   {item.service_details.service_name}
                 </Text>
               </View>
@@ -332,8 +333,7 @@ class ProDashboardScreen extends Component {
                 }}>
                 <Text
                   style={{
-                    fontSize: 12,
-                    fontWeight: 'bold',
+                    fontSize: metrics.font_size.normal,
                     ...(item.status === 'Pending'
                       ? styles.colorYellow
                       : item.status === 'Accepted'
@@ -359,7 +359,7 @@ class ProDashboardScreen extends Component {
                   {item.customer_review == 'Requested'
                     ? 'Waiting'
                     : item.customer_rating == ''
-                      ? 'Ask for review'
+                      ? 'Request'
                       : item.customer_rating + '/5'}
                 </Text>
               </TouchableOpacity>
@@ -373,9 +373,9 @@ class ProDashboardScreen extends Component {
                   paddingRight: 5,
                 }}
                 onPress={() => this.changeDialogVisibility(true, '', item, '', '')}>
-                <Text style={{ fontSize: 12 }}>
+                <Text style={{ fontSize: metrics.font_size.normal }}>
                   {item.employee_rating == ''
-                    ? 'Give review'
+                    ? 'Give'
                     : item.employee_rating + '/5'}
                 </Text>
               </TouchableOpacity>
@@ -733,6 +733,7 @@ class ProDashboardScreen extends Component {
     if (item.status == "Completed")
       await requestClientForReview({
         item,
+        props: this.props,
         fetchJobRequestHistory: this.props?.fetchJobRequestHistory,
         providerDetails: this.props?.userInfo?.providerDetails,
         toggleIsLoading: this.changeWaitingDialogVisibility,
@@ -768,13 +769,14 @@ class ProDashboardScreen extends Component {
       jobsInfo: {
         jobRequestsProviders,
         dataWorkSource,
-        dataWorkSourceFetched
+        dataWorkSourceFetched,
+        allJobRequestsProvidersMeta: { page, totalPages }
       },
       userInfo: { providerDetails },
       messagesInfo: { latestChats, fetchedLatestChats },
       navigation,
     } = this.props;
-    const { status, isLoadingLatestChats } = this.state;
+    const { status, isLoadingLatestChats, isLoadingDoneJobs } = this.state;
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
@@ -824,7 +826,7 @@ class ProDashboardScreen extends Component {
             </Text>
           </View>
         </View>
-        <ScrollView
+        <View
           style={{
             marginBottom:
               jobRequestsProviders && jobRequestsProviders.length === 0
@@ -832,23 +834,17 @@ class ProDashboardScreen extends Component {
                 : 45 * jobRequestsProviders.length,
             backgroundColor: lightGray,
           }}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this.onRefresh}
-              title="Loading"
-            />
-          }>
-          <View>
+        >
+          <ScrollView style={styles.subContainer}>
             {fetchedLatestChats && (
-              <View style={styles.mainContainer}>
+              <View style={styles.recentChatContainer}>
                 <View style={styles.recentMessageHeader}>
                   <Text
                     style={{
                       flex: 1,
                       textAlignVertical: 'center',
                       alignItems: 'flex-start',
-                      fontSize: font_size.header,
+                      fontSize: font_size.sub_header,
                       alignContent: 'flex-start',
                       justifyContent: 'flex-start',
                       marginLeft: 15,
@@ -863,7 +859,14 @@ class ProDashboardScreen extends Component {
                   </TouchableOpacity>
                 </View>
                 {latestChats?.length > 0 ?
-                  <ScrollView>
+                  <ScrollView
+                    refreshControl={
+                      <RefreshControl
+                        refreshing={this.state.refreshing}
+                        onRefresh={this.onRefresh}
+                      />
+                    }
+                  >
                     {<View style={styles.listView}>
                       {latestChats.map(this.renderRecentMessageItem)}
                     </View>}
@@ -879,15 +882,15 @@ class ProDashboardScreen extends Component {
                 <ActivityIndicator size={'large'} color={themeRed} />
               </View>
             }
-            {this.state.isWorkRequest && dataWorkSourceFetched && (
-              <View style={styles.mainContainer}>
+            {dataWorkSourceFetched && (
+              <View style={styles.workContainer}>
                 <View style={styles.recentMessageHeader}>
                   <Text
                     style={{
                       flex: 1,
                       textAlignVertical: 'center',
                       alignItems: 'flex-start',
-                      fontSize: font_size.header,
+                      fontSize: font_size.sub_header,
                       alignContent: 'flex-start',
                       justifyContent: 'flex-start',
                       marginLeft: 15,
@@ -895,11 +898,21 @@ class ProDashboardScreen extends Component {
                     }}>
                     Work
                   </Text>
-                  {false && (
-                    <TouchableOpacity onPress={() => navigation.navigate('Booking', { from: 'Dashboard' })} style={styles.viewAll}>
-                      <Text style={styles.textViewAll}>View All</Text>
+                  {
+                    totalPages && totalPages / page > 1 &&
+                    <TouchableOpacity onPress={() => {
+                      const { fetchJobRequestHistory, userInfo: { providerDetails }, jobsInfo: { allJobRequestsProvidersMeta: { page } } } = this.props;
+                      this.setState({ isLoadingDoneJobs: true });
+                      fetchJobRequestHistory({ providerId: providerDetails.providerId, props: this.props, page: Number(page) + 1 });
+                      this.setState({ isLoadingDoneJobs: false });
+                    }} style={styles.viewAll}
+                    >
+                      <Text style={styles.textViewAll}>Load More</Text>
                     </TouchableOpacity>
-                  )}
+                  }
+                  <TouchableOpacity onPress={() => navigation.navigate('ProBooking', { from: 'Dashboard' })} style={styles.viewAll}>
+                    <Text style={styles.textViewAll}>View All</Text>
+                  </TouchableOpacity>
                 </View>
                 <View
                   style={{
@@ -911,22 +924,22 @@ class ProDashboardScreen extends Component {
                 <View
                   style={{
                     flexDirection: 'row',
-                    padding: 10,
-                    justifyContent: 'center',
+                    padding: metrics.spacing.small,
+                    justifyContent: 'flex-start',
                   }}>
                   <Text
                     style={{
                       flex: 1,
-                      fontSize: 12,
+                      fontSize: metrics.font_size.normal,
                       fontWeight: 'bold',
                       textAlign: 'center',
                     }}>
-                    Job's Name
+                    Job
                   </Text>
                   <Text
                     style={{
                       flex: 1,
-                      fontSize: 12,
+                      fontSize: metrics.font_size.normal,
                       fontWeight: 'bold',
                       textAlign: 'center',
                     }}>
@@ -935,27 +948,42 @@ class ProDashboardScreen extends Component {
                   <Text
                     style={{
                       flex: 1,
-                      fontSize: 12,
-                      fontWeight: 'bold',
-                      textAlign: 'center',
-                    }}>
-                    Review
-                  </Text>
-                  <Text
-                    style={{
-                      flex: 1,
-                      fontSize: 12,
+                      fontSize: metrics.font_size.normal,
                       fontWeight: 'bold',
                       textAlign: 'center',
                     }}>
                     Client Review
                   </Text>
+                  <Text
+                    style={{
+                      flex: 1,
+                      fontSize: metrics.font_size.normal,
+                      fontWeight: 'bold',
+                      textAlign: 'center',
+                    }}>
+                    Review
+                  </Text>
                 </View>
                 <View style={styles.listView}>
-                  {dataWorkSource && dataWorkSource.length > 0 && <ScrollView>
-                    {this.renderDoneJobs()}
-                  </ScrollView>}
-                  {dataWorkSourceFetched && dataWorkSource.length === 0 && (
+                  {dataWorkSource?.length > 0 &&
+                    <ScrollView
+                      refreshControl={
+                        <RefreshControl
+                          refreshing={isLoadingDoneJobs}
+                          onRefresh={() => {
+                            const { fetchJobRequestHistory, userInfo: { providerDetails }, jobsInfo: { allJobRequestsProvidersMeta: { page } } } = this.props;
+                            this.setState({ isLoadingDoneJobs: true });
+                            fetchJobRequestHistory({ providerId: providerDetails.providerId, props: this.props, page: Number(page) + 1 });
+                            this.setState({ isLoadingDoneJobs: false });
+                          }}
+                        />}
+                    >
+                      {this.renderDoneJobs()}
+                      <View style={{ height: 200 }}>
+
+                      </View>
+                    </ScrollView>}
+                  {dataWorkSource?.length === 0 && (
                     <View style={{ padding: 15 }}>
                       {providerDetails.address === '' ? (
                         <View
@@ -1005,8 +1033,8 @@ class ProDashboardScreen extends Component {
               </View>
             )}
             {!dataWorkSourceFetched && <View style={styles.activityIncatorContainer}><ActivityIndicator size={'large'} color={themeRed} /></View>}
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </View>
         {jobRequestsProviders && jobRequestsProviders.length > 0 && (
           <View style={styles.pendingJobsContainer}>
             {jobRequestsProviders.map(this.renderPendingJobs)}
@@ -1109,8 +1137,8 @@ const mapDispatchToProps = dispatch => {
     fetchAllProJobRequestsError: () => {
       dispatch(fetchAllJobRequestsProError());
     },
-    fetchJobRequestHistory: providerId => {
-      dispatch(getAllWorkRequestPro(providerId));
+    fetchJobRequestHistory: ({ providerId, props, page = 1 }) => {
+      dispatch(getAllWorkRequestPro({ providerId, props, page }));
     },
     updateProviderDetails: dits => {
       dispatch(updateProviderDetails(dits));
@@ -1189,6 +1217,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
+  subContainer: {
+    height: screenHeight,
+    display: 'flex',
+    flexDirection: 'column',
+    backgroundColor: lightGray
+  },
+  recentChatContainer: {
+    flex: 2,
+    flexDirection: 'column',
+    backgroundColor: colorBg,
+    alignItems: 'center',
+    marginTop: metrics.spacing.small,
+    minHeight: 20,
+  },
+  workContainer: {
+    flex: 5,
+    flexDirection: 'column',
+    backgroundColor: colorBg,
+    alignItems: 'center',
+    marginTop: metrics.spacing.small,
+  },
   noticationsCount: {
     position: 'absolute',
     textAlignVertical: 'center',
@@ -1213,9 +1262,12 @@ const styles = StyleSheet.create({
     paddingRight: spacing.small,
     paddingTop: spacing.small,
     paddingBottom: spacing.small,
-    backgroundColor: 'white',
-    borderColor: themeRed,
-    borderWidth: 2,
+    backgroundColor: white,
+    shadowColor: darkGray,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.75,
+    shadowRadius: 5,
+    elevation: 5,
     borderRadius: 5,
     marginRight: spacing.large,
   },
@@ -1292,8 +1344,7 @@ const styles = StyleSheet.create({
   },
   itemMainContainer: {
     width: screenWidth,
-    flex: 1,
-    height: 70,
+    height: 55,
     flexDirection: 'row',
     backgroundColor: 'white',
     shadowColor: '#000',

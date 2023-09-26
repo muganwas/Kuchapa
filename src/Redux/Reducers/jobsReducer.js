@@ -20,6 +20,11 @@ import {
 const initialState = {
   selectedJobRequest: null,
   jobRequests: [],
+  jobRequestsMeta: { page: 1, limit: 10 },
+  dataWorkSourceMeta: { page: 1, limit: 10 },
+  allJobRequestsClientMeta: { page: 1, limit: 10 },
+  allJobRequestsProvidersMeta: { page: 1, limit: 10 },
+  jobRequestsProvidersMeta: { page: 1, limit: 10 },
   dataWorkSource: [],
   jobRequestsProviders: [],
   allJobRequestsProviders: [],
@@ -50,7 +55,8 @@ const jobsReducer = (state = initialState, action) => {
     case FETCHED_JOB_REQUESTS:
       return {
         ...state,
-        jobRequests: action.payload,
+        jobRequests: action.payload.data,
+        jobRequestsMeta: action.payload.metaData,
         requestsFetched: true,
         fetchingRequests: false,
         requestsError: null,
@@ -72,7 +78,8 @@ const jobsReducer = (state = initialState, action) => {
     case FETCHED_JOB_REQUESTS_PROVIDERS:
       return {
         ...state,
-        jobRequestsProviders: action.payload,
+        jobRequestsProviders: action.payload.data,
+        jobRequestsProvidersMeta: action.payload.metaData,
         requestsProvidersFetched: true,
         fetchingRequestsProviders: false,
         requestsProvidersError: null,
@@ -92,7 +99,8 @@ const jobsReducer = (state = initialState, action) => {
     case FETCHED_ALL_JOB_REQUESTS_PRO:
       return {
         ...state,
-        allJobRequestsProviders: action.payload,
+        allJobRequestsProviders: action.payload.data,
+        allJobRequestsProvidersMeta: action.payload.metaData,
         allJobRequestsProvidersFetched: true,
       };
     case UPDATE_BOOKING_COMPLETE_DATA:
@@ -113,7 +121,8 @@ const jobsReducer = (state = initialState, action) => {
     case FETCHED_ALL_JOB_REQUESTS_CLIENT:
       return {
         ...state,
-        allJobRequestsClient: action.payload,
+        allJobRequestsClient: action.payload.data,
+        allJobRequestsClientMeta: action.payload.metaData,
         allJobRequestsClientFetched: true,
       };
     case FETCH_ALL_JOB_REQUESTS_CLIENT_ERROR:
@@ -124,7 +133,8 @@ const jobsReducer = (state = initialState, action) => {
     case FETCHED_DATA_WORK_SOURCE:
       return {
         ...state,
-        dataWorkSource: action.payload,
+        dataWorkSource: action.payload.data,
+        dataWorkSourceMeta: action.payload.metaData,
         dataWorkSourceFetched: true,
       };
     case FETCH_DATA_WORK_SOURCE_ERROR:

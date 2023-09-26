@@ -124,7 +124,7 @@ class ProHamburger extends React.Component {
       const data = JSON.parse(message.data.data);
       const {
         notificationsInfo,
-        jobsInfo: { jobRequestsProviders },
+        jobsInfo: { jobRequestsProviders, allJobRequestsProviders, dataWorkSource },
         userInfo: { providerDetails }
       } = this.props;
       const receiverId = providerDetails.providerId;
@@ -149,7 +149,7 @@ class ProHamburger extends React.Component {
         dispatchFetchedProJobRequests(newJobRequestsProviders);
         navigation.navigate('ProHome');
       } else getPendingJobRequests(this.props, receiverId);
-      getAllWorkRequestPro(receiverId);
+      getAllWorkRequestPro({ providerId: receiverId, props: this.props });
       this.getAllBookingsProvider();
       //title !== 'Message Recieved' && this.getAllNotificationsProvider();
       if (title.toLowerCase() === 'booking request') {
@@ -546,8 +546,8 @@ const mapDispatchToProps = dispatch => {
     fetchEmployeeMessages: eId => {
       dispatch(fetchEmployeeMessages({ receiverId: eId }));
     },
-    getAllWorkRequestPro: proId => {
-      dispatch(getAllWorkRequestPro(proId));
+    getAllWorkRequestPro: ({ providerId, props, only = '' }) => {
+      dispatch(getAllWorkRequestPro({ providerId, props, only }));
     },
     getPendingJobRequests: (props, providerId, navTo) => {
       dispatch(getPendingJobRequestProvider(props, providerId, navTo));

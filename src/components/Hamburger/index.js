@@ -177,13 +177,13 @@ class Hamburger extends React.Component {
             fetchedPendingJobInfo(newJobRequests);
             navigation.navigate('Home');
           } else getPendingJobRequest(this.props, senderId, 'Home');
-          getAllWorkRequestClient(senderId);
+          getAllWorkRequestClient({ clientId: senderId, props: this.props });
           this.showToast(
             'The service provider rejected your request. please try again later',
           );
         } else if (title.toLowerCase() === 'job accepted') {
           getPendingJobRequest(this.props, senderId, 'Home');
-          getAllWorkRequestClient(senderId);
+          getAllWorkRequestClient({ clientId: senderId, props: this.props });
           this.getAllBookingsCustomer();
           this.showToast('Your job has been accepted.');
         } else if (title.toLowerCase() === 'job rejected') {
@@ -200,12 +200,12 @@ class Hamburger extends React.Component {
             fetchedPendingJobInfo(newJobRequests);
             navigation.navigate('Home');
           } else getPendingJobRequest(this.props, senderId, 'Home');
-          getAllWorkRequestClient(senderId);
+          getAllWorkRequestClient({ clientId: senderId, props: this.props });
           this.getAllBookingsCustomer();
           this.showToast('Your job is complete..');
         } else if (title.toLowerCase() === 'chat request accepted') {
           getPendingJobRequest(this.props, senderId, 'Home');
-          getAllWorkRequestClient(senderId);
+          getAllWorkRequestClient({ clientId: senderId, props: this.props });
           this.showToast('Chat request accepted');
           updateActiveRequest(false);
         } else if (
@@ -333,7 +333,7 @@ class Hamburger extends React.Component {
       const senderId = userDetails.userId;
       if (status.isConnected && !this.state.prevConnectivityStatus) {
         setTimeout(() => {
-          getAllWorkRequestClient(senderId);
+          getAllWorkRequestClient({ clientId: senderId, props: this.props });
           getPendingJobRequest(this.props, senderId);
         }, 1000);
         this.setState({ prevConnectivityStatus: status.isConnected });
@@ -602,8 +602,8 @@ const mapDispatchToProps = dispatch => {
     dbMessagesFetched: messages => {
       dispatch(dbMessagesFetched(messages));
     },
-    getAllWorkRequestClient: userId => {
-      dispatch(getAllWorkRequestClient(userId));
+    getAllWorkRequestClient: ({ clientId, props }) => {
+      dispatch(getAllWorkRequestClient({ clientId, props }));
     },
     fetchClientMessages: (senderId, callBack) => {
       dispatch(fetchClientMessages({ senderId, callBack }));

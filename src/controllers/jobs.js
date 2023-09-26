@@ -12,6 +12,7 @@ const SERVICES_URL = Config.baseURL + 'service/getall';
 
 export const requestClientForReview = async ({
   item,
+  props,
   fetchJobRequestHistory,
   providerDetails,
   toggleIsLoading,
@@ -55,7 +56,7 @@ export const requestClientForReview = async ({
       if (response.result) {
         toggleIsLoading();
         onSuccess('Request submitted successfully');
-        fetchJobRequestHistory(providerDetails.providerId);
+        fetchJobRequestHistory({ providerId: providerDetails.providerId, props });
       } else {
         onError('Something went wrong');
       }
@@ -167,7 +168,6 @@ export const acceptJobTask = async ({
   fetchedDataWorkSource,
   fetchedPendingJobInfo,
   jobRequestsProviders,
-  getAllWorkRequestPro,
   toggleIsLoading,
   currRequestPos,
   onSuccess,
@@ -231,7 +231,6 @@ export const acceptJobTask = async ({
       newjobRequestsProviders[currRequestPos].status =
         responseJson.data.status;
       fetchedPendingJobInfo(newjobRequestsProviders);
-      getAllWorkRequestPro(providerDetails.providerId);
       //Send Location to Firebase for tracking
       Geolocation.getCurrentPosition(position => {
         let locationData = {

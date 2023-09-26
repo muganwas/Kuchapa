@@ -137,20 +137,20 @@ export const getPendingJobRequest = (props, userId, navTo) => {
   };
 };
 
-export const getAllWorkRequestClient = (clientId, only) => {
+export const getAllWorkRequestClient = ({ clientId, props, page = 1, only }) => {
   return dispatch => {
     try {
-      getAllWorkRequestClientFunc(clientId, fetchedDataWorkSource, fetchedAllJobRequestsClient, dispatch, only);
+      getAllWorkRequestClientFunc({ clientId, props, page, fetchedDataWorkSource, fetchedAllJobRequestsClient, dispatch, only });
     } catch (e) {
       dispatch(fetchAllJobRequestsClientError());
     }
   };
 };
 
-export const getAllWorkRequestPro = (providerId, only) => {
+export const getAllWorkRequestPro = ({ providerId, props, page = 1, only = '' }) => {
   return dispatch => {
     try {
-      getAllWorkRequestProFunc(providerId, fetchedDataWorkSource, fetchedAllJobRequestsPro, dispatch, only);
+      getAllWorkRequestProFunc({ providerId, fetchedDataWorkSource, page, props, fetchedAllJobRequestsPro, dispatch, only });
     } catch (e) {
       dispatch(fetchDataWorkSourceError());
       dispatch(fetchAllJobRequestsProError());

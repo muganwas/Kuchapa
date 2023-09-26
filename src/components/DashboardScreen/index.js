@@ -303,7 +303,7 @@ class DashboardScreen extends Component {
       userInfo: { userDetails },
     } = this.props;
     await this.fetchAllServices();
-    await getAllWorkRequestClient(userDetails.userId);
+    await getAllWorkRequestClient({ clientId: userDetails.userId, props: this.props });
     await this.getAllRecentChatsCustomer();
     this.setState({ isLoading: false });
   };
@@ -668,8 +668,8 @@ const mapDispatchToProps = dispatch => {
     updateActiveRequest: val => {
       dispatch(updateActiveRequest(val));
     },
-    getAllWorkRequestClient: id => {
-      dispatch(getAllWorkRequestClient(id));
+    getAllWorkRequestClient: ({ clientId, props, only = '' }) => {
+      dispatch(getAllWorkRequestClient({ clientId, props, only }));
     },
     updateLatestChats: data => {
       dispatch(updateLatestChats(data));

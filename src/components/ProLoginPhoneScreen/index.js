@@ -470,8 +470,8 @@ const mapDispatchToProps = dispatch => {
     fetchProvidersJobRequests: (props, providerId, navTo) => {
       dispatch(getPendingJobRequestProvider(props, providerId, navTo));
     },
-    fetchJobRequestHistory: providerId => {
-      dispatch(getAllWorkRequestPro(providerId));
+    fetchJobRequestHistory: ({ providerId, props }) => {
+      dispatch(getAllWorkRequestPro({ providerId, props }));
     },
     updateProviderDetails: details => {
       dispatch(updateProviderDetails(details));

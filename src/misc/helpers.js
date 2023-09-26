@@ -545,7 +545,7 @@ export const getPendingJobRequestProviderFunc = async (providerId, navigation, n
         newJobRequestsProviders.push(jobData);
       }
     });
-    dispatch(fetchedJobProviderInfo(newJobRequestsProviders));
+    dispatch(fetchedJobProviderInfo({ data: newJobRequestsProviders, metaData: responseJson.metadata }));
     if (navigation && navTo) navigation.navigate(navTo);
   } else {
     SimpleToast.show('Could not fetch pending jobs');
@@ -553,50 +553,64 @@ export const getPendingJobRequestProviderFunc = async (providerId, navigation, n
   }
 };
 
-export const getAllWorkRequestProFunc = async (providerId, fetchedDataWorkSource, fetchedAllJobRequestsPro, dispatch, only = '') => {
-  const idToken = await firebaseAuth().currentUser.getIdToken();
-  const response = await fetch(BOOKING_HISTORY + providerId + '/Cancelled?only=' + only, {
-    headers: {
-      Authorization: 'Bearer ' + idToken
-    }
-  });
-  const responseJson = await response.json();
-  let newAllProvidersDetails = responseJson.data
-    ? cloneDeep(responseJson.data)
-    : [];
-  const dataWorkSource = [];
-  if (responseJson.result) {
-    await responseJson.data.map((dt, i) => {
-      if (dt?.status !== 'Pending') {
-        dataWorkSource.push(dt);
+export const getAllWorkRequestProFunc = async ({ providerId, fetchedDataWorkSource, page, props, fetchedAllJobRequestsPro, dispatch, only = '' }) => {
+  try {
+    const { jobsInfo: { dataWorkSource, allJobRequestsProviders, allJobRequestsProvidersMeta } } = props;
+    const idToken = await firebaseAuth().currentUser.getIdToken();
+    page = page || allJobRequestsProvidersMeta.page;
+    const limit = allJobRequestsProvidersMeta.limit;
+    const response = await fetch(BOOKING_HISTORY + providerId + '/Cancelled?only=' + only + "&page=" + page + "&limit=" + limit, {
+      headers: {
+        Authorization: 'Bearer ' + idToken
       }
     });
+    const responseJson = await response.json();
+    const newDataWorkSource = [];
+    if (responseJson.result) {
+      const newAllJobRequests = responseJson.data;
+      await responseJson.data.map((dt, i) => {
+        if (dt?.status !== 'Pending') {
+          newDataWorkSource.push(dt);
+        }
+      });
+      dispatch(fetchedDataWorkSource({ data: [...dataWorkSource, ...newDataWorkSource], metaData: responseJson.metadata }));
+      dispatch(fetchedAllJobRequestsPro({ data: [...allJobRequestsProviders, ...newAllJobRequests], metaData: responseJson.metadata }));
+    } else {
+      SimpleToast.show(responseJson.message);
+    }
+  } catch (e) {
+    SimpleToast.show(e.message);
   }
-  dispatch(fetchedDataWorkSource(dataWorkSource));
-  dispatch(fetchedAllJobRequestsPro(newAllProvidersDetails));
 };
 
-export const getAllWorkRequestClientFunc = async (clientId, fetchedDataWorkSource, fetchedAllJobRequestsClient, dispatch, only = '') => {
-  const idToken = await firebaseAuth().currentUser.getIdToken();
-  const response = await fetch(CUSTOMER_BOOKING_HISTORY + clientId + '/null?only=' + only, {
-    headers: {
-      Authorization: 'Bearer ' + idToken
+export const getAllWorkRequestClientFunc = async ({ clientId, props, page, fetchedDataWorkSource, fetchedAllJobRequestsClient, dispatch, only = '' }) => {
+  try {
+    const { jobsInfo: { dataWorkSource, allJobRequestsClient, allJobRequestsClientMeta } } = props;
+    page = page || allJobRequestsClientMeta.page;
+    const limit = allJobRequestsClientMeta.limit;
+    const idToken = await firebaseAuth().currentUser.getIdToken();
+    const response = await fetch(CUSTOMER_BOOKING_HISTORY + clientId + '/null?only=' + only + " &page=" + page + "&limit=" + limit, {
+      headers: {
+        Authorization: 'Bearer ' + idToken
+      }
+    });
+    const responseJson = await response.json();
+    if (responseJson.result) {
+      const newAllJobRequestsClient = responseJson.data;
+      const newDataWorkSource = [];
+      await responseJson.data.map((dt, i) => {
+        if (dt?.status !== 'Pending') {
+          dataWorkSource.push(dt);
+        };
+      });
+      dispatch(fetchedDataWorkSource({ data: [...dataWorkSource, ...newDataWorkSource], metaData: responseJson.metadata }));
+      dispatch(fetchedAllJobRequestsClient({ data: [...allJobRequestsClient, ...newAllJobRequestsClient], metaData: responseJson.metadata }));
+    } else {
+      SimpleToast.show(responseJson.message);
     }
-  });
-  const responseJson = await response.json();
-  let newAllClientDetails = responseJson.data
-    ? cloneDeep(responseJson.data)
-    : [];
-  const dataWorkSource = [];
-  if (responseJson.result) {
-    await responseJson.data.map((dt, i) => {
-      if (dt?.status !== 'Pending') {
-        dataWorkSource.push(dt);
-      };
-    })
+  } catch (e) {
+    SimpleToast.show(e.message);
   }
-  dispatch(fetchedDataWorkSource(dataWorkSource));
-  dispatch(fetchedAllJobRequestsClient(newAllClientDetails));
 };
 
 export const getPendingJobRequestFunc = async (userId, navigation, navTo, fetchedJobCustomerInfo, dispatch) => {
@@ -637,7 +651,7 @@ export const getPendingJobRequestFunc = async (userId, navigation, navTo, fetche
         newJobRequest.push(jobData);
       }
     });
-    dispatch(fetchedJobCustomerInfo(newJobRequest));
+    dispatch(fetchedJobCustomerInfo({ data: newJobRequest, metaData: responseJson.metadata }));
     /** navigate away */
     if (navigation && navTo) navigation.navigate(navTo);
   } else {

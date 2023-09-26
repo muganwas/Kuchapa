@@ -211,7 +211,7 @@ export const inhouseLogin = async ({
   try {
     const home = userType === 'Provider' ? 'ProHome' : 'Home';
     updateAppUserDetails(userId, fcmToken, () => {
-      fetchJobRequestHistory(userId);
+      fetchJobRequestHistory({ providerId: userId, userId, props });
       fetchPendingJobInfo(props, userId, home);
     });
   } catch (e) {
@@ -346,7 +346,7 @@ export const fbGmailLoginTask = async ({
           rNES.setItem('userType', userTypeName);
           rNES.setItem('email', email);
           rNES.setItem('firebaseId', firebaseId);
-          fetchJobRequestHistory(id);
+          fetchJobRequestHistory({ providerId: id, clientId: id, props });
           toggleLoading();
           fetchAppUserJobRequests(props, id, home);
         } catch (e) {
@@ -379,11 +379,11 @@ export const authenticateTask = async ({
   userType,
   authURL,
   fetchAppUserJobRequests,
+  props,
   updateAppUserDetails,
   fetchJobRequestHistory,
   toggleLoading,
   onError,
-  props,
 }) => {
   toggleLoading();
   const fcmToken = await messaging().getToken();
@@ -466,7 +466,7 @@ export const authenticateTask = async ({
           rNES.setItem('idToken', idToken);
           rNES.setItem('auth', JSON.stringify(auth));
           rNES.setItem('firebaseId', uid);
-          fetchJobRequestHistory(id);
+          fetchJobRequestHistory({ providerId: id, clientId: id, props });
           toggleLoading();
           fetchAppUserJobRequests(props, id, home);
         } else {
@@ -729,7 +729,7 @@ export const phoneLoginTask = async ({
             rNES.setItem('email', data.email);
             rNES.setItem('firebaseId', firebaseId);
             //Check if any Ongoing Request
-            fetchJobRequestHistory(id);
+            fetchJobRequestHistory({ clientId: id, providerId: id, props });
             toggleIsLoading(false);
             fetchJobRequests(props, id, Home);
           } else {

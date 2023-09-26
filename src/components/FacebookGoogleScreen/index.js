@@ -425,8 +425,8 @@ const mapDispatchToProps = dispatch => {
     fetchJobRequests: (props, providerId, navTo) => {
       dispatch(getPendingJobRequest(props, providerId, navTo));
     },
-    fetchJobRequestHistory: (clientId, only) => {
-      dispatch(getAllWorkRequestClient(clientId, only));
+    fetchJobRequestHistory: ({ clientId, props, only }) => {
+      dispatch(getAllWorkRequestClient({ clientId, props, only }));
     },
     updateUserDetails: details => {
       dispatch(updateUserDetails(details));

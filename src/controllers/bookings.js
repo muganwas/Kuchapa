@@ -7,8 +7,9 @@ const BOOKING_REQUEST = Config.baseURL + 'jobrequest/addjobrequest';
 
 export const getAllBookings = async ({
   userId,
+  page = 1,
   only = '',
-  limit,
+  limit = 10,
   userType, /** TODO: Refactor userType */
   toggleIsLoading,
   bookingHistoryURL,
@@ -19,7 +20,7 @@ export const getAllBookings = async ({
     let bookingCompleteData = [];
     let bookingRejectData = [];
     const idToken = await firebaseAuth().currentUser.getIdToken();
-    const response = await fetch(bookingHistoryURL + userId + '/bookings?only=' + only + '&limit=' + limit, {
+    const response = await fetch(bookingHistoryURL + userId + '/bookings?only=' + only + '&limit=' + limit + "&page=" + page, {
       headers: {
         Authorization: 'Bearer ' + idToken
       }
