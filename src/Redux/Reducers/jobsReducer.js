@@ -25,6 +25,8 @@ const initialState = {
   allJobRequestsClientMeta: { page: 1, limit: 10 },
   allJobRequestsProvidersMeta: { page: 1, limit: 10 },
   jobRequestsProvidersMeta: { page: 1, limit: 10 },
+  bookingCompleteMeta: { page: 1, limit: 20 },
+  bookingRejectMeta: { page: 1, limit: 20 },
   dataWorkSource: [],
   jobRequestsProviders: [],
   allJobRequestsProviders: [],
@@ -106,12 +108,14 @@ const jobsReducer = (state = initialState, action) => {
     case UPDATE_BOOKING_COMPLETE_DATA:
       return {
         ...state,
-        bookingCompleteData: action.payload,
+        bookingCompleteData: action.payload.data,
+        bookingCompleteMeta: action.payload.metaData
       };
     case UPDATE_REJECTED_BOOKINGS_DATA:
       return {
         ...state,
-        bookingRejectData: action.payload,
+        bookingRejectData: action.payload.data,
+        bookingRejectMeta: action.payload.metaData
       };
     case FETCH_ALL_JOB_REQUESTS_PRO_ERROR:
       return {

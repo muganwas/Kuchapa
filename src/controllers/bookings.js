@@ -20,28 +20,23 @@ export const getAllBookings = async ({
     let bookingCompleteData = [];
     let bookingRejectData = [];
     const idToken = await firebaseAuth().currentUser.getIdToken();
-    const response = await fetch(bookingHistoryURL + userId + '/bookings?only=' + only + '&limit=' + limit + "&page=" + page, {
+    const response = await fetch(bookingHistoryURL + userId + '/bookings?only=' + only + '&limit=' + limit + "&page=" + page + "&filter=" + true, {
       headers: {
         Authorization: 'Bearer ' + idToken
       }
     });
     const responseJson = await response.json();
-    if (responseJson.result && responseJson.data) {
+    if (responseJson.result) {
       let newData = cloneDeep(responseJson.data);
-      for (let i = 0; i < newData.length; i++) {
-        if (newData[i].chat_status === '1') {
-          if (newData[i].status === 'Completed') {
-            bookingCompleteData.push(newData[i]);
-          } else if (newData[i].status === 'Rejected') {
-            bookingRejectData.push(newData[i]);
-          }
-        } else {
-          if (newData[i].status === 'Rejected') {
-            bookingRejectData.push(newData[i]);
-          }
-        }
+      const filteredData = responseJson.filteredData;
+      if (!filteredData) {
+        bookingCompleteData = newData.filter(dt => dt.status === 'Completed');
+        bookingRejectData = newData.filter(dt => dt.status === 'Rejected');
+      } else {
+        bookingCompleteData = filteredData['Completed'];
+        bookingRejectData = filteredData['Rejected'];
       }
-      onSuccess(bookingCompleteData, bookingRejectData);
+      onSuccess(bookingCompleteData, bookingRejectData, responseJson.metadata);
     } else {
       toggleIsLoading(false);
     }

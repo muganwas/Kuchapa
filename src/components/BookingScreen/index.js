@@ -8,6 +8,7 @@ import {
   Image,
   Text,
   BackHandler,
+  RefreshControl,
   StatusBar,
   Platform,
   Modal,
@@ -62,6 +63,8 @@ class BookingScreen extends Component {
     this.state = {
       currentPage: 0,
       isLoading: true,
+      isLoadingCompleted: false,
+      isLoadingRejected: false,
       backClickCount: 0,
     };
     this.springValue = new Animated.Value(100);
@@ -109,22 +112,24 @@ class BookingScreen extends Component {
     });
   };
 
-  getAllBookingsCustomer = async (only, limit) =>
+  getAllBookingsCustomer = async (page, only, limit) =>
     await getAllBookings({
       userId: this.props?.userInfo?.userDetails?.userId,
       userType: 'Customer',
+      page,
       only,
       limit,
       toggleIsLoading: this.changeWaitingDialogVisibility,
       bookingHistoryURL: BOOKING_HISTORY,
-      onSuccess: (bookingCompleteData, bookingRejectData) => {
-        this.props.updateCompletedBookingData(bookingCompleteData);
-        this.props.updateFailedBookingData(bookingRejectData);
-        this.setState({ isLoading: false });
+      onSuccess: (newBookingCompleteData, newBookingRejectData, metaData) => {
+        const { jobsInfo: { bookingCompleteData, bookingRejectData } } = this.props;
+        this.props.updateCompletedBookingData({ data: [...newBookingCompleteData, ...bookingCompleteData], metaData });
+        this.props.updateFailedBookingData({ data: [...newBookingRejectData, ...bookingRejectData], metaData });
+        this.changeWaitingDialogVisibility(false);
       },
     });
 
-  fetchCompletedRejectedJobs = () => this.getAllBookingsCustomer('Completed,Rejected', 20);
+  fetchCompletedRejectedJobs = (page = 1) => this.getAllBookingsCustomer(page, 'Completed,Rejected', 20);
 
   onPageSelected = event => {
     let currentPage = event.nativeEvent.position;
@@ -286,12 +291,14 @@ class BookingScreen extends Component {
   changeWaitingDialogVisibility = bool => {
     this.setState(prevState => ({
       isLoading: typeof bool === 'boolean' ? bool : !prevState.isLoading,
+      isLoadingCompleted: typeof bool === 'boolean' ? bool : !prevState.isLoadingCompleted,
+      isLoadingRejected: typeof bool === 'boolean' ? bool : !prevState.isLoadingRejected,
     }));
   };
 
   render() {
     const {
-      jobsInfo: { bookingCompleteData, bookingRejectData },
+      jobsInfo: { bookingCompleteData, bookingRejectData, bookingCompleteMeta: { totalPages, page } },
     } = this.props;
     return (
       <View style={styles.container}>
@@ -359,7 +366,19 @@ class BookingScreen extends Component {
         <View style={{ flex: 1, display: 'flex', flexDirection: 'row' }}>
           {this.state.currentPage === 0 ?
             <>
-              <ScrollView>
+              <ScrollView
+                refreshControl={
+                  <RefreshControl
+                    refreshing={this.state.isLoadingCompleted}
+                    onRefresh={() => {
+                      this.fetchCompletedRejectedJobs(Number(page + 1));
+                    }}
+                  />
+                }
+              >
+                {totalPages / page > 1 ? <View style={{ display: 'flex', flex: 1, padding: spacing.small, alignItems: 'center' }}>
+                  <Text style={{ fontSize: font_size.small, color: darkGray, textAlign: 'center' }}>Pull down to load more</Text>
+                </View> : <></>}
                 <View style={styles.listView}>
                   {bookingCompleteData.map(this.renderBookingHistoryItem)}
                 </View>
@@ -379,7 +398,19 @@ class BookingScreen extends Component {
             </> :
             this.state.currentPage === 1 ?
               <>
-                <ScrollView>
+                <ScrollView
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={this.state.isLoadingRejected}
+                      onRefresh={() => {
+                        this.fetchCompletedRejectedJobs(Number(page + 1));
+                      }}
+                    />
+                  }
+                >
+                  {totalPages / page > 1 ? <View style={{ display: 'flex', flex: 1, padding: spacing.small, alignItems: 'center' }}>
+                    <Text style={{ fontSize: font_size.small, color: darkGray, textAlign: 'center' }}>Pull down to load more</Text>
+                  </View> : <></>}
                   <View style={styles.listView}>
                     {bookingRejectData.map(this.renderBookingHistoryItem)}
                   </View>
@@ -412,15 +443,6 @@ class BookingScreen extends Component {
             <Text style={styles.exitText}>Exit</Text>
           </TouchableOpacity>
         </Animated.View>
-        <Modal
-          transparent={true}
-          visible={this.state.isLoading}
-          animationType="fade"
-          onRequestClose={() => this.changeWaitingDialogVisibility(false)}>
-          <WaitingDialog
-            changeWaitingDialogVisibility={this.changeWaitingDialogVisibility}
-          />
-        </Modal>
       </View >
     );
   }
