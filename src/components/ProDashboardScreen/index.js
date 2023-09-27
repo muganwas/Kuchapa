@@ -59,6 +59,7 @@ import {
   themeRed,
   darkGray,
   black,
+  colorGray,
 } from '../../Constants/colors';
 
 const screenWidth = Dimensions.get('window').width;
@@ -287,12 +288,16 @@ class ProDashboardScreen extends Component {
       jobsInfo: { dataWorkSource },
       navigation,
     } = this.props;
-    return <View>{
+    return <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{
       dataWorkSource.map((item, index) => {
+        const rejected = item.status == 'Rejected';
+        const pending = item.status == 'Pending';
+        const accepted = item.status == 'Accepted';
+        const completed = item.status == 'Completed';
         if (
           item &&
           String(item.employee_id) === String(providerDetails.providerId) &&
-          (item.status != 'Pending')) {
+          !pending) {
           return (
             <TouchableOpacity
               key={index}
@@ -300,8 +305,10 @@ class ProDashboardScreen extends Component {
                 width: screenWidth,
                 flexDirection: 'row',
                 backgroundColor: lightGray,
+                justifyContent: 'center',
                 alignItems: 'center',
-                borderRadius: 3
+                borderRadius: 3,
+                marginBottom: metrics.spacing.xsmall
               }}
               onPress={() =>
                 navigation.navigate('ProBookingDetails', {
@@ -313,12 +320,11 @@ class ProDashboardScreen extends Component {
                 style={{
                   flex: 1,
                   alignItems: 'center',
+                  justifyContent: 'center',
                   paddingTop: 15,
                   paddingBottom: 15,
-                  paddingLeft: 5,
-                  paddingRight: 5,
                 }}>
-                <Text style={{ fontSize: metrics.font_size.normal }}>
+                <Text style={{ fontSize: metrics.font_size.small }}>
                   {item.service_details.service_name}
                 </Text>
               </View>
@@ -328,17 +334,15 @@ class ProDashboardScreen extends Component {
                   alignItems: 'center',
                   paddingTop: 15,
                   paddingBottom: 15,
-                  paddingLeft: 5,
-                  paddingRight: 5,
                 }}>
                 <Text
                   style={{
-                    fontSize: metrics.font_size.normal,
-                    ...(item.status === 'Pending'
+                    fontSize: metrics.font_size.small,
+                    ...(pending
                       ? styles.colorYellow
-                      : item.status === 'Accepted'
+                      : accepted
                         ? styles.colorGreen
-                        : item.status === 'Completed'
+                        : completed
                           ? styles.colorBlack
                           : styles.colorRed),
                   }}>
@@ -346,16 +350,10 @@ class ProDashboardScreen extends Component {
                 </Text>
               </View>
               <TouchableOpacity
-                style={{
-                  flex: 1,
-                  alignItems: 'center',
-                  paddingTop: 15,
-                  paddingBottom: 15,
-                  paddingLeft: 5,
-                  paddingRight: 5,
-                }}
+                style={rejected ? styles.inactiveReviewButton : styles.reviewButton}
+                disabled={rejected}
                 onPress={() => this.askForReview(item)}>
-                <Text style={{ fontSize: 12 }}>
+                <Text style={rejected ? styles.inactiveReviewButtonText : styles.reviewButtonText}>
                   {item.customer_review == 'Requested'
                     ? 'Waiting'
                     : item.customer_rating == ''
@@ -364,16 +362,10 @@ class ProDashboardScreen extends Component {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={{
-                  flex: 1,
-                  alignItems: 'center',
-                  paddingTop: 15,
-                  paddingBottom: 15,
-                  paddingLeft: 5,
-                  paddingRight: 5,
-                }}
+                style={rejected ? styles.inactiveReviewButton : styles.reviewButton}
+                disabled={rejected}
                 onPress={() => this.changeDialogVisibility(true, '', item, '', '')}>
-                <Text style={{ fontSize: metrics.font_size.normal }}>
+                <Text style={rejected ? styles.inactiveReviewButtonText : styles.reviewButtonText}>
                   {item.employee_rating == ''
                     ? 'Give'
                     : item.employee_rating + '/5'}
@@ -923,46 +915,35 @@ class ProDashboardScreen extends Component {
                 />
                 <View
                   style={{
+                    flex: 1,
+                    display: 'flex',
                     flexDirection: 'row',
-                    padding: metrics.spacing.small,
                     justifyContent: 'flex-start',
                   }}>
-                  <Text
-                    style={{
-                      flex: 1,
-                      fontSize: metrics.font_size.normal,
-                      fontWeight: 'bold',
-                      textAlign: 'center',
-                    }}>
-                    Job
-                  </Text>
-                  <Text
-                    style={{
-                      flex: 1,
-                      fontSize: metrics.font_size.normal,
-                      fontWeight: 'bold',
-                      textAlign: 'center',
-                    }}>
-                    Status
-                  </Text>
-                  <Text
-                    style={{
-                      flex: 1,
-                      fontSize: metrics.font_size.normal,
-                      fontWeight: 'bold',
-                      textAlign: 'center',
-                    }}>
-                    Client Review
-                  </Text>
-                  <Text
-                    style={{
-                      flex: 1,
-                      fontSize: metrics.font_size.normal,
-                      fontWeight: 'bold',
-                      textAlign: 'center',
-                    }}>
-                    Review
-                  </Text>
+                  <View style={styles.sectionTitle}>
+                    <Text
+                      style={styles.sectionTitleText}>
+                      Job
+                    </Text>
+                  </View>
+                  <View style={styles.sectionTitle}>
+                    <Text
+                      style={styles.sectionTitleText}>
+                      Status
+                    </Text>
+                  </View>
+                  <View style={styles.sectionTitle}>
+                    <Text
+                      style={styles.sectionTitleText}>
+                      Client Review
+                    </Text>
+                  </View>
+                  <View style={styles.sectionTitle}>
+                    <Text
+                      style={styles.sectionTitleText}>
+                      Review
+                    </Text>
+                  </View>
                 </View>
                 <View style={styles.listView}>
                   {dataWorkSource?.length > 0 &&
@@ -979,9 +960,7 @@ class ProDashboardScreen extends Component {
                         />}
                     >
                       {this.renderDoneJobs()}
-                      <View style={{ height: 200 }}>
-
-                      </View>
+                      <View style={{ height: 200 }}></View>
                     </ScrollView>}
                   {dataWorkSource?.length === 0 && (
                     <View style={{ padding: 15 }}>
@@ -1257,6 +1236,18 @@ const styles = StyleSheet.create({
     backgroundColor: colorBg,
     alignItems: 'center',
   },
+  sectionTitle: {
+    display: 'flex',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingLeft: metrics.spacing.small,
+    paddingRight: metrics.spacing.small,
+  },
+  sectionTitleText: {
+    fontSize: metrics.font_size.small,
+    fontWeight: 'bold',
+  },
   viewAll: {
     paddingLeft: spacing.small,
     paddingRight: spacing.small,
@@ -1274,9 +1265,10 @@ const styles = StyleSheet.create({
   textViewAll: {
     textAlignVertical: 'center',
     textAlign: 'center',
-    fontSize: font_size.normal,
+    fontSize: font_size.small,
     alignSelf: 'flex-end',
     color: 'black',
+    fontWeight: '600'
   },
   viewAccept: {
     paddingLeft: 5,
@@ -1328,31 +1320,62 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     alignItems: 'flex-start',
     justifyContent: 'center',
-    marginLeft: 15,
+    marginLeft: metrics.spacing.large,
+  },
+  reviewButton: {
+    flex: 1,
+    alignItems: 'center',
+    paddingTop: metrics.spacing.small,
+    paddingBottom: metrics.spacing.small,
+    backgroundColor: white,
+    margin: metrics.spacing.small,
+    shadowColor: colorGray,
+    shadowOffset: { width: 0, height: metrics.elevation.low },
+    elevation: metrics.elevation.low,
+    borderRadius: metrics.radius.xsmall
+  },
+  inactiveReviewButton: {
+    flex: 1,
+    alignItems: 'center',
+    paddingTop: metrics.spacing.small,
+    paddingBottom: metrics.spacing.small,
+    backgroundColor: lightGray,
+    margin: metrics.spacing.small,
+    shadowColor: lightGray,
+    shadowOffset: { width: 0, height: metrics.elevation.xlow },
+    elevation: metrics.elevation.xlow,
+    borderRadius: metrics.radius.xsmall
+  },
+  reviewButtonText: {
+    fontSize: metrics.font_size.small,
+    color: darkGray
+  },
+  inactiveReviewButtonText: {
+    fontSize: metrics.font_size.small,
+    color: colorGray
   },
   textHeader: {
-    fontSize: 20,
+    fontSize: metrics.font_size.header,
     fontWeight: 'bold',
-    color: 'black',
+    color: black,
     textAlignVertical: 'center',
     alignSelf: 'center',
   },
   listView: {
     flex: 1,
     backgroundColor: colorBg,
-    padding: 5,
   },
   itemMainContainer: {
     width: screenWidth,
     height: 55,
     flexDirection: 'row',
-    backgroundColor: 'white',
+    backgroundColor: white,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.75,
-    shadowRadius: 5,
-    elevation: 5,
-    padding: 5,
+    shadowRadius: metrics.radius.xxsmall,
+    elevation: metrics.elevation.low,
+    padding: metrics.spacing.small,
   },
   itemImageView: {
     width: 50,
