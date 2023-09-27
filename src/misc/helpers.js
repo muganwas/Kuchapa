@@ -606,11 +606,9 @@ export const getAllWorkRequestClientFunc = async ({ clientId, props, page, fetch
       dispatch(fetchedDataWorkSource({ data: [...dataWorkSource, ...newDataWorkSource], metaData: responseJson.metadata }));
       dispatch(fetchedAllJobRequestsClient({ data: [...allJobRequestsClient, ...newAllJobRequestsClient], metaData: responseJson.metadata }));
     } else {
-      console.log('work req err ', responseJson.message)
       SimpleToast.show(responseJson.message);
     }
   } catch (e) {
-    console.log('work req err 2', e)
     SimpleToast.show(e.message);
   }
 };

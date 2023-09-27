@@ -13,7 +13,6 @@ export const getAllNotifications = async ({
   notificationsURL,
 }) => {
   toggleIsLoading(true);
-  console.log('notification response', { page, limit })
   try {
     const idToken = await firebaseAuth().currentUser.getIdToken();
     const response = await fetch(notificationsURL + userId + "?page=" + page + "&limit=" + limit, {
@@ -96,9 +95,8 @@ export const readNotification = async ({
       onSuccess(altDataSource);
     }
   } catch (e) {
-    console.log('read notification err', e);
     SimpleToast.show(
-      "Notification couldn't be read, try again.",
+      e.message,
       SimpleToast.SHORT,
     );
   }

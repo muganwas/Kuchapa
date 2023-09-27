@@ -612,7 +612,6 @@ export const updateProfileInfo = async ({
     });
     const response = await resp.json();
     if (response.result) {
-      console.log('all coordinates ', { response })
       const online = await synchroniseOnlineStatus(userId, response.data.online);
       const newUserData = userType === 'User' ? {
         userId: response.data.id,
