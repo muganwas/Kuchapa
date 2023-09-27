@@ -10,6 +10,7 @@ const initialState = {
   adminMessages: 0,
   generic: 0,
   dataSource: [],
+  dataSourceMeta: { page: 1, limit: 10 },
   messagesFetched: false,
   messagesFetching: false,
   messagesError: null,
@@ -46,7 +47,8 @@ const notificationReducer = (state = initialState, action) => {
     case UPDATE_NOTIFICATIONS:
       return {
         ...state,
-        dataSource: action.payload,
+        dataSource: action.payload.data,
+        dataSourceMeta: action.payload.metaData
       };
     default:
       return {

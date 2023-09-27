@@ -4,6 +4,8 @@ import firebaseAuth from '@react-native-firebase/auth';
 
 export const getAllNotifications = async ({
   userId,
+  page,
+  limit,
   userType,
   toggleIsLoading,
   onSuccess,
@@ -11,9 +13,10 @@ export const getAllNotifications = async ({
   notificationsURL,
 }) => {
   toggleIsLoading(true);
+  console.log('notification response', { page, limit })
   try {
     const idToken = await firebaseAuth().currentUser.getIdToken();
-    const response = await fetch(notificationsURL + userId, {
+    const response = await fetch(notificationsURL + userId + "?page=" + page + "&limit=" + limit, {
       headers: {
         Authorization: 'Bearer ' + idToken
       }
@@ -21,13 +24,12 @@ export const getAllNotifications = async ({
     const responseJson = await response.json();
     if (responseJson.result) {
       let dataSource = cloneDeep(responseJson.data);
-      onSuccess(dataSource);
+      onSuccess(dataSource, responseJson.metadata);
     } else {
-      onError();
+      onError && onError(response.message);
     }
   } catch (e) {
-    onError();
-    SimpleToast.show('An error has occurred, try again.');
+    onError && onError(e.message);
   }
 };
 

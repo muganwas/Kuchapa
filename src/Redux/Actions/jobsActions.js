@@ -137,7 +137,7 @@ export const getPendingJobRequest = (props, userId, navTo) => {
   };
 };
 
-export const getAllWorkRequestClient = ({ clientId, props, page = 1, only }) => {
+export const getAllWorkRequestClient = ({ clientId, props, page = 1, only = '' }) => {
   return dispatch => {
     try {
       getAllWorkRequestClientFunc({ clientId, props, page, fetchedDataWorkSource, fetchedAllJobRequestsClient, dispatch, only });

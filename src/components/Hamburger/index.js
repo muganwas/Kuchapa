@@ -25,7 +25,6 @@ import {
   startFetchingNotification,
   notificationsFetched,
   notificationError,
-  updateNotifications,
 } from '../../Redux/Actions/notificationActions';
 import {
   startFetchingMessages,
@@ -65,13 +64,10 @@ import {
 import { checkForUserType } from '../../controllers/users';
 import { updateLatestChats } from '../../Redux/Actions/messageActions';
 import { deregisterOnlineStatusListener } from '../../controllers/chats';
-import { getAllNotifications } from '../../controllers/notifications';
 import { getAllBookings } from '../../controllers/bookings';
 import { white } from '../../Constants/colors';
 
 const socket = Config.socket;
-const NOTIFICATION_URL =
-  Config.baseURL + 'notification/get-customer-notification/';
 const BOOKING_HISTORY = Config.baseURL + 'jobrequest/customer_request/';
 const Android = Platform.OS === 'android';
 let notifications = [];
@@ -170,7 +166,6 @@ class Hamburger extends React.Component {
         }
         let newJobRequests = cloneDeep(jobRequests);
         let pos = jobRequests.findIndex(obj => orderId === obj.orderId);
-        // title !== 'Message Recieved' && this.getAllNotificationsCustomer();
         if (title.toLowerCase() === 'chat request rejected') {
           if (pos !== undefined && pos !== -1) {
             newJobRequests.splice(pos, 1);
@@ -607,9 +602,6 @@ const mapDispatchToProps = dispatch => {
     },
     fetchClientMessages: (senderId, callBack) => {
       dispatch(fetchClientMessages({ senderId, callBack }));
-    },
-    updateNotifications: data => {
-      dispatch(updateNotifications(data));
     },
     updateCompletedBookingData: data => {
       dispatch(updateCompletedBookingData(data));

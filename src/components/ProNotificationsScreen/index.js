@@ -9,6 +9,7 @@ import {
   Dimensions,
   StatusBar,
   Platform,
+  RefreshControl,
   Animated,
   BackHandler,
   ActivityIndicator,
@@ -24,9 +25,10 @@ import {
   notificationError,
   updateNotifications,
 } from '../../Redux/Actions/notificationActions';
-import { font_size } from '../../Constants/metrics';
+import { font_size, spacing } from '../../Constants/metrics';
 import {
   lightGray,
+  darkGray,
   white,
   themeRed,
   colorGray,
@@ -111,21 +113,21 @@ class ProNotificationsScreen extends Component {
       },
     });
 
-  getAllNotificationsProvider = async () =>
+  getAllNotificationsProvider = async (page = 1, limit = 10) =>
     await getAllNotifications({
       userId: this.props?.userInfo?.providerDetails?.providerId,
       userType: 'Provider',
+      page,
+      limit,
       toggleIsLoading: this.changeWaitingDialogVisibility,
-      onSuccess: dataSource => {
-        this.props.updateNotifications(dataSource);
-        this.setState({
-          isLoading: false,
-        });
+      onSuccess: (newDataSource, metaData) => {
+        const { notificationsInfo: { dataSource } } = this.props;
+        this.props.updateNotifications({ data: [...newDataSource, ...dataSource], metaData });
+        this.changeWaitingDialogVisibility(false);
       },
-      onError: () => {
-        this.setState({
-          isLoading: false,
-        });
+      onError: (error) => {
+        this.changeWaitingDialogVisibility(false);
+        SimpleToast.show(error);
       },
       notificationsURL: NOTIFICATION_URL,
     });
@@ -229,7 +231,7 @@ class ProNotificationsScreen extends Component {
 
   render() {
     const {
-      notificationsInfo: { dataSource },
+      notificationsInfo: { dataSource, dataSourceMeta: { totalPages, page } },
     } = this.props;
     return (
       <View style={styles.container}>
@@ -239,24 +241,29 @@ class ProNotificationsScreen extends Component {
             styles.header,
             { borderBottomWidth: 1, borderBottomColor: themeRed },
           ]}><ProHamburger text="Notifications" /></View>
-        {this.state.isLoading && (
-          <View
-            style={{
-              height: '100%',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <ActivityIndicator size={'large'} color={colorGray} />
-          </View>
-        )}
-        {!this.state.isLoading && (dataSource && dataSource.length > 0) && (
-          <ScrollView>
-            <View style={styles.listView}>
-              {dataSource.map(this.renderItem)}
-            </View>
-          </ScrollView>
-        )}
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isLoading}
+              onRefresh={() => {
+                <RefreshControl
+                  refreshing={this.state.isLoading}
+                  onRefresh={() => {
+                    const { notificationsInfo: { dataSourceMeta: { page, limit } } } = this.props;
+                    this.getAllNotificationsProvider(Number(page) + 1, limit);
+                  }}
+                />
+              }}
+            />
+          }
+        >
+          {totalPages / page > 1 ? <View style={{ display: 'flex', flex: 1, padding: spacing.small, alignItems: 'center' }}>
+            <Text style={{ fontSize: font_size.small, color: darkGray, textAlign: 'center' }}>Pull down to load more</Text>
+          </View> : <></>}
+          {dataSource && dataSource.length > 0 && <View style={styles.listView}>
+            {dataSource.map(this.renderItem)}
+          </View>}
+        </ScrollView>
         {!this.state.isLoading && (!dataSource || dataSource.length === 0) && (
           <View
             style={{

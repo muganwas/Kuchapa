@@ -211,7 +211,7 @@ export const inhouseLogin = async ({
   try {
     const home = userType === 'Provider' ? 'ProHome' : 'Home';
     updateAppUserDetails(userId, fcmToken, () => {
-      fetchJobRequestHistory({ providerId: userId, userId, props });
+      fetchJobRequestHistory({ providerId: userId, clientId: userId, userId, props });
       fetchPendingJobInfo(props, userId, home);
     });
   } catch (e) {

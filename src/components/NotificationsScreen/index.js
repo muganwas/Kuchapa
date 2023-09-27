@@ -6,6 +6,7 @@ import {
   Image,
   Text,
   Dimensions,
+  RefreshControl,
   ActivityIndicator,
   BackHandler,
   StatusBar,
@@ -30,11 +31,12 @@ import {
   deleteNotification,
   readNotification,
 } from '../../controllers/notifications';
-import { font_size } from '../../Constants/metrics';
+import { font_size, spacing } from '../../Constants/metrics';
 import {
   lightGray,
   white,
   themeRed,
+  darkGray,
   colorGray,
   black,
   colorBg,
@@ -137,21 +139,21 @@ class NotificationsScreen extends Component {
       },
     });
 
-  getAllNotificationsCustomer = async () =>
+  getAllNotificationsCustomer = async (page = 1, limit = 10) =>
     await getAllNotifications({
       userId: this.props?.userInfo?.userDetails?.userId,
       userType: 'Customer',
+      page,
+      limit,
       toggleIsLoading: this.changeWaitingDialogVisibility,
-      onSuccess: dataSource => {
-        this.props.updateNotifications(dataSource);
-        this.setState({
-          isLoading: false,
-        });
+      onSuccess: (newDataSource, metaData) => {
+        const { notificationsInfo: { dataSource } } = this.props;
+        this.props.updateNotifications({ data: [...newDataSource, ...dataSource], metaData });
+        this.changeWaitingDialogVisibility(false);
       },
-      onError: () => {
-        this.setState({
-          isLoading: false,
-        });
+      onError: (error) => {
+        this.changeWaitingDialogVisibility(false);
+        SimpleToast.show(error);
       },
       notificationsURL: NOTIFICATION_URL,
     });
@@ -248,7 +250,7 @@ class NotificationsScreen extends Component {
 
   render() {
     const {
-      notificationsInfo: { dataSource },
+      notificationsInfo: { dataSource, dataSourceMeta: { totalPages, page } },
     } = this.props;
     return (
       <View style={styles.container}>
@@ -260,24 +262,24 @@ class NotificationsScreen extends Component {
           ]}>
           <Hamburger text="Notifications" />
         </View>
-        {this.state.isLoading && (
-          <View
-            style={{
-              height: '100%',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <ActivityIndicator size={'large'} color={colorGray} />
-          </View>
-        )}
-        {!this.state.isLoading && (dataSource && dataSource.length > 0) && (
-          <ScrollView>
-            <View style={styles.listView}>
-              {dataSource.map(this.renderItem)}
-            </View>
-          </ScrollView>
-        )}
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isLoading}
+              onRefresh={() => {
+                const { notificationsInfo: { dataSourceMeta: { page, limit } } } = this.props;
+                this.getAllNotificationsCustomer(Number(page) + 1, limit);
+              }}
+            />
+          }
+        >
+          {totalPages / page > 1 ? <View style={{ display: 'flex', flex: 1, padding: spacing.small, alignItems: 'center' }}>
+            <Text style={{ fontSize: font_size.small, color: darkGray, textAlign: 'center' }}>Pull down to load more</Text>
+          </View> : <></>}
+          {dataSource && dataSource.length > 0 && <View style={styles.listView}>
+            {dataSource.map(this.renderItem)}
+          </View>}
+        </ScrollView>
         {!this.state.isLoading && (!dataSource || dataSource.length === 0) && (
           <View
             style={{
