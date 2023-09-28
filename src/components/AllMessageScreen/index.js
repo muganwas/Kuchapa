@@ -16,6 +16,7 @@ import {
   Animated,
 } from 'react-native';
 import _ from 'lodash';
+import SimpleToast from 'react-native-simple-toast';
 import {
   startFetchingNotification,
   notificationsFetched,
@@ -31,6 +32,8 @@ import {
   themeRed,
   black
 } from '../../Constants/colors';
+import { fetchJobInfo } from '../../controllers/jobs';
+import Config from '../Config';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -68,6 +71,7 @@ class AllMessageScreen extends Component {
   componentDidMount() {
     const {
       messagesInfo: { latestChats, fetchedLatestChats },
+      userInfo: { userDetails: { userId } }
     } = this.props;
     this.setState({ dataSource: latestChats, isLoading: !fetchedLatestChats });
     BackHandler.addEventListener(
@@ -96,12 +100,20 @@ class AllMessageScreen extends Component {
     this.props.navigation.goBack();
   };
 
-  goToChat = async ({ selectedJobReq, item }, index) => {
+  goToChat = async ({ selectedJobReq, item, index }) => {
     const {
       dispatchSelectedJobRequest,
+      userInfo: { userDetails: { userId } },
       navigation
     } = this.props;
+    if (!selectedJobReq) {
+      this.setState({ isLoading: true });
+      selectedJobReq = await fetchJobInfo({
+        jobFetchURL: Config.baseURL + 'jobrequest/job_details?orderId=' + item.orderId + "&employeeId=" + item.id + "&userId=" + userId + "&userType=Customer"
+      });
+    }
     await dispatchSelectedJobRequest(selectedJobReq);
+    this.setState({ isLoading: false });
     if (selectedJobReq?.status.toLowerCase() === 'pending') {
       navigation.navigate('Chat', {
         providerId: item.id,
@@ -130,60 +142,58 @@ class AllMessageScreen extends Component {
     }
   }
 
-  renderRecentMessageItem = (item, index) => {
+  renderRecentMessageItem = (item, status, index) => {
     const {
-      jobsInfo: { allJobRequestsClient },
+      jobsInfo: { jobRequests },
     } = this.props;
-    const currentPos = allJobRequestsClient.findIndex(jobInfo => jobInfo.employee_id === item.id);
-    const selectedJobReq = allJobRequestsClient[currentPos];
-    if (currentPos !== -1 && selectedJobReq?.employee_details)
-      return (
-        <TouchableOpacity
-          key={index}
-          style={styles.itemMainContainer}
-          onPress={() => this.goToChat({ selectedJobReq, item }, currentPos)}>
-          <View style={styles.itemImageView}>
-            <Image
-              style={{ width: 40, height: 40, borderRadius: 100 }}
-              source={
-                item.image && item.imageExists
-                  ? { uri: item.image }
-                  : require('../../images/generic_avatar.png')
-              }
-            />
-          </View>
-          <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
-            <Text
-              style={{
-                fontSize: 14,
-                color: black,
-                textAlignVertical: 'center',
-              }}>
-              {item.name}
-            </Text>
-            <Text
-              style={{
-                width: screenWidth - 150,
-                fontSize: 10,
-                color: black,
-                textAlignVertical: 'center',
-                color: 'gray',
-                marginTop: 3,
-              }}
-              numberOfLines={2}>
-              {item.textMessage}
-            </Text>
-          </View>
+    const currentPos = jobRequests.findIndex(jobInfo => jobInfo.employee_id === item.id);
+    const selectedJobReq = jobRequests[currentPos];
+    return (
+      <TouchableOpacity
+        key={index}
+        style={styles.itemMainContainer}
+        onPress={() => this.goToChat({ selectedJobReq, item, index: currentPos })}>
+        <View style={styles.itemImageView}>
+          <Image
+            style={{ width: 40, height: 40, borderRadius: 100 }}
+            source={
+              item.image && item.imageExists
+                ? { uri: item.image }
+                : require('../../images/generic_avatar.png')
+            }
+          />
+        </View>
+        <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
+          <Text
+            style={{
+              fontSize: 14,
+              color: black,
+              textAlignVertical: 'center',
+            }}>
+            {item.name}
+          </Text>
+          <Text
+            style={{
+              width: screenWidth - 150,
+              fontSize: 10,
+              color: black,
+              textAlignVertical: 'center',
+              color: 'gray',
+              marginTop: 3,
+            }}
+            numberOfLines={2}>
+            {item.textMessage}
+          </Text>
+        </View>
 
-          <View
-            style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
-            <Text style={{ alignSelf: 'flex-end', marginRight: 20, fontSize: 8 }}>
-              {item.date}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      );
-    return <View key={index}></View>
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
+          <Text style={{ alignSelf: 'flex-end', marginRight: 20, fontSize: 8 }}>
+            {item.date}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
   };
 
   searchTask = textInput => {

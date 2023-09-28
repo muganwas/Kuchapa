@@ -427,12 +427,30 @@ export const jobCompleteTask = async ({
   }
 };
 
+export const fetchJobInfo = async ({ jobFetchURL }) => {
+  try {
+    const idToken = await firebaseAuth().currentUser.getIdToken();
+    const result = await fetch(jobFetchURL, {
+      headers: {
+        Authorization: 'Bearer ' + idToken,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      }
+    });
+    const jobInfo = await result.json();
+    return jobInfo?.data;
+  } catch (e) {
+    SimpleToast.show(e.message);
+    return null;
+  }
+}
+
 export const fetchServices = async ({ onSuccess, onError }) => {
   try {
     const response = await fetch(SERVICES_URL);
     const responseJson = await response.json();
     onSuccess(responseJson.data);
   } catch (e) {
-    onError('An error has occurred, check your internet connection');
+    onError(e.message);
   }
 };

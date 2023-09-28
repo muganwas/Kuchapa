@@ -27,6 +27,7 @@ import {
   fetchProviderJobInfoError,
   setSelectedJobRequest,
 } from '../../Redux/Actions/jobsActions';
+import Config from '../Config';
 import { updateLatestChats } from '../../Redux/Actions/messageActions';
 import { colorBg, white, themeRed, lightGray } from '../../Constants/colors';
 
@@ -95,85 +96,94 @@ class ProAllMessageScreen extends Component {
     this.props.navigation.goBack();
   };
 
-  renderRecentMessageItem = (item, index) => {
+  gotToChat = async ({ selectedJobReq, item, index }) => {
     const {
       dispatchSelectedJobRequest,
-      jobsInfo: { allJobRequestsProviders },
-      navigation
+      navigation,
+      userInfo: { providerDetails: { providerId } }
     } = this.props;
+    if (!selectedJobReq) {
+      this.setState({ isLoading: true });
+      selectedJobReq = await fetchJobInfo({
+        jobFetchURL: Config.baseURL + 'jobrequest/job_details?orderId=' + item.orderId + "&employeeId=" + providerId + "&userId=" + item.id + "&userType=Employee"
+      });
+    }
+    await dispatchSelectedJobRequest(selectedJobReq);
+    this.setState({ isLoading: false })
+    if (selectedJobReq.status === 'Pending')
+      navigation.navigate('ProAcceptRejectJob', {
+        currentPos: index,
+        orderId: item.orderId,
+      });
+    else
+      navigation.navigate('ProChat', {
+        currentPos: index,
+        receiverId: item.id,
+        receiverName: item.name,
+        receiverImage: item.image,
+        orderId: item.orderId,
+        serviceName: item.serviceName,
+        pageTitle: 'ProAllMessage',
+        imageAvailable: item.imageAvailable
+      });
+  }
 
-    const currentPos = allJobRequestsProviders.findIndex(el => el.user_id === item.id);
-    const selectedJobReq = allJobRequestsProviders[currentPos];
-
-    if (selectedJobReq?.user_details && (currentPos !== undefined && currentPos !== -1))
-      return (
-        <TouchableOpacity
-          key={index}
-          style={styles.itemMainContainer}
-          onPress={async () => {
-            await dispatchSelectedJobRequest(selectedJobReq);
-            if (selectedJobReq.status === 'Pending')
-              navigation.navigate('ProAcceptRejectJob', {
-                currentPos: currentPos,
-                orderId: item.orderId,
-              });
-            else
-              navigation.navigate('ProChat', {
-                currentPos,
-                receiverId: item.id,
-                receiverName: item.name,
-                receiverImage: item.image,
-                orderId: item.orderId,
-                serviceName: item.serviceName,
-                pageTitle: 'ProAllMessage',
-                imageAvailable: item.imageAvailable
-              });
-          }}>
-          <View style={styles.itemImageView}>
-            <Image
-              style={{ width: 40, height: 40, borderRadius: 100 }}
-              source={
-                item.image && item.imageExists
-                  ? { uri: item.image }
-                  : require('../../images/generic_avatar.png')
-              }
-            />
-          </View>
-          <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
-            <Text
-              style={{
-                fontSize: 14,
-                color: 'black',
-                textAlignVertical: 'center',
-              }}>
-              {item.name}
-            </Text>
-            <Text
-              style={{
-                width: screenWidth - 150,
-                fontSize: 10,
-                color: 'black',
-                textAlignVertical: 'center',
-                color: 'gray',
-                marginTop: 3,
-              }}
-              numberOfLines={2}>
-              {item.textMessage}
-            </Text>
-          </View>
-
-          <View
+  renderRecentMessageItem = (item, index) => {
+    const {
+      jobsInfo: { jobRequestsProviders }
+    } = this.props;
+    const currentPos = jobRequestsProviders.findIndex(el => el.user_id === item.id);
+    const selectedJobReq = jobRequestsProviders[currentPos];
+    return (
+      <TouchableOpacity
+        key={index}
+        style={styles.itemMainContainer}
+        onPress={() => this.gotToChat({ selectedJobReq, item, index: currentPos })}>
+        <View style={styles.itemImageView}>
+          <Image
+            style={{ width: 40, height: 40, borderRadius: 100 }}
+            source={
+              item.image && item.imageExists
+                ? { uri: item.image }
+                : require('../../images/generic_avatar.png')
+            }
+          />
+        </View>
+        <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
+          <Text
             style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignContent: 'center',
+              fontSize: 14,
+              color: 'black',
+              textAlignVertical: 'center',
             }}>
-            <Text style={{ alignSelf: 'flex-end', marginRight: 20, fontSize: 8 }}>
-              {item.date}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      );
+            {item.name}
+          </Text>
+          <Text
+            style={{
+              width: screenWidth - 150,
+              fontSize: 10,
+              color: 'black',
+              textAlignVertical: 'center',
+              color: 'gray',
+              marginTop: 3,
+            }}
+            numberOfLines={2}>
+            {item.textMessage}
+          </Text>
+        </View>
+
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignContent: 'center',
+          }}>
+          <Text style={{ alignSelf: 'flex-end', marginRight: 20, fontSize: 8 }}>
+            {item.date}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
     return <View key={index}></View>
   };
 
