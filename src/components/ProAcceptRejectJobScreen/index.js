@@ -172,8 +172,7 @@ class ProAcceptRejectJobScreen extends Component {
     const {
       userInfo: { providerDetails },
       jobsInfo: {
-        jobRequestsProviders,
-        selectedJobRequest: { user_id },
+        selectedJobRequest
       },
       messagesInfo: { fetchedDBMessages },
       generalInfo: { OnlineUsers },
@@ -182,6 +181,7 @@ class ProAcceptRejectJobScreen extends Component {
     if (!socket.connected) {
       socket.connect();
     }
+    const { user_id } = selectedJobRequest;
     const currRequestPos = route.params.currentPos || 0;
     this.setState({
       senderId: providerDetails?.providerId,
@@ -190,29 +190,29 @@ class ProAcceptRejectJobScreen extends Component {
       senderSurname: providerDetails?.surname,
       inputMessage: '',
       showButton: false,
-      isAcceptJob: jobRequestsProviders[currRequestPos]?.status === 'Accepted',
+      isAcceptJob: selectedJobRequest.status === 'Accepted',
       isRejectJob: false,
       isLoading: !fetchedDBMessages,
       isErrorToast: false,
-      receiverId: jobRequestsProviders[currRequestPos]?.user_id,
-      receiverName: jobRequestsProviders[currRequestPos]?.name,
-      receiverImage: jobRequestsProviders[currRequestPos]?.image,
-      receiverMobile: jobRequestsProviders[currRequestPos]?.mobile,
-      receiverDob: jobRequestsProviders[currRequestPos]?.dob,
-      receiverAddress: jobRequestsProviders[currRequestPos]?.address,
-      receiverLat: jobRequestsProviders[currRequestPos]?.lat,
-      receiverLang: jobRequestsProviders[currRequestPos]?.lang,
-      receiverFcmId: jobRequestsProviders[currRequestPos]?.fcm_id,
-      orderId: jobRequestsProviders[currRequestPos]?.order_id,
-      serviceName: jobRequestsProviders[currRequestPos]?.service_name,
-      mainId: jobRequestsProviders[currRequestPos]?.id,
-      deliveryAddress: jobRequestsProviders[currRequestPos]?.delivery_address,
-      deliveryLat: jobRequestsProviders[currRequestPos]?.delivery_lat,
-      deliveryLang: jobRequestsProviders[currRequestPos]?.delivery_lang,
-      chatStatus: jobRequestsProviders[currRequestPos]?.chat_status,
-      status: jobRequestsProviders[currRequestPos]?.status,
+      receiverId: selectedJobRequest.user_id,
+      receiverName: selectedJobRequest.name,
+      receiverImage: selectedJobRequest.image,
+      receiverMobile: selectedJobRequest.mobile,
+      receiverDob: selectedJobRequest.dob,
+      receiverAddress: selectedJobRequest.address,
+      receiverLat: selectedJobRequest.lat,
+      receiverLang: selectedJobRequest.lang,
+      receiverFcmId: selectedJobRequest.fcm_id,
+      orderId: selectedJobRequest.order_id,
+      serviceName: selectedJobRequest.service_name,
+      mainId: selectedJobRequest.id,
+      deliveryAddress: selectedJobRequest.delivery_address,
+      deliveryLat: selectedJobRequest.delivery_lat,
+      deliveryLang: selectedJobRequest.delivery_lang,
+      chatStatus: selectedJobRequest.chat_status,
+      status: selectedJobRequest.status,
       imageAvailable:
-        jobRequestsProviders[currRequestPos].imageAvailable || false,
+        selectedJobRequest.imageAvailable || false,
       currRequestPos,
       selectedStatus: '0',
       liveChatStatus: OnlineUsers[user_id] ? OnlineUsers[user_id].status : '0',

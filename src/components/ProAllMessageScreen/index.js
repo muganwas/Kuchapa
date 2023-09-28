@@ -27,6 +27,7 @@ import {
   fetchProviderJobInfoError,
   setSelectedJobRequest,
 } from '../../Redux/Actions/jobsActions';
+import { fetchJobInfo } from '../../controllers/jobs';
 import Config from '../Config';
 import { updateLatestChats } from '../../Redux/Actions/messageActions';
 import { colorBg, white, themeRed, lightGray } from '../../Constants/colors';
@@ -110,7 +111,7 @@ class ProAllMessageScreen extends Component {
     }
     await dispatchSelectedJobRequest(selectedJobReq);
     this.setState({ isLoading: false })
-    if (selectedJobReq.status === 'Pending')
+    if (selectedJobReq.status == 'Pending' || selectedJobReq.status == 'Accepted')
       navigation.navigate('ProAcceptRejectJob', {
         currentPos: index,
         orderId: item.orderId,

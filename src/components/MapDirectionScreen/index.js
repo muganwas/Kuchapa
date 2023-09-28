@@ -69,11 +69,11 @@ class MapDirectionScreen extends Component {
       userInfo: { userDetails },
       generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
-        jobRequests,
-        selectedJobRequest: { employee_id },
+        selectedJobRequest
       },
       route,
     } = props;
+    const { employee_id } = selectedJobRequest;
     const currRequestPos = route.params.currentPos;
     const employeeLatitude = othersCoordinates[employee_id]
       ? othersCoordinates[employee_id].latitude
@@ -97,25 +97,25 @@ class MapDirectionScreen extends Component {
       inputMessage: '',
       dataChatSource: [],
       currRequestPos,
-      id: jobRequests[currRequestPos].id,
-      orderId: jobRequests[currRequestPos].order_id,
-      providerId: jobRequests[currRequestPos].employee_id,
-      providerImage: jobRequests[currRequestPos].image,
-      providerfcmId: jobRequests[currRequestPos].fcm_id,
+      id: selectedJobRequest.id,
+      orderId: selectedJobRequest.order_id,
+      providerId: selectedJobRequest.employee_id,
+      providerImage: selectedJobRequest.image,
+      providerfcmId: selectedJobRequest.fcm_id,
       providerName:
-        jobRequests[currRequestPos].name +
+        selectedJobRequest.name +
         ' ' +
-        jobRequests[currRequestPos].surName,
-      providerMobile: jobRequests[currRequestPos].mobile,
-      providerDescription: jobRequests[currRequestPos].description,
-      providerAddress: jobRequests[currRequestPos].address,
-      providerLat: jobRequests[currRequestPos].lat,
-      providerLang: jobRequests[currRequestPos].lang,
-      serviceName: jobRequests[currRequestPos].service_name,
-      isJobAccepted: jobRequests[currRequestPos].status === 'Accepted',
+        selectedJobRequest.surName,
+      providerMobile: selectedJobRequest.mobile,
+      providerDescription: selectedJobRequest.description,
+      providerAddress: selectedJobRequest.address,
+      providerLat: selectedJobRequest.lat,
+      providerLang: selectedJobRequest.lang,
+      serviceName: selectedJobRequest.service_name,
+      isJobAccepted: selectedJobRequest.status === 'Accepted',
       titlePage: route.params.titlePage,
       mapKey: Math.random(2),
-      fcm_id: jobRequests[currRequestPos].fcm_id,
+      fcm_id: selectedJobRequest.fcm_id,
       employeeLocationFetched: othersCoordinates[employee_id] ? true : false,
       showDialog: false,
       dialogType: null,
@@ -133,16 +133,13 @@ class MapDirectionScreen extends Component {
       userInfo: { userDetails },
       generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
-        jobRequests,
-        selectedJobRequest: { employee_id },
+        selectedJobRequest
       },
       route,
     } = props;
+    const { employee_id } = selectedJobRequest;
     const currRequestPos = route.params.currentPos;
-    if (
-      (currRequestPos || currRequestPos === 0) &&
-      jobRequests[currRequestPos]
-    ) {
+    if (selectedJobRequest) {
       const employeeLatitude = othersCoordinates[employee_id]
         ? othersCoordinates[employee_id].latitude
         : usersCoordinates.latitude;
@@ -166,25 +163,25 @@ class MapDirectionScreen extends Component {
         inputMessage: '',
         dataChatSource: [],
         currRequestPos,
-        id: jobRequests[currRequestPos].id,
-        orderId: jobRequests[currRequestPos].order_id,
-        providerId: jobRequests[currRequestPos].employee_id,
-        providerImage: jobRequests[currRequestPos].image,
-        providerfcmId: jobRequests[currRequestPos].fcm_id,
+        id: selectedJobRequest.id,
+        orderId: selectedJobRequest.order_id,
+        providerId: selectedJobRequest.employee_id,
+        providerImage: selectedJobRequest.image,
+        providerfcmId: selectedJobRequest.fcm_id,
         providerName:
-          jobRequests[currRequestPos].name +
+          selectedJobRequest.name +
           ' ' +
-          jobRequests[currRequestPos].surName,
-        providerMobile: jobRequests[currRequestPos].mobile,
-        providerDescription: jobRequests[currRequestPos].description,
-        providerAddress: jobRequests[currRequestPos].address,
-        providerLat: jobRequests[currRequestPos].lat,
-        providerLang: jobRequests[currRequestPos].lang,
-        serviceName: jobRequests[currRequestPos].service_name,
-        isJobAccepted: jobRequests[currRequestPos].status === 'Accepted',
+          selectedJobRequest.surName,
+        providerMobile: selectedJobRequest.mobile,
+        providerDescription: selectedJobRequest.description,
+        providerAddress: selectedJobRequest.address,
+        providerLat: selectedJobRequest.lat,
+        providerLang: selectedJobRequest.lang,
+        serviceName: selectedJobRequest.service_name,
+        isJobAccepted: selectedJobRequest.status === 'Accepted',
         titlePage: route.params.titlePage,
         mapKey: Math.random(2),
-        fcm_id: jobRequests[currRequestPos].fcm_id,
+        fcm_id: selectedJobRequest.fcm_id,
         employeeLocationFetched: othersCoordinates[employee_id] ? true : false,
         showDialog: false,
         dialogType: null,
@@ -365,7 +362,7 @@ class MapDirectionScreen extends Component {
   render() {
     const {
       userInfo: { userDetails },
-      jobsInfo: { jobRequests },
+      jobsInfo: { selectedJobRequest },
       fetchedNotifications,
     } = this.props;
     const {
@@ -522,7 +519,7 @@ class MapDirectionScreen extends Component {
         ) : (
           <ActivityIndicator size={30} color={'#000'} />
         )}
-        {jobRequests && jobRequests[currRequestPos] && (
+        {selectedJobRequest && (
           <SlidingPanel
             headerLayoutHeight={140}
             headerLayout={(togglePanel, panelStatus) => (
@@ -558,9 +555,9 @@ class MapDirectionScreen extends Component {
                         borderRadius: 200,
                       }}
                       source={
-                        jobRequests[currRequestPos] &&
-                          jobRequests[currRequestPos].imageAvailable
-                          ? { uri: jobRequests[currRequestPos].image }
+                        selectedJobRequest &&
+                          selectedJobRequest.imageAvailable
+                          ? { uri: selectedJobRequest.image }
                           : require('../../images/generic_avatar.png')
                       }
                     />
@@ -579,9 +576,9 @@ class MapDirectionScreen extends Component {
                           textAlignVertical: 'center',
                         }}
                         numberOfLines={1}>
-                        {jobRequests[currRequestPos].name +
+                        {selectedJobRequest.name +
                           ' ' +
-                          jobRequests[currRequestPos].surName}
+                          selectedJobRequest.surName}
                       </Text>
                       <Text
                         style={{
@@ -590,7 +587,7 @@ class MapDirectionScreen extends Component {
                           marginLeft: 10,
                           textAlignVertical: 'center',
                         }}>
-                        {jobRequests[currRequestPos].service_name}
+                        {selectedJobRequest.service_name}
                       </Text>
                       <Text
                         style={{
@@ -600,7 +597,7 @@ class MapDirectionScreen extends Component {
                           textAlignVertical: 'center',
                           fontWeight: 'bold',
                         }}>
-                        {jobRequests[currRequestPos].status == 'Pending'
+                        {selectedJobRequest.status == 'Pending'
                           ? 'Chat request accepted'
                           : 'Job accepted'}
                       </Text>
@@ -647,15 +644,15 @@ class MapDirectionScreen extends Component {
                             value: 0,
                           });
                           this.props.navigation.navigate('Chat', {
-                            providerId: jobRequests[currRequestPos].employee_id,
-                            providerName: jobRequests[currRequestPos].name,
+                            providerId: selectedJobRequest.employee_id,
+                            providerName: selectedJobRequest.name,
                             providerSurname:
-                              jobRequests[currRequestPos].surName,
-                            providerImage: jobRequests[currRequestPos].image,
+                              selectedJobRequest.surName,
+                            providerImage: selectedJobRequest.image,
                             serviceName:
-                              jobRequests[currRequestPos].service_name,
-                            OrderId: jobRequests[currRequestPos].order_id,
-                            fcmId: jobRequests[currRequestPos].fcm_id,
+                              selectedJobRequest.service_name,
+                            OrderId: selectedJobRequest.order_id,
+                            fcmId: selectedJobRequest.fcm_id,
                             titlePage: 'MapDirection',
                             currentPosition: currRequestPos,
                           });

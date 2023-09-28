@@ -68,17 +68,14 @@ class ProChatScreen extends Component {
     super();
     const {
       messagesInfo: { fetchedDBMessages },
-      route: {
-        params: { currentPos },
-      },
       jobsInfo: {
-        allJobRequestsProviders,
-        selectedJobRequest: { user_id },
+        selectedJobRequest,
       },
       route,
       userInfo: { providerDetails },
       generalInfo: { OnlineUsers },
     } = props;
+    const { user_id } = selectedJobRequest;
     this.state = {
       showButton: false,
       senderId: providerDetails.providerId,
@@ -88,14 +85,14 @@ class ProChatScreen extends Component {
       showButton: false,
       isLoading: !fetchedDBMessages,
       pageTitle: route.params.pageTitle,
-      receiverId: allJobRequestsProviders[currentPos].user_id,
-      receiverName: allJobRequestsProviders[currentPos].user_details.username,
-      receiverImage: allJobRequestsProviders[currentPos].user_details.image,
-      orderId: allJobRequestsProviders[currentPos].order_id,
+      receiverId: selectedJobRequest.user_id,
+      receiverName: selectedJobRequest.user_details.username,
+      receiverImage: selectedJobRequest.user_details.image,
+      orderId: selectedJobRequest.order_id,
       serviceName:
-        allJobRequestsProviders[currentPos].service_details.service_name,
-      userImageAvailable: allJobRequestsProviders[currentPos].imageAvailable,
-      customer_FCM_id: allJobRequestsProviders[currentPos].user_details.fcm_id,
+        selectedJobRequest.service_details.service_name,
+      userImageAvailable: selectedJobRequest.imageAvailable,
+      customer_FCM_id: selectedJobRequest.user_details.fcm_id,
       selectedStatus: '0',
       liveChatStatus: OnlineUsers[user_id] ? OnlineUsers[user_id].status : '0',
       online: false,
@@ -105,7 +102,7 @@ class ProChatScreen extends Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
@@ -147,14 +144,15 @@ class ProChatScreen extends Component {
       messagesInfo: { fetchedDBMessages },
       route,
       jobsInfo: {
-        allJobRequestsProviders,
+        selectedJobRequest
       },
+      generalInfo: { OnlineUsers },
       userInfo: { providerDetails },
     } = this.props;
     if (!socket.connected) {
       socket.connect();
     }
-    const currentPos = route?.params?.currentPos;
+    const { user_id } = selectedJobRequest;
     this.setState({
       showButton: false,
       senderId: providerDetails.providerId,
@@ -165,14 +163,15 @@ class ProChatScreen extends Component {
       isLoading: !fetchedDBMessages,
       //From ProDashboardScreen && ProMapDirection
       pageTitle: route.params.pageTitle,
-      receiverId: allJobRequestsProviders[currentPos].user_id,
-      receiverName: allJobRequestsProviders[currentPos].user_details.username,
-      receiverImage: allJobRequestsProviders[currentPos].user_details.image,
-      orderId: allJobRequestsProviders[currentPos].order_id,
+      receiverId: selectedJobRequest.user_id,
+      receiverName: selectedJobRequest.user_details.username,
+      receiverImage: selectedJobRequest.user_details.image,
+      orderId: selectedJobRequest.order_id,
       serviceName:
-        allJobRequestsProviders[currentPos].service_details.service_name,
-      userImageAvailable: allJobRequestsProviders[currentPos].imageAvailable,
-      customer_FCM_id: allJobRequestsProviders[currentPos].user_details.fcm_id,
+        selectedJobRequest.service_details.service_name,
+      userImageAvailable: selectedJobRequest.imageAvailable,
+      customer_FCM_id: selectedJobRequest.user_details.fcm_id,
+      liveChatStatus: OnlineUsers[user_id] ? OnlineUsers[user_id].status : '0',
     });
     refetchMessages && await this.fetchUserChatsLocal(1, 10);
   };
@@ -320,8 +319,12 @@ class ProChatScreen extends Component {
     else Toast.show(message);
   };
 
-  loadMoreMessages = () => {
-    const { messagesInfo } = this.props;
+  loadMoreMessages = async () => {
+    const { metaData: { page, pages, limit } } = this.state;
+    if (pages > 1) {
+      this.setState({ isLoading: true });
+      await this.updateUserChatsLocal((Number(page)) + 1, limit);
+    }
   }
 
   renderSeparator = () => {

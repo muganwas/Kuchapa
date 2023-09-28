@@ -231,12 +231,12 @@ export const updateAvailabilityInDB = async ({
   }
 };
 //Recent Chat Message
-export const getAllRecentChats = async ({ id, dataSource, onSuccess, onError }) => {
+export const getAllRecentChats = async ({ id, limit = 10, dataSource, onSuccess, onError }) => {
   if (!id) return onError();
   try {
     const dbRef = database()
       .ref('recentMessage')
-      .child(id).limitToLast(3);
+      .child(id).limitToLast(limit);
     dbRef.on('value', async resp => {
       const messages = resp.val();
       if (!messages) return onError();

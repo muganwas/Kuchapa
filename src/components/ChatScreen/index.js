@@ -17,7 +17,6 @@ import {
   Image,
   Text,
   Dimensions,
-  ActivityIndicator,
   BackHandler,
   ImageBackground,
   StatusBar,
@@ -142,8 +141,7 @@ class ChatScreen extends Component {
     const {
       userInfo: { userDetails },
       jobsInfo: {
-        jobRequests,
-        selectedJobRequest: { employee_id },
+        selectedJobRequest
       },
       messagesInfo: { fetchedDBMessages },
       generalInfo: { OnlineUsers },
@@ -152,7 +150,7 @@ class ChatScreen extends Component {
     if (!socket.connected) {
       socket.connect();
     }
-    const currRequestPos = route.params.currentPosition || 0;
+    const { employee_id } = selectedJobRequest;
     const providerId = route.params.providerId || employee_id;
     this.setState({
       senderId: userDetails.userId,
@@ -163,36 +161,23 @@ class ChatScreen extends Component {
       isLoading: !fetchedDBMessages,
       isUploading: false,
       isJobAccepted:
-        jobRequests[currRequestPos] &&
-        jobRequests[currRequestPos].status === 'Accepted',
+        selectedJobRequest.status === 'Accepted',
       requestStatus:
-        jobRequests[currRequestPos] && jobRequests[currRequestPos].status,
+        selectedJobRequest.status,
       receiverId:
-        jobRequests[currRequestPos] && jobRequests[currRequestPos].employee_id,
+        selectedJobRequest.employee_id,
       receiverName:
-        (jobRequests[currRequestPos] &&
-          jobRequests[currRequestPos].employee_details.name) ||
-        (jobRequests[currRequestPos] &&
-          jobRequests[currRequestPos].employee_details.username),
-      receiverImage:
-        (jobRequests[currRequestPos] &&
-          jobRequests[currRequestPos].employee_details.image) ||
-        (jobRequests[currRequestPos] &&
-          jobRequests[currRequestPos].employee_details.image),
-      serviceName:
-        jobRequests[currRequestPos] && jobRequests[currRequestPos].service_name,
-      orderId:
-        jobRequests[currRequestPos] && jobRequests[currRequestPos].order_id,
+        selectedJobRequest.employee_details.name ||
+        selectedJobRequest.employee_details.username,
+      receiverImage: selectedJobRequest.employee_details.image,
+      serviceName: selectedJobRequest.service_name,
+      orderId: selectedJobRequest.order_id,
       titlePage: route.params.titlePage,
-      provider_FCM_id:
-        jobRequests[currRequestPos] &&
-        jobRequests[currRequestPos].employee_details.fcm_id,
+      provider_FCM_id: selectedJobRequest.employee_details.fcm_id,
       liveChatStatus: OnlineUsers[providerId]
         ? OnlineUsers[providerId].status
         : '0',
-      imageAvailable:
-        jobRequests[currRequestPos] &&
-        jobRequests[currRequestPos].imageAvailable,
+      imageAvailable: selectedJobRequest.imageAvailable,
       selectedStatus: '0',
       showDialog: false,
       dialogType: null,
@@ -208,15 +193,14 @@ class ChatScreen extends Component {
     const {
       messagesInfo: { fetchedDBMessages },
       jobsInfo: {
-        jobRequests,
+        selectedJobRequest
       },
       generalInfo: { OnlineUsers },
       route,
     } = this.props;
-    const currRequestPos = route.params.currentPosition || 0;
     const providerId =
       route.params.providerId ||
-      jobRequests[currRequestPos].employee_id;
+      selectedJobRequest.employee_id;
     const {
       isLoading,
       liveChatStatus,
@@ -242,15 +226,14 @@ class ChatScreen extends Component {
       dbMessagesFetched,
       userInfo: { userDetails },
       jobsInfo: {
-        jobRequests
+        selectedJobRequest
       },
       messagesInfo,
       route
     } = this.props;
-    const currRequestPos = route.params.currentPosition || 0;
     const providerId =
       route.params.providerId ||
-      jobRequests[currRequestPos].employee_id;
+      selectedJobRequest.employee_id;
     await fetchEmployeeUserChats({ primary: userDetails.userId, page, secondary: providerId, limit }, (chatData, metaData) => {
       const newMessages = cloneDeep(messagesInfo.messages);
       newMessages[providerId] = chatData;
@@ -264,15 +247,14 @@ class ChatScreen extends Component {
       dbMessagesFetched,
       userInfo: { userDetails },
       jobsInfo: {
-        jobRequests
+        selectedJobRequest
       },
       messagesInfo,
       route
     } = this.props;
-    const currRequestPos = route.params.currentPosition || 0;
     const providerId =
       route.params.providerId ||
-      jobRequests[currRequestPos].employee_id;
+      selectedJobRequest.employee_id;
     await fetchEmployeeUserChats({ primary: userDetails.userId, secondary: providerId, page, limit }, (chatData, metaData) => {
       const newMessages = cloneDeep(messagesInfo.messages);
       newMessages[providerId] = [...chatData, ...newMessages[providerId]];

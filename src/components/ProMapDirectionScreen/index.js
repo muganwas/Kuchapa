@@ -70,13 +70,13 @@ class ProMapDirectionScreen extends Component {
     const {
       generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
-        jobRequestsProviders,
-        selectedJobRequest: { user_id },
+        selectedJobRequest
       },
       route,
     } = props;
+    const { user_id } = selectedJobRequest;
     let currentPos = route.params.currentPos;
-    const currentRequest = jobRequestsProviders[currentPos] || {};
+    const currentRequest = selectedJobRequest;
     this.state = {
       sourcesourceLocation:
         usersCoordinates.latitude + ',' + usersCoordinates.longitude,
@@ -165,14 +165,13 @@ class ProMapDirectionScreen extends Component {
     const {
       generalInfo: { usersCoordinates, othersCoordinates },
       jobsInfo: {
-        jobRequestsProviders,
-        selectedJobRequest: { user_id },
+        selectedJobRequest
       },
       route,
     } = this.props;
-    let currentPos = route.params.currentPos || 0;
-    const currentRequest = jobRequestsProviders[currentPos] || {};
-    if (currentPos || (currentPos === 0 && jobRequestsProviders[currentPos])) {
+    const { user_id } = selectedJobRequest;
+    const currentRequest = selectedJobRequest;
+    if (selectedJobRequest) {
       this.setState({
         sourcesourceLocation:
           usersCoordinates.latitude + ',' + usersCoordinates.longitude,

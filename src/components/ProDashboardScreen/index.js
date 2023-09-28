@@ -38,6 +38,7 @@ import {
   getPendingJobRequestProvider
 } from '../../Redux/Actions/jobsActions';
 import { updateProviderDetails } from '../../Redux/Actions/userActions';
+import { fetchJobInfo } from '../../controllers/jobs';
 import {
   updateLatestChats,
   setLatestChatsError,
@@ -205,80 +206,89 @@ class ProDashboardScreen extends Component {
       })
     });
 
+  gotToChat = async ({ selectedJobReq, item, index }) => {
+    const {
+      dispatchSelectedJobRequest,
+      navigation,
+      userInfo: { providerDetails: { providerId } },
+      fetchedNotifications
+    } = this.props;
+    if (!selectedJobReq) {
+      this.setState({ isLoadingLatestChats: true });
+      selectedJobReq = await fetchJobInfo({
+        jobFetchURL: Config.baseURL + 'jobrequest/job_details?orderId=' + item.orderId + "&employeeId=" + providerId + "&userId=" + item.id + "&userType=Employee"
+      });
+    }
+    await dispatchSelectedJobRequest(selectedJobReq);
+    fetchedNotifications({ type: 'messages', value: 0 });
+    this.setState({ isLoadingLatestChats: false });
+    if (selectedJobReq.status === 'Pending' || selectedJobReq.status === 'Accepted')
+      navigation.navigate('ProAcceptRejectJob', {
+        currentPos: index,
+        orderId: item.orderId,
+      });
+    else
+      navigation.navigate('ProChat', {
+        currentPos: index,
+        receiverId: item.id,
+        receiverName: item.name,
+        receiverImage: item.image,
+        orderId: item.orderId,
+        serviceName: item.serviceName,
+        pageTitle: 'ProAllMessage',
+        imageAvailable: item.imageAvailable
+      });
+  }
+
   renderRecentMessageItem = (item, index) => {
     if (item) {
       const {
-        dispatchSelectedJobRequest,
-        jobsInfo: { allJobRequestsProviders },
-        fetchedNotifications,
-        navigation,
+        jobsInfo: { jobRequestsProviders }
       } = this.props;
+      const currentPos = jobRequestsProviders.findIndex(el => el.user_id === item.id);
+      const selectedJobReq = jobRequestsProviders[currentPos];
+      return (
+        <TouchableOpacity
+          key={index}
+          style={styles.itemMainContainer}
+          onPress={() => this.gotToChat({ selectedJobReq, item, index: currentPos })}>
+          <View style={styles.itemImageView}>
+            <Image
+              style={{ width: 25, height: 25, borderRadius: 100 }}
+              source={{ uri: item.image }}
+            />
+          </View>
+          <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
+            <Text
+              style={{
+                fontSize: metrics.font_size.normal,
+                color: black,
+                textAlignVertical: 'center',
+              }}>
+              {item.name}
+            </Text>
+            <Text
+              style={{
+                width: screenWidth - 150,
+                fontSize: metrics.font_size.small,
+                color: black,
+                textAlignVertical: 'center',
+                color: 'gray',
+                marginTop: 3,
+              }}
+              numberOfLines={2}>
+              {item.textMessage}
+            </Text>
+          </View>
 
-      const currentPos = allJobRequestsProviders.findIndex(el => el.user_id === item.id);
-      const selectedJobReq = allJobRequestsProviders[currentPos];
-      /** Job should be completed or ongoing */
-      if (selectedJobReq && selectedJobReq.user_details && (currentPos !== undefined && currentPos !== -1))
-        return (
-          <TouchableOpacity
-            key={index}
-            style={styles.itemMainContainer}
-            onPress={() => {
-              dispatchSelectedJobRequest(selectedJobReq);
-              fetchedNotifications({ type: 'messages', value: 0 });
-              if (selectedJobReq.status === 'Pending') {
-                navigation.navigate('ProAcceptRejectJob', {
-                  currentPos,
-                  orderId: selectedJobReq.orderId,
-                });
-              } else
-                navigation.navigate('ProChat', {
-                  currentPos,
-                  userId: item.id,
-                  name: item.name,
-                  image: item.image,
-                  orderId: item.orderId,
-                  serviceName: item.serviceName,
-                  pageTitle: 'ProDashboard',
-                  imageAvailable: item.imageAvailable,
-                });
-            }}>
-            <View style={styles.itemImageView}>
-              <Image
-                style={{ width: 25, height: 25, borderRadius: 100 }}
-                source={{ uri: item.image }}
-              />
-            </View>
-            <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
-              <Text
-                style={{
-                  fontSize: metrics.font_size.normal,
-                  color: black,
-                  textAlignVertical: 'center',
-                }}>
-                {item.name}
-              </Text>
-              <Text
-                style={{
-                  width: screenWidth - 150,
-                  fontSize: metrics.font_size.small,
-                  color: black,
-                  textAlignVertical: 'center',
-                  color: 'gray',
-                  marginTop: 3,
-                }}
-                numberOfLines={2}>
-                {item.textMessage}
-              </Text>
-            </View>
-
-            <View
-              style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
-              <Text style={{ alignSelf: 'flex-end', marginRight: 20, fontSize: 8 }}>
-                {item.date}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        );
+          <View
+            style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
+            <Text style={{ alignSelf: 'flex-end', marginRight: 20, fontSize: 8 }}>
+              {item.date}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      );
     } return <View key={index}></View>
   };
 
@@ -502,6 +512,7 @@ class ProDashboardScreen extends Component {
     const {
       navigation: { navigate },
       generalInfo: { othersCoordinates },
+      jobsInfo: { jobRequestsProviders }
     } = this.props;
     if (chat_status.toString() === '0') {
       this.setState({
@@ -510,7 +521,7 @@ class ProDashboardScreen extends Component {
       this.showToast('Accept Chat Request First');
     } else {
       const { dispatchSelectedJobRequest } = this.props;
-      dispatchSelectedJobRequest(jobInfo);
+      dispatchSelectedJobRequest(jobRequestsProviders[jobInfo.currentPos]);
       if (status === 'Pending') {
         navigate('ProAcceptRejectJob', {
           currentPos: jobInfo.currentPos,
@@ -769,6 +780,9 @@ class ProDashboardScreen extends Component {
       navigation,
     } = this.props;
     const { status, isLoadingLatestChats, isLoadingDoneJobs } = this.state;
+    /** only display a max of 3 latest chats */
+    const pos = latestChats.length >= 3 ? 3 : latestChats.length;
+    const subLatestChats = latestChats.slice(0, pos)
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
@@ -860,7 +874,7 @@ class ProDashboardScreen extends Component {
                     }
                   >
                     {<View style={styles.listView}>
-                      {latestChats.map(this.renderRecentMessageItem)}
+                      {subLatestChats.map(this.renderRecentMessageItem)}
                     </View>}
                   </ScrollView> :
                   <View style={styles.listView}>

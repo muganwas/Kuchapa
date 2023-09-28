@@ -326,7 +326,7 @@ class DashboardScreen extends Component {
     });
 
   goToNextPage = (chat_status, jobInfo) => {
-    const { dispatchSelectedJobRequest, fetchedNotifications, generalInfo: { othersCoordinates }, } = this.props;
+    const { dispatchSelectedJobRequest, fetchedNotifications, generalInfo: { othersCoordinates }, jobsInfo: { jobRequests } } = this.props;
 
     if (chat_status === '0') {
       this.showToast('Your chat request has been accepted yet. Please wait...');
@@ -344,14 +344,13 @@ class DashboardScreen extends Component {
       const nameArr = name.split(' ');
       const username = nameArr[0];
       const surname = nameArr.pop();
-      let currentPostInAllJobs = currentPos;
-      dispatchSelectedJobRequest(jobInfo);
+      dispatchSelectedJobRequest(jobRequests[currentPos]);
       if (jobInfo.status.toLowerCase() === 'pending') {
         fetchedNotifications({ type: 'messages', value: 0 });
         this.props.navigation.navigate('Chat', {
           providerId: employee_id,
           fcmId: fcm_id,
-          currentPosition: currentPostInAllJobs,
+          currentPosition: currentPos,
           providerName: username,
           providerSurname: surname,
           providerImage: image,
@@ -363,7 +362,7 @@ class DashboardScreen extends Component {
       } else if (jobInfo.status.toLowerCase() === 'accepted') {
         if (!othersCoordinates || !othersCoordinates[employee_id]) return Toast.show('Fetching co-ordinates, please wait');
         this.props.navigation.navigate('MapDirection', {
-          currentPos: jobInfo.currentPos,
+          currentPos,
           titlePage: 'Dashboard',
         });
       }

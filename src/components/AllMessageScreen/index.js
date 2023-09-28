@@ -13,10 +13,8 @@ import {
   BackHandler,
   StatusBar,
   Platform,
-  Animated,
 } from 'react-native';
 import _ from 'lodash';
-import SimpleToast from 'react-native-simple-toast';
 import {
   startFetchingNotification,
   notificationsFetched,
@@ -71,7 +69,6 @@ class AllMessageScreen extends Component {
   componentDidMount() {
     const {
       messagesInfo: { latestChats, fetchedLatestChats },
-      userInfo: { userDetails: { userId } }
     } = this.props;
     this.setState({ dataSource: latestChats, isLoading: !fetchedLatestChats });
     BackHandler.addEventListener(
