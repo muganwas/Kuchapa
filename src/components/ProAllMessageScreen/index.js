@@ -9,13 +9,14 @@ import {
   Text,
   ScrollView,
   TextInput,
-  ActivityIndicator,
+  RefreshControl,
   BackHandler,
   StatusBar,
   Platform,
   Animated,
 } from 'react-native';
 import _ from 'lodash';
+import SimpleToast from 'react-native-simple-toast';
 import ProHamburger from '../ProHamburger';
 import {
   startFetchingNotification,
@@ -30,7 +31,9 @@ import {
 import { fetchJobInfo } from '../../controllers/jobs';
 import Config from '../Config';
 import { updateLatestChats } from '../../Redux/Actions/messageActions';
-import { colorBg, white, themeRed, lightGray } from '../../Constants/colors';
+import { colorBg, white, themeRed, darkGray, lightGray } from '../../Constants/colors';
+import { font_size, spacing } from '../../Constants/metrics';
+import { getMoreRecentChats } from '../../controllers/chats';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -129,6 +132,25 @@ class ProAllMessageScreen extends Component {
       });
   }
 
+  getMoreRecentChatsLocal = async () => {
+    const { messagesInfo: { latestChatsMeta: { page, limit } } } = this.props;
+    this.setState({ isLoading: true });
+    await getMoreRecentChats({
+      id: this.props?.userInfo?.providerDetails?.providerId,
+      page: Number(page) + 1,
+      limit,
+      dataSource: this.props?.messagesInfo?.latestChats,
+      onSuccess: (data, metaData) => {
+        this.props.updateLatestChats({ data, metaData });
+        this.setState({ isLoading: false });
+      },
+      onError: ((e) => {
+        SimpleToast.show(e);
+        this.setState({ isLoading: false });
+      })
+    });
+  }
+
   renderRecentMessageItem = (item, index) => {
     const {
       jobsInfo: { jobRequestsProviders }
@@ -185,7 +207,6 @@ class ProAllMessageScreen extends Component {
         </View>
       </TouchableOpacity>
     );
-    return <View key={index}></View>
   };
 
   searchTask = textInput => {
@@ -203,6 +224,7 @@ class ProAllMessageScreen extends Component {
   };
 
   render() {
+    const { messagesInfo: { latestChatsMeta: { totalPages, page } } } = this.props;
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
@@ -253,29 +275,30 @@ class ProAllMessageScreen extends Component {
             />
           </View>
         </View>
-
-        {this.state.dataSource.length !== 0 && <ScrollView
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isLoading}
+              onRefresh={this.getMoreRecentChatsLocal}
+            />}
           contentContainerStyle={{
             justifyContent: 'center',
             alignItems: 'center',
             alwaysBounceVertical: true,
           }}>
+          {totalPages / page > 1 ? <View style={{ display: 'flex', flex: 1, padding: spacing.small, alignItems: 'center' }}>
+            <Text style={{ fontSize: font_size.small, color: darkGray, textAlign: 'center' }}>Pull down to load more</Text>
+          </View> : <></>}
           <View style={styles.listView}>
-            {this.state.dataSource.map(this.renderRecentMessageItem)}
+            {this.state.dataSource.length !== 0 && this.state.dataSource.map(this.renderRecentMessageItem)}
           </View>
-        </ScrollView>}
+        </ScrollView>
 
         {this.state.dataSource.length == 0 && !this.state.isLoading && (
           <View style={styles.noDataStyle}>
             <Text style={{ color: 'black', fontSize: 20 }}>
               You have no messages!
             </Text>
-          </View>
-        )}
-
-        {this.state.isLoading && (
-          <View style={styles.loaderStyle}>
-            <ActivityIndicator style={{ height: 80 }} color="#C00" size="large" />
           </View>
         )}
       </View>

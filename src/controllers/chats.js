@@ -9,6 +9,7 @@ import { uploadAttachment } from './storage';
 import { synchroniseOnlineStatus } from './users';
 
 const REJECT_ACCEPT_REQUEST = Config.baseURL + 'jobrequest/updatejobrequest';
+const FETCH_RECENT_MESSAGES = Config.baseURL + 'chat/fetchRecentChats';
 const socket = Config.socket;
 const PRO_INFO_UPDATE = Config.baseURL + 'employee/';
 
@@ -113,7 +114,7 @@ export const acceptChatRequest = async (
         imageAvailable
       };
       newjobRequests[pos] = jobData;
-      fetchedPendingJobInfo(newjobRequests);
+      fetchedPendingJobInfo({ data: newjobRequests });
       if (redirect) navigate();
     } else {
       onError('Something went wrong, no data returned.');
@@ -184,7 +185,7 @@ export const rejectChatRequest = async (
       if (!rejectionData) {
         toggleLoading(false);
         newjobRequestsProviders.splice(pos, 1);
-        fetchedPendingJobInfo(newjobRequestsProviders);
+        fetchedPendingJobInfo({ data: newjobRequestsProviders });
       }
       onSuccess && onSuccess();
     } else {
@@ -231,60 +232,46 @@ export const updateAvailabilityInDB = async ({
   }
 };
 //Recent Chat Message
-export const getAllRecentChats = async ({ id, limit = 10, dataSource, onSuccess, onError }) => {
-  if (!id) return onError();
+export const getMoreRecentChats = async ({ id, limit = 10, page = 1, dataSource, onSuccess, onError }) => {
   try {
-    const dbRef = database()
-      .ref('recentMessage')
-      .child(id).limitToLast(limit);
-    dbRef.on('value', async resp => {
-      const messages = resp.val();
-      if (!messages) return onError();
-      let msgsArr = Object.values(messages);
-      let newMsgArr = [];
-      await msgsArr.map(msg => {
-        const ex = dataSource.findIndex(m => m.time === msg.time && m.id === msg.id);
-        if (ex === -1) newMsgArr.push(msg)
-      });
-      const newLatests = [...dataSource, ...newMsgArr];
-      onSuccess(newLatests);
-    })
+    if (!id) return onError();
+    const idToken = await firebaseAuth().currentUser.getIdToken();
+    const res = await fetch(
+      FETCH_RECENT_MESSAGES + '?id=' + id + '&limit=' + limit + '&page=' + page, {
+      headers: {
+        Authorization: 'Bearer ' + idToken
+      }
+    });
+    const response = await res.json();
+    if (response.result) {
+      return onSuccess(response.data, response.metadata);
+    }
+    return onError(response.message);
   } catch (e) {
     onError(e.message);
   }
 };
 
-export const setMessageChangeListeners = async ({ id, dataSource, onSuccess, onError }) => {
-  if (!id) return onError();
-  const dbRef = database()
-    .ref('recentMessage')
-    .child(id);
-  let newDataSource = cloneDeep(dataSource);
-  dbRef.on('child_changed', async resp => {
-    let message = resp.val();
-    let present = false;
-    await newDataSource.map((obj, i) => {
-      if (obj.name === message.name) {
-        newDataSource[i] = message;
-      }
+export const setMessageChangeListeners = async ({ id, limit = 10, page = 1, dataSource, onSuccess, onError }) => {
+  try {
+    if (!id) return onError();
+    const nLimit = Number(limit);
+    const ref = database()
+      .ref('recentMessage')
+      .child(id);
+    const dbRef = ref.limitToLast(nLimit);
+    const countResp = await ref.once('value');
+    const chatCount = countResp.numChildren();
+    const totalPages = (chatCount - ((Number(page) - 1) * nLimit)) / nLimit;
+    dbRef.on('value', async resp => {
+      const messages = resp.val();
+      if (!messages) return onError();
+      let msgsArr = Object.values(messages);
+      onSuccess(msgsArr, { page, totalPages, limit });
     });
-    if (message && !present) {
-      return onSuccess(newDataSource);
-    }
-    onError();
-  });
-  dbRef.on('child_added', async resp => {
-    let message = resp.val();
-    let present = false;
-    await newDataSource.map(obj => {
-      if (JSON.stringify(obj) === JSON.stringify(message)) present = true;
-    });
-    if (message && !present) {
-      newDataSource.push(message);
-      return onSuccess(newDataSource);
-    }
-    onError();
-  });
+  } catch (e) {
+    onError(e.message);
+  }
 }
 
 export const attachFile = async ({
@@ -343,7 +330,7 @@ export const attachFile = async ({
           date,
         });
       }
-      dbMessagesFetched(newMessages);
+      dbMessagesFetched({ data: newMessages });
       const newUrlText = await uploadAttachment(response);
       altMessage.uri = newUrlText;
       if (newUrlText) {
@@ -427,7 +414,7 @@ export const sendMessageTask = async ({
     }
     if (socket.connected) {
       clearInput();
-      dbMessagesFetched(newMessages);
+      dbMessagesFetched({ data: newMessages });
       socket.emit('sent-message', messageObj);
     } else {
       SimpleToast.show(

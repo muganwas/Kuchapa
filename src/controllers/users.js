@@ -11,6 +11,7 @@ import rNES from 'react-native-encrypted-storage';
 import SimpleToast from 'react-native-simple-toast';
 import { cloneDeep } from 'lodash';
 import storage from '@react-native-firebase/storage';
+import database from '@react-native-firebase/database';
 import Config from '../components/Config';
 import {
   emailCheck,
@@ -591,6 +592,20 @@ export const updateProfileImageTask = async ({
     });
 };
 
+export const fetchUserLocation = async ({ id, othersCoordinates, updateOthersCoordinates }) => {
+  try {
+    database()
+      .ref(`liveLocation/${id}`)
+      .on('value', (changeData) => {
+        const addressInfo = changeData.val();
+        const newOthersCoordinates = Object.assign(othersCoordinates, { [id]: addressInfo });
+        updateOthersCoordinates(newOthersCoordinates);
+      });
+  } catch (e) {
+    SimpleToast.show(e.message)
+  }
+}
+
 export const updateProfileInfo = async ({
   userId,
   userData,
@@ -745,7 +760,7 @@ export const phoneLoginTask = async ({
           );
         }
       } else {
-        onError(responseJson.data.message || 'Something went wrong');
+        onError(responseJson.message || 'Something went wrong');
       }
     } catch (e) {
       onError('Something went wrong, try again.');

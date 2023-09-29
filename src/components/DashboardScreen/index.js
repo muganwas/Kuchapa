@@ -27,7 +27,7 @@ import Toast from 'react-native-simple-toast';
 import WaitingDialog from '../WaitingDialog';
 import Hamburger from '../Hamburger';
 import { updateLatestChats } from '../../Redux/Actions/messageActions';
-import { getAllRecentChats } from '../../controllers/chats';
+import { setMessageChangeListeners } from '../../controllers/chats';
 import {
   startFetchingJobCustomer,
   fetchedJobCustomerInfo,
@@ -37,6 +37,7 @@ import {
   getAllWorkRequestClient,
   getPendingJobRequest
 } from '../../Redux/Actions/jobsActions';
+import { updateOthersCoordinates } from '../../Redux/Actions/generalActions';
 import { font_size } from '../../Constants/metrics';
 import {
   colorPrimary,
@@ -50,6 +51,7 @@ import {
 import images from '../../Constants/images';
 import { jobCancelTask, fetchServices } from '../../controllers/jobs';
 import Config from '../Config';
+import { fetchUserLocation } from '../../controllers/users';
 
 const screenWidth = Dimensions.get('window').width;
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
@@ -93,7 +95,7 @@ class DashboardScreen extends Component {
     if (!online && connectivityAvailable) Config.socket.connect();
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
     await this.fetchAllServices();
-    await this.getAllRecentChatsCustomer();
+    await this.setMessageChangeListenersLocal();
   };
 
   componentWillUnmount() {
@@ -304,30 +306,27 @@ class DashboardScreen extends Component {
     } = this.props;
     await this.fetchAllServices();
     await getAllWorkRequestClient({ clientId: userDetails.userId, props: this.props });
-    await this.getAllRecentChatsCustomer();
+    await this.setMessageChangeListenersLocal();
     this.setState({ isLoading: false });
   };
 
-
-
   //Recent Chat Message
-  getAllRecentChatsCustomer = async () =>
-    await getAllRecentChats({
+  setMessageChangeListenersLocal = async () =>
+    await setMessageChangeListeners({
       id: this.props?.userInfo?.userDetails?.userId,
       dataSource: this.props?.messagesInfo?.latestChats,
-      onSuccess: data => {
-        this.props.updateLatestChats(data);
+      onSuccess: async (data, metaData) => {
+        this.props.updateLatestChats({ data, metaData });
         this.setState({ isLoading: false, isRecentMessage: true });
       },
-      onError: (() => {
-        this.props.updateLatestChats(this.props?.messagesInfo?.latestChats || []);
+      onError: ((e) => {
+        Toast.show(e);
         this.setState({ isLoadingLatestChats: false, isLoading: false });
       })
     });
 
   goToNextPage = (chat_status, jobInfo) => {
-    const { dispatchSelectedJobRequest, fetchedNotifications, generalInfo: { othersCoordinates }, jobsInfo: { jobRequests } } = this.props;
-
+    const { dispatchSelectedJobRequest, fetchedOthersCoordinates, fetchedNotifications, generalInfo: { othersCoordinates }, jobsInfo: { jobRequests } } = this.props;
     if (chat_status === '0') {
       this.showToast('Your chat request has been accepted yet. Please wait...');
     } else {
@@ -360,7 +359,10 @@ class DashboardScreen extends Component {
           isJobAccepted: status === 'Accepted',
         });
       } else if (jobInfo.status.toLowerCase() === 'accepted') {
-        if (!othersCoordinates || !othersCoordinates[employee_id]) return Toast.show('Fetching co-ordinates, please wait');
+        if (!othersCoordinates || !othersCoordinates[employee_id]) {
+          fetchUserLocation({ id: employee_id, othersCoordinates, updateOthersCoordinates: fetchedOthersCoordinates });
+          return Toast.show('Fetching co-ordinates, please wait');
+        }
         this.props.navigation.navigate('MapDirection', {
           currentPos,
           titlePage: 'Dashboard',
@@ -660,6 +662,9 @@ const mapDispatchToProps = dispatch => {
     },
     fetchingPendingJobInfoError: error => {
       dispatch(fetchCustomerJobInfoError(error));
+    },
+    fetchedOthersCoordinates: data => {
+      dispatch(updateOthersCoordinates(data));
     },
     dispatchSelectedJobRequest: job => {
       dispatch(setSelectedJobRequest(job));

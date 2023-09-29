@@ -58,7 +58,7 @@ export const requestClientForReview = async ({
         onSuccess('Request submitted successfully');
         fetchJobRequestHistory({ providerId: providerDetails.providerId, props });
       } else {
-        onError('Something went wrong');
+        onError(response.message);
       }
     } catch (e) {
       onError('Something went wrong, try again');
@@ -148,7 +148,7 @@ export const jobCancelTask = async ({
       onSuccess && onSuccess();
       toggleIsLoading(false);
       newJobRequests.splice(currRequestPos, 1);
-      updatePendingJobInfo(newJobRequests);
+      updatePendingJobInfo({ data: newJobRequests });
       navigate && navigate(dash);
     } else {
       onError(responseJson.message);
@@ -224,13 +224,13 @@ export const acceptJobTask = async ({
       onSuccess();
       if (dataWSPos || dataWSPos === 0) {
         newDWS[dataWSPos].status = 'Accepted';
-        fetchedDataWorkSource(newDWS);
+        fetchedDataWorkSource({ data: newDWS });
       }
       newjobRequestsProviders[currRequestPos].chat_status =
         responseJson.data.chat_status;
       newjobRequestsProviders[currRequestPos].status =
         responseJson.data.status;
-      fetchedPendingJobInfo(newjobRequestsProviders);
+      fetchedPendingJobInfo({ data: newjobRequestsProviders });
       //Send Location to Firebase for tracking
       Geolocation.getCurrentPosition(position => {
         let locationData = {
@@ -246,7 +246,7 @@ export const acceptJobTask = async ({
       });
     } else {
       onError();
-      SimpleToast.show('Something went wrong, please try again later');
+      SimpleToast.show(responseJson.message);
     }
   } catch (e) {
     toggleIsLoading(false);
@@ -321,11 +321,11 @@ export const rejectJobTask = async ({
         fetchedDataWorkSource(newDWS);
       }
       newjobRequestsProviders.splice(currRequestPos, 1);
-      fetchedPendingJobInfo(newjobRequestsProviders);
+      fetchedPendingJobInfo({ data: newjobRequestsProviders });
       navigation.navigate('ProHome');
     } else {
       onError();
-      SimpleToast.show('Something went wrong, please try again later');
+      SimpleToast.show(responseJson.message);
     }
   } catch (e) {
     toggleIsLoading(false);
@@ -414,10 +414,10 @@ export const jobCompleteTask = async ({
       if (responseJson.result) {
         onSuccess();
         newJobRequests.splice(currRequestPos, 1);
-        updatePendingJobInfo(newJobRequests);
+        updatePendingJobInfo({ data: newJobRequests });
         navigate(dash);
       } else {
-        onError('An error has occurred, please try again later');
+        onError(responseJson.message);
       }
     } else {
       SimpleToast.show('Something went wrong, try logging in and out of app');

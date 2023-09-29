@@ -124,7 +124,7 @@ class NotificationsScreen extends Component {
       userId,
       dataSource: this.props.notificationsInfo?.dataSource,
       onSuccess: dataSource => {
-        this.props.updateNotifications(dataSource);
+        this.props.updateNotifications({ data: dataSource });
       },
       readNotificationURL: READ_NOTIFICATION_URL,
     });
@@ -135,7 +135,7 @@ class NotificationsScreen extends Component {
       dataSource: this.props.notificationsInfo?.dataSource,
       deleteNotificationURL: DELETE_NOTIFICATION_URL,
       onSuccess: dataSource => {
-        this.props.updateNotifications(dataSource);
+        this.props.updateNotifications({ data: dataSource });
       },
     });
 

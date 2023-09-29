@@ -38,6 +38,7 @@ import {
   getPendingJobRequestProvider
 } from '../../Redux/Actions/jobsActions';
 import { updateProviderDetails } from '../../Redux/Actions/userActions';
+import { updateOthersCoordinates } from '../../Redux/Actions/generalActions';
 import { fetchJobInfo } from '../../controllers/jobs';
 import {
   updateLatestChats,
@@ -47,8 +48,10 @@ import {
   acceptChatRequest,
   rejectChatRequest,
   updateAvailabilityInDB,
-  getAllRecentChats,
+  getMoreRecentChats,
+  setMessageChangeListeners
 } from '../../controllers/chats';
+import { fetchUserLocation } from '../../controllers/users';
 import { requestClientForReview } from '../../controllers/jobs';
 import { reviewTask } from '../../controllers/bookings';
 import metrics, { font_size, spacing } from '../../Constants/metrics';
@@ -116,7 +119,6 @@ class ProDashboardScreen extends Component {
       isReviewDialogVisible: false,
       rating: '3',
       review: '',
-      refreshing: false,
       pause: false,
       backClickCount: 0,
       selectedReviewItem: null,
@@ -134,7 +136,7 @@ class ProDashboardScreen extends Component {
       this.handleBackButtonClick,
     );
     if (!fetchedLatestChats)
-      this.getAllRecentChatsPro();
+      this.setMessageChangeListenersLocal();
   };
 
   componentWillUnmount() {
@@ -151,8 +153,7 @@ class ProDashboardScreen extends Component {
       jobsInfo: {
         dataWorkSource,
         dataWorkSourceFetched
-      },
-      messagesInfo: { fetchedLatestChats }
+      }
     } = this.props;
     const { status, isLoading } = this.state;
     if (dataWorkSource && dataWorkSourceFetched && isLoading) this.setState({ isLoading: false, isWorkRequest: true, isLoadingDoneJobs: false });
@@ -171,11 +172,9 @@ class ProDashboardScreen extends Component {
         availBackground: 'green',
       });
     }
-    if (!fetchedLatestChats) this.getAllRecentChatsPro();
   }
 
-  onRefresh = async () => {
-    this.setState({ refreshing: true, isLoading: true, isWorkRequest: false });
+  onRefreshRecentChats = async () => {
     const {
       generalInfo: { online, connectivityAvailable },
       userInfo: { providerDetails },
@@ -186,25 +185,43 @@ class ProDashboardScreen extends Component {
           ? 'ONLINE'
           : 'OFFLINE'
     });
-    await this.getAllRecentChatsPro();
-    this.setState({ refreshing: false, isLoading: false, isWorkRequest: true });
+    await this.getMoreRecentChatsLocal();
     this.springValue = new Animated.Value(100);
   };
 
   //Recent Chat Message
-  getAllRecentChatsPro = async () =>
-    await getAllRecentChats({
+  setMessageChangeListenersLocal = async () =>
+    await setMessageChangeListeners({
       id: this.props?.userInfo?.providerDetails?.providerId,
       dataSource: this.props?.messagesInfo?.latestChats,
-      onSuccess: data => {
-        this.props.updateLatestChats(data);
+      onSuccess: async (data, metaData) => {
+        this.props.updateLatestChats({ data, metaData });
         this.setState({ isLoadingLatestChats: false });
       },
-      onError: (() => {
-        this.props.updateLatestChats(this.props?.messagesInfo?.latestChats || []);
+      onError: ((e) => {
+        SimpleToast.show(e);
         this.setState({ isLoadingLatestChats: false });
       })
     });
+
+  getMoreRecentChatsLocal = async () => {
+    const { messagesInfo: { latestChatsMeta: { page, limit } } } = this.props;
+    this.setState({ isLoadingLatestChats: true });
+    await getMoreRecentChats({
+      id: this.props?.userInfo?.providerDetails?.providerId,
+      page: Number(page) + 1,
+      limit,
+      dataSource: this.props?.messagesInfo?.latestChats,
+      onSuccess: (data, metaData) => {
+        this.props.updateLatestChats({ data, metaData });
+        this.setState({ isLoadingLatestChats: false });
+      },
+      onError: ((e) => {
+        SimpleToast.show(e);
+        this.setState({ isLoadingLatestChats: false });
+      })
+    });
+  }
 
   gotToChat = async ({ selectedJobReq, item, index }) => {
     const {
@@ -508,11 +525,12 @@ class ProDashboardScreen extends Component {
     }
   };
 
-  goToProMapDirection = (chat_status, status, jobInfo) => {
+  goToNextPage = (chat_status, status, jobInfo) => {
     const {
       navigation: { navigate },
       generalInfo: { othersCoordinates },
-      jobsInfo: { jobRequestsProviders }
+      jobsInfo: { jobRequestsProviders },
+      fetchedOthersCoordinates,
     } = this.props;
     if (chat_status.toString() === '0') {
       this.setState({
@@ -528,7 +546,10 @@ class ProDashboardScreen extends Component {
           orderId: jobInfo.orderId,
         });
       } else if (status === 'Accepted') {
-        if (!othersCoordinates || !othersCoordinates[jobInfo.user_id]) return SimpleToast.show('Fetching co-ordinates, please wait');
+        if (!othersCoordinates || !othersCoordinates[jobInfo.user_id]) {
+          fetchUserLocation({ id: jobInfo.user_id, othersCoordinates, updateOthersCoordinates: fetchedOthersCoordinates });
+          return SimpleToast.show('Fetching co-ordinates, please wait');
+        }
         navigate('ProMapDirection', {
           currentPos: jobInfo.currentPos,
           pageTitle: 'ProDashboard',
@@ -602,7 +623,7 @@ class ProDashboardScreen extends Component {
             },
           ]}
           onPress={() =>
-            this.goToProMapDirection(chat_status, status, {
+            this.goToNextPage(chat_status, status, {
               currentPos: index,
               userType: 'provider',
               user_id,
@@ -782,7 +803,7 @@ class ProDashboardScreen extends Component {
     const { status, isLoadingLatestChats, isLoadingDoneJobs } = this.state;
     /** only display a max of 3 latest chats */
     const pos = latestChats.length >= 3 ? 3 : latestChats.length;
-    const subLatestChats = latestChats.slice(0, pos)
+    const subLatestChats = latestChats.slice(0, pos);
     return (
       <View style={styles.container}>
         <StatusBarPlaceHolder />
@@ -842,197 +863,195 @@ class ProDashboardScreen extends Component {
           }}
         >
           <ScrollView style={styles.subContainer}>
-            {fetchedLatestChats && (
-              <View style={styles.recentChatContainer}>
-                <View style={styles.recentMessageHeader}>
-                  <Text
-                    style={{
-                      flex: 1,
-                      textAlignVertical: 'center',
-                      alignItems: 'flex-start',
-                      fontSize: font_size.sub_header,
-                      alignContent: 'flex-start',
-                      justifyContent: 'flex-start',
-                      marginLeft: 15,
-                      fontWeight: 'bold',
-                    }}>
-                    Recent Message
-                  </Text>
-                  <TouchableOpacity
-                    style={styles.viewAll}
-                    onPress={() => navigation.navigate('ProAllMessage')}>
-                    <Text style={styles.textViewAll}>View All</Text>
-                  </TouchableOpacity>
+            <View style={styles.recentChatContainer}>
+              <View style={styles.recentMessageHeader}>
+                <Text
+                  style={{
+                    flex: 1,
+                    textAlignVertical: 'center',
+                    alignItems: 'flex-start',
+                    fontSize: font_size.sub_header,
+                    alignContent: 'flex-start',
+                    justifyContent: 'flex-start',
+                    marginLeft: 15,
+                    fontWeight: 'bold',
+                  }}>
+                  Recent Message
+                </Text>
+                <TouchableOpacity
+                  style={styles.viewAll}
+                  onPress={() => navigation.navigate('ProAllMessage')}>
+                  <Text style={styles.textViewAll}>View All</Text>
+                </TouchableOpacity>
+              </View>
+              {fetchedLatestChats && <ScrollView
+                refreshControl={
+                  <RefreshControl
+                    refreshing={isLoadingLatestChats}
+                    onRefresh={this.onRefreshRecentChats}
+                  />
+                }
+              >
+                <View style={styles.listView}>
+                  {subLatestChats.length > 0 && subLatestChats.map(this.renderRecentMessageItem)}
                 </View>
-                {latestChats?.length > 0 ?
+                {
+                  latestChats.length === 0 ? < View style={styles.listView}>
+                    <Text style={{ fontStyle: 'italic', color: darkGray }}>You have no chats to display</Text>
+                  </View> : <></>
+                }
+              </ScrollView>}
+              {isLoadingLatestChats &&
+                <View style={styles.activityIncatorContainer}>
+                  <ActivityIndicator size={'large'} color={themeRed} />
+                </View>
+              }
+            </View>
+
+            <View style={styles.workContainer}>
+              <View style={styles.recentMessageHeader}>
+                <Text
+                  style={{
+                    flex: 1,
+                    textAlignVertical: 'center',
+                    alignItems: 'flex-start',
+                    fontSize: font_size.sub_header,
+                    alignContent: 'flex-start',
+                    justifyContent: 'flex-start',
+                    marginLeft: 15,
+                    fontWeight: 'bold',
+                  }}>
+                  Work
+                </Text>
+                {
+                  totalPages && totalPages / page > 1 &&
+                  <TouchableOpacity onPress={() => {
+                    const { fetchJobRequestHistory, userInfo: { providerDetails }, jobsInfo: { allJobRequestsProvidersMeta: { page } } } = this.props;
+                    this.setState({ isLoadingDoneJobs: true });
+                    fetchJobRequestHistory({ providerId: providerDetails.providerId, props: this.props, page: Number(page) + 1 });
+                    this.setState({ isLoadingDoneJobs: false });
+                  }} style={styles.viewAll}
+                  >
+                    <Text style={styles.textViewAll}>Load More</Text>
+                  </TouchableOpacity>
+                }
+                <TouchableOpacity onPress={() => navigation.navigate('ProBooking', { from: 'Dashboard' })} style={styles.viewAll}>
+                  <Text style={styles.textViewAll}>View All</Text>
+                </TouchableOpacity>
+              </View>
+              <View
+                style={{
+                  width: screenWidth,
+                  height: 1,
+                  backgroundColor: lightGray,
+                }}
+              />
+              <View
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                }}>
+                <View style={styles.sectionTitle}>
+                  <Text
+                    style={styles.sectionTitleText}>
+                    Job
+                  </Text>
+                </View>
+                <View style={styles.sectionTitle}>
+                  <Text
+                    style={styles.sectionTitleText}>
+                    Status
+                  </Text>
+                </View>
+                <View style={styles.sectionTitle}>
+                  <Text
+                    style={styles.sectionTitleText}>
+                    Client Review
+                  </Text>
+                </View>
+                <View style={styles.sectionTitle}>
+                  <Text
+                    style={styles.sectionTitleText}>
+                    Review
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.listView}>
+                {dataWorkSource?.length > 0 &&
                   <ScrollView
                     refreshControl={
                       <RefreshControl
-                        refreshing={this.state.refreshing}
-                        onRefresh={this.onRefresh}
-                      />
-                    }
+                        refreshing={isLoadingDoneJobs}
+                        onRefresh={() => {
+                          const { fetchJobRequestHistory, userInfo: { providerDetails }, jobsInfo: { allJobRequestsProvidersMeta: { page } } } = this.props;
+                          this.setState({ isLoadingDoneJobs: true });
+                          fetchJobRequestHistory({ providerId: providerDetails.providerId, props: this.props, page: Number(page) + 1 });
+                          this.setState({ isLoadingDoneJobs: false });
+                        }}
+                      />}
                   >
-                    {<View style={styles.listView}>
-                      {subLatestChats.map(this.renderRecentMessageItem)}
-                    </View>}
-                  </ScrollView> :
-                  <View style={styles.listView}>
-                    <Text style={{ fontStyle: 'italic', color: darkGray }}>You have no chats to display</Text>
-                  </View>
-                }
-              </View>
-            )}
-            {isLoadingLatestChats &&
-              <View style={styles.activityIncatorContainer}>
-                <ActivityIndicator size={'large'} color={themeRed} />
-              </View>
-            }
-            {dataWorkSourceFetched && (
-              <View style={styles.workContainer}>
-                <View style={styles.recentMessageHeader}>
-                  <Text
-                    style={{
-                      flex: 1,
-                      textAlignVertical: 'center',
-                      alignItems: 'flex-start',
-                      fontSize: font_size.sub_header,
-                      alignContent: 'flex-start',
-                      justifyContent: 'flex-start',
-                      marginLeft: 15,
-                      fontWeight: 'bold',
-                    }}>
-                    Work
-                  </Text>
-                  {
-                    totalPages && totalPages / page > 1 &&
-                    <TouchableOpacity onPress={() => {
-                      const { fetchJobRequestHistory, userInfo: { providerDetails }, jobsInfo: { allJobRequestsProvidersMeta: { page } } } = this.props;
-                      this.setState({ isLoadingDoneJobs: true });
-                      fetchJobRequestHistory({ providerId: providerDetails.providerId, props: this.props, page: Number(page) + 1 });
-                      this.setState({ isLoadingDoneJobs: false });
-                    }} style={styles.viewAll}
-                    >
-                      <Text style={styles.textViewAll}>Load More</Text>
-                    </TouchableOpacity>
-                  }
-                  <TouchableOpacity onPress={() => navigation.navigate('ProBooking', { from: 'Dashboard' })} style={styles.viewAll}>
-                    <Text style={styles.textViewAll}>View All</Text>
-                  </TouchableOpacity>
-                </View>
-                <View
-                  style={{
-                    width: screenWidth,
-                    height: 1,
-                    backgroundColor: lightGray,
-                  }}
-                />
-                <View
-                  style={{
-                    flex: 1,
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                  }}>
-                  <View style={styles.sectionTitle}>
-                    <Text
-                      style={styles.sectionTitleText}>
-                      Job
-                    </Text>
-                  </View>
-                  <View style={styles.sectionTitle}>
-                    <Text
-                      style={styles.sectionTitleText}>
-                      Status
-                    </Text>
-                  </View>
-                  <View style={styles.sectionTitle}>
-                    <Text
-                      style={styles.sectionTitleText}>
-                      Client Review
-                    </Text>
-                  </View>
-                  <View style={styles.sectionTitle}>
-                    <Text
-                      style={styles.sectionTitleText}>
-                      Review
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.listView}>
-                  {dataWorkSource?.length > 0 &&
-                    <ScrollView
-                      refreshControl={
-                        <RefreshControl
-                          refreshing={isLoadingDoneJobs}
-                          onRefresh={() => {
-                            const { fetchJobRequestHistory, userInfo: { providerDetails }, jobsInfo: { allJobRequestsProvidersMeta: { page } } } = this.props;
-                            this.setState({ isLoadingDoneJobs: true });
-                            fetchJobRequestHistory({ providerId: providerDetails.providerId, props: this.props, page: Number(page) + 1 });
-                            this.setState({ isLoadingDoneJobs: false });
-                          }}
-                        />}
-                    >
-                      {this.renderDoneJobs()}
-                      <View style={{ height: 200 }}></View>
-                    </ScrollView>}
-                  {dataWorkSource?.length === 0 && (
-                    <View style={{ padding: 15 }}>
-                      {providerDetails.address === '' ? (
-                        <View
+                    {this.renderDoneJobs()}
+                    <View style={{ height: 200 }}></View>
+                  </ScrollView>}
+                {dataWorkSourceFetched && dataWorkSource?.length === 0 && (
+                  <View style={{ padding: 15 }}>
+                    {providerDetails.address === '' ? (
+                      <View
+                        style={{
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}>
+                        <Text
                           style={{
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center',
+                            fontStyle: 'italic',
+                            color: darkGray,
+                            textAlign: 'center',
                           }}>
-                          <Text
-                            style={{
-                              fontStyle: 'italic',
-                              color: darkGray,
-                              textAlign: 'center',
-                            }}>
-                            Add your address to your profile for it to be
-                            visible to potential clients.
-                          </Text>
-                          <TouchableOpacity
-                            onPress={() => {
-                              navigation.navigate('ProMyProfile', {
-                                from: "ProDashboard"
-                              });
-                            }}
-                            style={{
-                              backgroundColor: themeRed,
-                              paddingHorizontal: 10,
-                              paddingVertical: 5,
-                              borderRadius: 5,
-                              margin: 5,
-                              shadowColor: '#000',
-                              shadowOffset: { width: 0, height: 0 },
-                              shadowOpacity: 0.75,
-                              shadowRadius: 5,
-                              elevation: 5,
-                            }}>
-                            <Text style={{ color: white }}>Profile</Text>
-                          </TouchableOpacity>
-                        </View>
-                      ) : (
-                        <Text style={{ fontStyle: 'italic', color: darkGray }}>
-                          You haven't completed any jobs yet.
+                          Add your address to your profile for it to be
+                          visible to potential clients.
                         </Text>
-                      )}
-                    </View>
-                  )}
-                </View>
+                        <TouchableOpacity
+                          onPress={() => {
+                            navigation.navigate('ProMyProfile', {
+                              from: "ProDashboard"
+                            });
+                          }}
+                          style={{
+                            backgroundColor: themeRed,
+                            paddingHorizontal: 10,
+                            paddingVertical: 5,
+                            borderRadius: 5,
+                            margin: 5,
+                            shadowColor: '#000',
+                            shadowOffset: { width: 0, height: 0 },
+                            shadowOpacity: 0.75,
+                            shadowRadius: 5,
+                            elevation: 5,
+                          }}>
+                          <Text style={{ color: white }}>Profile</Text>
+                        </TouchableOpacity>
+                      </View>
+                    ) : (
+                      <Text style={{ fontStyle: 'italic', color: darkGray }}>
+                        You haven't completed any jobs yet.
+                      </Text>
+                    )}
+                  </View>
+                )}
               </View>
-            )}
+            </View>
             {!dataWorkSourceFetched && <View style={styles.activityIncatorContainer}><ActivityIndicator size={'large'} color={themeRed} /></View>}
           </ScrollView>
-        </View>
+        </View >
         {jobRequestsProviders && jobRequestsProviders.length > 0 && (
           <View style={styles.pendingJobsContainer}>
             {jobRequestsProviders.map(this.renderPendingJobs)}
           </View>
-        )}
+        )
+        }
         <Modal
           transparent={true}
           visible={this.state.isDialogLogoutVisible}
@@ -1080,7 +1099,7 @@ class ProDashboardScreen extends Component {
             <Text style={styles.exitText}>Exit</Text>
           </TouchableOpacity>
         </Animated.View>
-      </View>
+      </View >
     );
   }
 }
@@ -1111,6 +1130,9 @@ const mapDispatchToProps = dispatch => {
     },
     fetchingNotificationsError: error => {
       dispatch(notificationError(error));
+    },
+    fetchedOthersCoordinates: data => {
+      dispatch(updateOthersCoordinates(data));
     },
     fetchingPendingJobInfo: () => {
       dispatch(startFetchingJobProvider());

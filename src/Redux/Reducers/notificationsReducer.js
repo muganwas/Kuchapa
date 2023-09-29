@@ -48,7 +48,7 @@ const notificationReducer = (state = initialState, action) => {
       return {
         ...state,
         dataSource: action.payload.data,
-        dataSourceMeta: action.payload.metaData
+        dataSourceMeta: action.payload.metaData || state.dataSourceMeta
       };
     default:
       return {

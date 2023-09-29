@@ -238,7 +238,7 @@ class ChatScreen extends Component {
       const newMessages = cloneDeep(messagesInfo.messages);
       newMessages[providerId] = chatData;
       this.setState({ metaData, isLoading: false });
-      dbMessagesFetched(newMessages);
+      dbMessagesFetched({ data: newMessages, metaData });
     });
   }
 
@@ -259,7 +259,7 @@ class ChatScreen extends Component {
       const newMessages = cloneDeep(messagesInfo.messages);
       newMessages[providerId] = [...chatData, ...newMessages[providerId]];
       this.setState({ metaData, isLoading: false });
-      dbMessagesFetched(newMessages);
+      dbMessagesFetched({ data: newMessages, metaData });
     });
   }
 

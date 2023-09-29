@@ -58,7 +58,7 @@ const jobsReducer = (state = initialState, action) => {
       return {
         ...state,
         jobRequests: action.payload.data,
-        jobRequestsMeta: action.payload.metaData,
+        jobRequestsMeta: action.payload.metaData || state.jobRequestsMeta,
         requestsFetched: true,
         fetchingRequests: false,
         requestsError: null,
@@ -81,7 +81,7 @@ const jobsReducer = (state = initialState, action) => {
       return {
         ...state,
         jobRequestsProviders: action.payload.data,
-        jobRequestsProvidersMeta: action.payload.metaData,
+        jobRequestsProvidersMeta: action.payload.metaData || state.jobRequestsProvidersMeta,
         requestsProvidersFetched: true,
         fetchingRequestsProviders: false,
         requestsProvidersError: null,
@@ -102,20 +102,20 @@ const jobsReducer = (state = initialState, action) => {
       return {
         ...state,
         allJobRequestsProviders: action.payload.data,
-        allJobRequestsProvidersMeta: action.payload.metaData,
+        allJobRequestsProvidersMeta: action.payload.metaData || state.allJobRequestsProvidersMeta,
         allJobRequestsProvidersFetched: true,
       };
     case UPDATE_BOOKING_COMPLETE_DATA:
       return {
         ...state,
         bookingCompleteData: action.payload.data,
-        bookingCompleteMeta: action.payload.metaData
+        bookingCompleteMeta: action.payload.metaData || state.bookingCompleteMeta
       };
     case UPDATE_REJECTED_BOOKINGS_DATA:
       return {
         ...state,
         bookingRejectData: action.payload.data,
-        bookingRejectMeta: action.payload.metaData
+        bookingRejectMeta: action.payload.metaData || state.bookingRejectMeta
       };
     case FETCH_ALL_JOB_REQUESTS_PRO_ERROR:
       return {
@@ -126,7 +126,7 @@ const jobsReducer = (state = initialState, action) => {
       return {
         ...state,
         allJobRequestsClient: action.payload.data,
-        allJobRequestsClientMeta: action.payload.metaData,
+        allJobRequestsClientMeta: action.payload.metaData || state.allJobRequestsClientMeta,
         allJobRequestsClientFetched: true,
       };
     case FETCH_ALL_JOB_REQUESTS_CLIENT_ERROR:
@@ -138,7 +138,7 @@ const jobsReducer = (state = initialState, action) => {
       return {
         ...state,
         dataWorkSource: action.payload.data,
-        dataWorkSourceMeta: action.payload.metaData,
+        dataWorkSourceMeta: action.payload.metaData || state.dataWorkSourceMeta,
         dataWorkSourceFetched: true,
       };
     case FETCH_DATA_WORK_SOURCE_ERROR:

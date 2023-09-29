@@ -211,7 +211,7 @@ class ProChatScreen extends Component {
       const newMessages = cloneDeep(messagesInfo.messages);
       newMessages[user_id] = chatData;
       this.setState({ metaData, isLoading: false });
-      dbMessagesFetched(newMessages);
+      dbMessagesFetched({ data: newMessages, metaData });
     });
   }
 
@@ -228,7 +228,7 @@ class ProChatScreen extends Component {
       const newMessages = cloneDeep(messagesInfo.messages);
       newMessages[user_id] = [...chatData, ...newMessages[user_id]];
       this.setState({ metaData, isLoading: false });
-      dbMessagesFetched(newMessages);
+      dbMessagesFetched({ data: newMessages, metaData });
     });
   }
 

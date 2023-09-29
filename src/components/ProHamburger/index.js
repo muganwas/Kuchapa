@@ -124,7 +124,7 @@ class ProHamburger extends React.Component {
       const data = JSON.parse(message.data.data);
       const {
         notificationsInfo,
-        jobsInfo: { jobRequestsProviders, allJobRequestsProviders, dataWorkSource },
+        jobsInfo: { jobRequestsProviders },
         userInfo: { providerDetails }
       } = this.props;
       const receiverId = providerDetails.providerId;
@@ -146,7 +146,7 @@ class ProHamburger extends React.Component {
       let newJobRequestsProviders = cloneDeep(jobRequestsProviders);
       if (pos !== undefined && pos !== -1) {
         newJobRequestsProviders.splice(pos, 1);
-        dispatchFetchedProJobRequests(newJobRequestsProviders);
+        dispatchFetchedProJobRequests({ data: newJobRequestsProviders });
         navigation.navigate('ProHome');
       } else getPendingJobRequests(this.props, receiverId);
       getAllWorkRequestPro({ providerId: receiverId, props: this.props });
@@ -253,7 +253,7 @@ class ProHamburger extends React.Component {
           newMessages[sender]
             ? newMessages[sender].push(data)
             : (newMessages[sender] = [data]);
-          dbMessagesFetched(newMessages);
+          dbMessagesFetched({ data: newMessages });
         }
       } catch (e) {
         SimpleToast.show(e.message);
@@ -284,7 +284,7 @@ class ProHamburger extends React.Component {
             lng: longitude.toString(),
           });
           userRef
-            .update({
+            .set({
               latitude,
               longitude,
               address: addressInfo.msg === 'ok' && addressInfo.address,
@@ -324,7 +324,7 @@ class ProHamburger extends React.Component {
             lng: longitude.toString(),
           });
           userRef
-            .update({
+            .set({
               latitude,
               longitude,
               address: addressInfo.msg === 'ok' && addressInfo.address,
@@ -392,9 +392,9 @@ class ProHamburger extends React.Component {
       userType: 'Provider',
       bookingHistoryURL: BOOKING_HISTORY,
       toggleIsLoading: () => { },
-      onSuccess: (bookingCompleteData, bookingRejectData) => {
-        this.props.updateCompletedBookingData(bookingCompleteData);
-        this.props.updateFailedBookingData(bookingRejectData);
+      onSuccess: (bookingCompleteData, bookingRejectData, metaData) => {
+        this.props.updateCompletedBookingData({ data: bookingCompleteData, metaData });
+        this.props.updateFailedBookingData({ data: bookingRejectData, metaData });
       },
     });
 

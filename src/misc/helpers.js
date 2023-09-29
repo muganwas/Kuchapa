@@ -324,7 +324,7 @@ export const fetchEmployeeUserChats = async ({ primary, secondary, page, limit }
     const response = await res.json();
     if (response.result) {
       if (typeof callBack === "function")
-        return callBack(response.data, response.metaData);
+        return callBack(response.data, response.metadata);
       return response;
     }
     return SimpleToast.show(response.message);
@@ -343,7 +343,7 @@ export const fetchEmployeeMessagesFunc = async (receiverId, dispatch, dbMessages
     }
   });
   const resJson = await res.json();
-  const { result, data, message } = resJson;
+  const { result, data, message, metadata } = resJson;
   let messages = {};
   let otherUsers = {};
   // get ids of other users this user has chatted with
@@ -367,7 +367,7 @@ export const fetchEmployeeMessagesFunc = async (receiverId, dispatch, dbMessages
           messages[otherUser] = thisUsersMessages;
       });
     }
-    dispatch(dbMessagesFetched(messages));
+    dispatch(dbMessagesFetched({ data: messages, metaData: metadata }));
     callBack && callBack();
   } else {
     dispatch(messagesError(message));
@@ -385,7 +385,7 @@ export const fetchMessagesFunc = async (senderId, dispatch, dbMessagesFetched, c
     }
   });
   const resJosn = await res.json();
-  const { data, result, message } = resJosn;
+  const { data, result, message, metadata } = resJosn;
   let messages = {};
   let otherUsers = {};
   // get ids of other users this user has chatted with
@@ -409,7 +409,7 @@ export const fetchMessagesFunc = async (senderId, dispatch, dbMessagesFetched, c
           messages[otherUser] = thisUsersMessages;
       });
     }
-    dispatch(dbMessagesFetched(messages));
+    dispatch(dbMessagesFetched({ data: messages, metaData: metadata }));
     callBack && callBack();
   } else {
     dispatch(messagesError(message));
@@ -568,13 +568,14 @@ export const getAllWorkRequestProFunc = async ({ providerId, fetchedDataWorkSour
     const newDataWorkSource = [];
     if (responseJson.result) {
       const newAllJobRequests = responseJson.data;
-      await responseJson.data.map((dt, i) => {
+      await responseJson.data.map((dt) => {
         if (dt?.status !== 'Pending') {
           newDataWorkSource.push(dt);
         }
       });
-      dispatch(fetchedDataWorkSource({ data: [...dataWorkSource, ...newDataWorkSource], metaData: responseJson.metadata }));
-      dispatch(fetchedAllJobRequestsPro({ data: [...allJobRequestsProviders, ...newAllJobRequests], metaData: responseJson.metadata }));
+      // take care of rare refetch issues
+      dispatch(fetchedDataWorkSource({ data: page === 1 && dataWorkSource.length > 0 ? newDataWorkSource : [...dataWorkSource, ...newDataWorkSource], metaData: responseJson.metadata }));
+      dispatch(fetchedAllJobRequestsPro({ data: page === 1 && allJobRequestsProviders.length > 0 ? newAllJobRequests : [...allJobRequestsProviders, ...newAllJobRequests], metaData: responseJson.metadata }));
     } else {
       SimpleToast.show(responseJson.message);
     }
@@ -598,13 +599,13 @@ export const getAllWorkRequestClientFunc = async ({ clientId, props, page, fetch
     if (responseJson.result) {
       const newAllJobRequestsClient = responseJson.data;
       const newDataWorkSource = [];
-      await responseJson.data.map((dt, i) => {
+      await responseJson.data.map((dt) => {
         if (dt?.status !== 'Pending') {
           dataWorkSource.push(dt);
         };
       });
-      dispatch(fetchedDataWorkSource({ data: [...dataWorkSource, ...newDataWorkSource], metaData: responseJson.metadata }));
-      dispatch(fetchedAllJobRequestsClient({ data: [...allJobRequestsClient, ...newAllJobRequestsClient], metaData: responseJson.metadata }));
+      dispatch(fetchedDataWorkSource({ data: page === 1 && dataWorkSource.length > 0 ? newDataWorkSource : [...dataWorkSource, ...newDataWorkSource], metaData: responseJson.metadata }));
+      dispatch(fetchedAllJobRequestsClient({ data: page === 1 && allJobRequestsClient.length > 0 ? newAllJobRequestsClient : [...allJobRequestsClient, ...newAllJobRequestsClient], metaData: responseJson.metadata }));
     } else {
       SimpleToast.show(responseJson.message);
     }

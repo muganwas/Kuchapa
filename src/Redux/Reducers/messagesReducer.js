@@ -10,7 +10,10 @@ import {
 const initialState = {
   dataChatSource: {},
   latestChats: [],
+  latestChatsMeta: { page: 1, limit: 10 },
+  dataChatSourceMeta: { page: 1, limit: 10 },
   messages: {},
+  messagesMeta: { page: 1, limit: 10 },
   fetchedLatestChats: false,
   latestChatsError: false,
   fetched: false,
@@ -39,7 +42,8 @@ const messagesReducer = (state = initialState, action) => {
     case FETCHED_DB_MESSAGES:
       return {
         ...state,
-        messages: action.payload,
+        messages: action.payload.data,
+        messagesMeta: action.payload.metaData,
         error: null,
         fetchedDBMessages: true,
         fetching: false,
@@ -54,7 +58,8 @@ const messagesReducer = (state = initialState, action) => {
     case UPDATE_LATEST_CHATS:
       return {
         ...state,
-        latestChats: action.payload,
+        latestChats: action.payload.data,
+        latestChatsMeta: action.payload.metaData || state.latestChatsMeta,
         fetchedLatestChats: true,
         latestChatsError: false,
       };

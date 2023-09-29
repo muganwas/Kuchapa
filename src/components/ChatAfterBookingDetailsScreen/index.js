@@ -190,7 +190,7 @@ class ChatAfterBookingDetailsScreen extends Component {
       const newMessages = cloneDeep(messagesInfo.messages);
       newMessages[employee_id] = chatData;
       this.setState({ metaData, isLoading: false });
-      dbMessagesFetched(newMessages);
+      dbMessagesFetched({ data: newMessages, metaData });
     });
   }
 
@@ -207,7 +207,7 @@ class ChatAfterBookingDetailsScreen extends Component {
       const newMessages = cloneDeep(messagesInfo.messages);
       newMessages[employee_id] = [...chatData, ...newMessages[employee_id]];
       this.setState({ metaData, isLoading: false });
-      dbMessagesFetched(newMessages);
+      dbMessagesFetched({ data: newMessages, metaData });
     });
   }
 

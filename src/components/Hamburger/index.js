@@ -129,6 +129,7 @@ class Hamburger extends React.Component {
     const currentUser = firebaseAuth().currentUser;
     if (!currentUser) this.logout();
     const senderId = userDetails.userId;
+    console.log('receiver id --', { senderId })
     const locationRef = database().ref(`liveLocation/${senderId}`);
     messaging().setBackgroundMessageHandler(message => {
       if (message && message.data) {
@@ -169,7 +170,7 @@ class Hamburger extends React.Component {
         if (title.toLowerCase() === 'chat request rejected') {
           if (pos !== undefined && pos !== -1) {
             newJobRequests.splice(pos, 1);
-            fetchedPendingJobInfo(newJobRequests);
+            fetchedPendingJobInfo({ data: newJobRequests });
             navigation.navigate('Home');
           } else getPendingJobRequest(this.props, senderId, 'Home');
           getAllWorkRequestClient({ clientId: senderId, props: this.props });
@@ -184,7 +185,7 @@ class Hamburger extends React.Component {
         } else if (title.toLowerCase() === 'job rejected') {
           if (pos !== undefined && pos !== -1) {
             newJobRequests.splice(pos, 1);
-            fetchedPendingJobInfo(newJobRequests);
+            fetchedPendingJobInfo({ data: newJobRequests });
             navigation.navigate('Home');
           } else getPendingJobRequest(this.props, senderId, 'Home');
           this.getAllBookingsCustomer();
@@ -192,7 +193,7 @@ class Hamburger extends React.Component {
         } else if (title.toLowerCase() === 'job completed') {
           if (pos !== undefined && pos !== -1) {
             newJobRequests.splice(pos, 1);
-            fetchedPendingJobInfo(newJobRequests);
+            fetchedPendingJobInfo({ data: newJobRequests });
             navigation.navigate('Home');
           } else getPendingJobRequest(this.props, senderId, 'Home');
           getAllWorkRequestClient({ clientId: senderId, props: this.props });
@@ -210,7 +211,7 @@ class Hamburger extends React.Component {
         ) {
           if (pos !== undefined && pos !== -1) {
             newJobRequests.splice(pos, 1);
-            fetchedPendingJobInfo(newJobRequests);
+            fetchedPendingJobInfo({ data: newJobRequests });
             navigation.navigate('Home');
           } else getPendingJobRequest(this.props, senderId, 'Home');
           this.showToast(
@@ -251,7 +252,7 @@ class Hamburger extends React.Component {
             lng: longitude.toString(),
           });
           locationRef
-            .update({
+            .set({
               latitude,
               longitude,
               address: addressInfo.msg === 'ok' && addressInfo.address,
@@ -292,7 +293,7 @@ class Hamburger extends React.Component {
             lng: longitude.toString(),
           });
           locationRef
-            .update({
+            .set({
               latitude,
               longitude,
               address: addressInfo.msg === 'ok' && addressInfo.address,
@@ -382,7 +383,7 @@ class Hamburger extends React.Component {
         newMessages[sender]
           ? newMessages[sender].push(data)
           : (newMessages[sender] = [data]);
-        dbMessagesFetched(newMessages);
+        dbMessagesFetched({ data: newMessages });
       }
     });
 
@@ -430,18 +431,18 @@ class Hamburger extends React.Component {
       userType: 'Customer',
       toggleIsLoading: () => { },
       bookingHistoryURL: BOOKING_HISTORY,
-      onSuccess: (bookingCompleteData, bookingRejectData) => {
-        this.props.updateCompletedBookingData(bookingCompleteData);
-        this.props.updateFailedBookingData(bookingRejectData);
+      onSuccess: (bookingCompleteData, bookingRejectData, metaData) => {
+        this.props.updateCompletedBookingData({ data: bookingCompleteData, metaData });
+        this.props.updateFailedBookingData({ data: bookingRejectData, metaData });
       },
     });
 
   fetchEmployeeLocations = () => {
     const {
       fetchedOthersCoordinates,
-      jobsInfo: { allJobRequestsClient },
+      jobsInfo: { jobRequests },
     } = this.props;
-    allJobRequestsClient.map(obj => {
+    jobRequests.map(obj => {
       const { employee_id } = obj;
       database()
         .ref(`liveLocation/${employee_id}/address`)
@@ -561,11 +562,11 @@ const mapDispatchToProps = dispatch => {
     fetchCoordinatesError: error => {
       dispatch(updateCoordinatesError(error));
     },
-    fetchingOthersCoordinates: () => {
-      dispatch(updatingOthersCoordinates());
-    },
     fetchedOthersCoordinates: data => {
       dispatch(updateOthersCoordinates(data));
+    },
+    fetchingOthersCoordinates: () => {
+      dispatch(updatingOthersCoordinates());
     },
     fetchOthersCoordinatesError: error => {
       dispatch(updateOthersCoordinatesError(error));
