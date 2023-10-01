@@ -25,7 +25,7 @@ export const getAllNotifications = async ({
       let dataSource = cloneDeep(responseJson.data);
       onSuccess(dataSource, responseJson.metadata);
     } else {
-      onError && onError(response.message);
+      onError && onError(responseJson.message);
     }
   } catch (e) {
     onError && onError(e.message);
