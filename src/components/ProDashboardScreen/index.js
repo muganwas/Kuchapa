@@ -129,7 +129,7 @@ class ProDashboardScreen extends Component {
 
   //Get All Bookings
   componentDidMount = () => {
-    const { generalInfo: { online, connectivityAvailable }, messagesInfo: { fetchedLatestChats } } = this.props;
+    const { jobsInfo, generalInfo: { online, connectivityAvailable }, messagesInfo: { fetchedLatestChats } } = this.props;
     if (!online && connectivityAvailable) Config.socket.connect();
     BackHandler.addEventListener(
       'hardwareBackPress',
@@ -151,12 +151,11 @@ class ProDashboardScreen extends Component {
       generalInfo: { connectivityAvailable },
       userInfo: { providerDetails },
       jobsInfo: {
-        dataWorkSource,
         dataWorkSourceFetched
       }
     } = this.props;
-    const { status, isLoading } = this.state;
-    if (dataWorkSource && dataWorkSourceFetched && isLoading) this.setState({ isLoading: false, isWorkRequest: true, isLoadingDoneJobs: false });
+    const { status, isLoadingDoneJobs, isLoading } = this.state;
+    if (dataWorkSourceFetched && (isLoading || isLoadingDoneJobs)) this.setState({ isLoading: false, isWorkRequest: true, isLoadingDoneJobs: false });
     if (!connectivityAvailable && status === 'ONLINE')
       this.setState({
         status: 'OFFLINE',
@@ -196,11 +195,11 @@ class ProDashboardScreen extends Component {
       dataSource: this.props?.messagesInfo?.latestChats,
       onSuccess: async (data, metaData) => {
         this.props.updateLatestChats({ data, metaData });
-        this.setState({ isLoadingLatestChats: false });
+        this.setState({ isLoading: false, isLoadingLatestChats: false });
       },
-      onError: ((e) => {
-        SimpleToast.show(e);
-        this.setState({ isLoadingLatestChats: false });
+      onError: ((error) => {
+        SimpleToast.show(error);
+        this.setState({ isLoading: false, isLoadingLatestChats: false });
       })
     });
 
@@ -878,11 +877,11 @@ class ProDashboardScreen extends Component {
                   }}>
                   Recent Message
                 </Text>
-                <TouchableOpacity
+                {subLatestChats.length > 0 && <TouchableOpacity
                   style={styles.viewAll}
                   onPress={() => navigation.navigate('ProAllMessage')}>
                   <Text style={styles.textViewAll}>View All</Text>
-                </TouchableOpacity>
+                </TouchableOpacity>}
               </View>
               {fetchedLatestChats && <ScrollView
                 refreshControl={
@@ -935,9 +934,9 @@ class ProDashboardScreen extends Component {
                     <Text style={styles.textViewAll}>Load More</Text>
                   </TouchableOpacity>
                 }
-                <TouchableOpacity onPress={() => navigation.navigate('ProBooking', { from: 'Dashboard' })} style={styles.viewAll}>
+                {dataWorkSource?.length > 0 && <TouchableOpacity onPress={() => navigation.navigate('ProBooking', { from: 'Dashboard' })} style={styles.viewAll}>
                   <Text style={styles.textViewAll}>View All</Text>
-                </TouchableOpacity>
+                </TouchableOpacity>}
               </View>
               <View
                 style={{
@@ -1076,7 +1075,7 @@ class ProDashboardScreen extends Component {
           />
         </Modal>
 
-        <Modal
+        {/* <Modal
           transparent={true}
           visible={this.state.isLoading}
           animationType="fade"
@@ -1084,7 +1083,7 @@ class ProDashboardScreen extends Component {
           <WaitingDialog
             changeWaitingDialogVisibility={this.changeWaitingDialogVisibility}
           />
-        </Modal>
+        </Modal> */}
         <Animated.View
           style={[
             styles.animatedView,

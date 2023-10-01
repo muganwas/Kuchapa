@@ -196,14 +196,14 @@ class ProviderDetailsScreen extends Component {
     BackHandler.addEventListener('hardwareBackPress', () =>
       this.handleBackButtonClick(),
     );
-    this.initialRender(this.props);
+    this.initialRender();
   }
 
-  initialRender = async (props) => {
+  initialRender = async () => {
     const {
       route,
       generalInfo: { OnlineUsers },
-    } = props;
+    } = this.props;
     const liveChatStatus = OnlineUsers[route.params.providerId]
       ? OnlineUsers[route.params.providerId].status
       : '0';

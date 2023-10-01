@@ -263,6 +263,9 @@ export const setMessageChangeListeners = async ({ id, limit = 10, page = 1, data
     const countResp = await ref.once('value');
     const chatCount = countResp.numChildren();
     const totalPages = (chatCount - ((Number(page) - 1) * nLimit)) / nLimit;
+    let msgsArr = [];
+    /** set messages fetched in case on messages found */
+    onSuccess(msgsArr, { page, limit });
     dbRef.on('value', async resp => {
       const messages = resp.val();
       if (!messages) return onError();

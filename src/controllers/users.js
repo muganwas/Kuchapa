@@ -412,7 +412,7 @@ export const authenticateTask = async ({
           body: JSON.stringify(data),
         });
         const responseJson = await response.json();
-        if (responseJson && responseJson.result) {
+        if (responseJson?.result) {
           const id = responseJson.data.id;
           const online = await synchroniseOnlineStatus(id, responseJson.data.online);
           let userData = userType === 'User' ? {
@@ -483,7 +483,7 @@ export const authenticateTask = async ({
       } else if (error.code === 'auth/wrong-password') {
         onError('You entered a wrong password!');
       } else {
-        onError(error.message);
+        onError('There was some difficulty login you in, please retry.');
       }
     };
   } else {
@@ -893,6 +893,9 @@ export const registerTask = async ({
 
 export const getAllProviders = async ({
   userDetails,
+  page = 1,
+  limit = 10,
+  prevDataSource,
   serviceId,
   toggleIsLoading,
   onSuccess,
@@ -901,6 +904,8 @@ export const getAllProviders = async ({
   const data = {
     lat: userDetails.lat,
     lang: userDetails.lang,
+    page,
+    limit
   };
   try {
     const idToken = await firebaseAuth().currentUser.getIdToken();
@@ -914,13 +919,15 @@ export const getAllProviders = async ({
       body: JSON.stringify(data),
     });
     const responseJson = await response.json();
-    if (responseJson.result)
-      onSuccess(responseJson.data);
+    if (responseJson.result) {
+      const newData = prevDataSource ? [...prevDataSource, ...responseJson.data] : responseJson.data;
+      onSuccess(newData, responseJson.metadata);
+    }
     else
-      onError();
+      onError(responseJson.message);
   } catch (e) {
     toggleIsLoading(false);
-    SimpleToast.show('Something went wrong, try again');
+    SimpleToast.show(e.message);
   }
 };
 

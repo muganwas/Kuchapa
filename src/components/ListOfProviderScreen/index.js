@@ -8,8 +8,9 @@ import {
   Text,
   ActivityIndicator,
   Dimensions,
-  FlatList,
+  RefreshControl,
   BackHandler,
+  ScrollView,
   StatusBar,
   Platform,
   Modal,
@@ -18,8 +19,8 @@ import { AirbnbRating } from 'react-native-ratings';
 import Toast from 'react-native-simple-toast';
 import WaitingDialog from '../WaitingDialog';
 import images from '../../Constants/images';
-import { font_size } from '../../Constants/metrics';
-import { colorBg, white, themeRed } from '../../Constants/colors';
+import { font_size, spacing } from '../../Constants/metrics';
+import { colorBg, white, themeRed, darkGray } from '../../Constants/colors';
 import { getAllProviders } from '../../controllers/users';
 
 const screenWidth = Dimensions.get('window').width;
@@ -48,6 +49,7 @@ class ListOfProviderScreen extends Component {
       serviceName: null,
       serviceId: null,
       dataSource: [],
+      metaData: { page: 1, limit: 10 },
       distCalculated: false,
       isNoData: false,
       isData: false,
@@ -87,27 +89,36 @@ class ListOfProviderScreen extends Component {
       distanceOrder: true,
       reviewOrder: true,
     });
-    await this.getAllProvidersLocal();
+    await this.getAllProvidersLocal(this.state.metaData.page, this.state.metaData.limit);
   };
 
-  getAllProvidersLocal = async () =>
+  getAllProvidersLocal = async (page = 1, limit = 10, prevDataSource) =>
     getAllProviders({
-      userDetails: this.props?.userInfo?.userDetails,
+      userDetails: {
+        lat: this.props?.generalInfo?.usersCoordinates.latitude,
+        lang: this.props?.generalInfo?.usersCoordinates.longitude
+      },
+      page,
+      limit,
+      prevDataSource,
       serviceId: this.props.route.params.serviceId,
       toggleIsLoading: this.changeWaitingDialogVisibility,
-      onSuccess: (dataSource) =>
+      onSuccess: (dataSource, metaData) =>
         this.setState({
           isLoading: false,
           dataSource,
+          metaData,
           isNoData: false,
           isData: true,
         }),
-      onError: () =>
+      onError: (message) => {
+        Toast.show(message);
         this.setState({
           isLoading: false,
           isNoData: true,
           isData: false,
-        }),
+        });
+      }
     });
 
   handleBackButtonClick = () => {
@@ -120,7 +131,7 @@ class ListOfProviderScreen extends Component {
     else Toast.show(message);
   };
 
-  renderItem = ({ item }) => {
+  renderItem = (item, index) => {
     const {
       userInfo: { userDetails },
       navigation,
@@ -133,6 +144,7 @@ class ListOfProviderScreen extends Component {
       return (
         <TouchableOpacity
           style={styles.itemMainContainer}
+          key={index}
           onPress={() => {
             !showClasses
               ? navigation.navigate('ProviderDetails', {
@@ -323,7 +335,7 @@ class ListOfProviderScreen extends Component {
   };
 
   render() {
-    const { showClasses, dataSource } = this.state;
+    const { showClasses, dataSource, isLoading, metaData: { page, totalPages, limit } } = this.state;
     const categoryImage = this.props.route.params.serviceImage;
     return (
       <View style={styles.container}>
@@ -372,57 +384,56 @@ class ListOfProviderScreen extends Component {
             </View>
           </View>
         </View>
-
-        {dataSource && dataSource.length > 0 && (
-          <View style={styles.listView}>
-            <FlatList
-              numColumns={1}
-              data={this.state.dataSource}
-              renderItem={this.renderItem}
-              keyExtractor={(item, index) => index.toString()}
-              showsVerticalScrollIndicator={false}
-              extraData={this.state}
-              refreshing={this.state.refreshing}
-              onRefresh={this.getAllProvidersLocal}
-            />
-          </View>
-        )}
-
-        {this.state.isNoData && (
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'column',
-              backgroundColor: colorBg,
-              justifyContent: 'center',
-              alignItems: 'center',
-              zIndex: 1,
-              elevation: Platform.OS === 'android' ? 3 : 0,
-            }}>
-            <View
-              style={{
-                width: 100,
-                height: 100,
-                borderRadius: 100,
-                backgroundColor: themeRed,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              {categoryImage ? (
-                <Image
-                  style={{ width: 50, height: 50, tintColor: white }}
-                  source={images[categoryImage]}
-                />
-              ) : (
-                <Image
-                  style={{ width: 50, height: 50 }}
-                  source={require('../../icons/service_provider_tool.png')}
-                />
-              )}
-            </View>
-            <Text style={{ fontSize: font_size.header, marginTop: 10 }}>No provider found</Text>
-          </View>
-        )}
+        <View style={styles.listView}>
+          <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={isLoading}
+                onRefresh={() => this.getAllProvidersLocal(Number(page) + 1, limit, this.state.dataSource)}
+              />
+            }>
+            {totalPages / page > 1 ? <View style={{ display: 'flex', flex: 1, padding: spacing.small, alignItems: 'center' }}>
+              <Text style={{ fontSize: font_size.small, color: darkGray, textAlign: 'center' }}>Pull down to load more</Text>
+            </View> : <></>}
+            {dataSource && dataSource.map(this.renderItem)}
+            {(!dataSource || !dataSource.length) && !isLoading && (
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'column',
+                  backgroundColor: colorBg,
+                  height: 200,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  zIndex: 1,
+                  elevation: Platform.OS === 'android' ? 3 : 0,
+                }}>
+                <View
+                  style={{
+                    width: 100,
+                    height: 100,
+                    borderRadius: 100,
+                    backgroundColor: themeRed,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  {categoryImage ? (
+                    <Image
+                      style={{ width: 50, height: 50, tintColor: white }}
+                      source={images[categoryImage]}
+                    />
+                  ) : (
+                    <Image
+                      style={{ width: 50, height: 50 }}
+                      source={require('../../icons/service_provider_tool.png')}
+                    />
+                  )}
+                </View>
+                <Text style={{ fontSize: font_size.header, marginTop: 10 }}>No provider found</Text>
+              </View>
+            )}
+          </ScrollView>
+        </View>
         <Modal
           transparent={true}
           visible={this.state.isLoading}
@@ -463,7 +474,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     backgroundColor: colorBg,
     padding: 5,
-    elevation: Platform.OS === 'android' ? 1 : 0,
     zIndex: 2,
   },
   smActivityIndicator: {

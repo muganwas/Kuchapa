@@ -507,49 +507,51 @@ export const fetchProviderProfileFunc = async (userId, fcmToken, updateProviderD
 };
 
 export const getPendingJobRequestProviderFunc = async (providerId, navigation, navTo, fetchedJobProviderInfo, dispatch) => {
-  const newJobRequestsProviders = [];
-  const idToken = await firebaseAuth().currentUser.getIdToken();
-  const response = await fetch(PENDING_JOB_PROVIDER + providerId + '/pending', {
-    method: 'GET',
-    headers: {
-      Authorization: 'Bearer ' + idToken,
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-  });
-  const responseJson = await response.json();
-  if (responseJson.result) {
-    responseJson.data.map(async (job, index) => {
-      if (job && job.customer_details) {
-        var jobData = {
-          id: job._id,
-          order_id: job.order_id,
-          user_id: job.customer_details && job.customer_details._id,
-          image: job.customer_details && job.customer_details.image,
-          fcm_id: job.customer_details && job.customer_details.fcm_id,
-          name: job.customer_details && job.customer_details.username,
-          mobile: job.customer_details && job.customer_details.mobile,
-          dob: job.customer_details && job.customer_details.dob,
-          address: job.customer_details && job.customer_details.address,
-          lat: job.customer_details && job.customer_details.lat,
-          lang: job.customer_details && job.customer_details.lang,
-          imageAvailable: job.customer_details && job.customer_details.image_available,
-          service_name: job.service_details.service_name,
-          chat_status: job.chat_status,
-          status: job.status,
-          delivery_address: job.delivery_address,
-          delivery_lat: job.delivery_lat,
-          delivery_lang: job.delivery_lang,
-          customer_details: job.customer_details,
-        };
-        newJobRequestsProviders.push(jobData);
-      }
+  try {
+    const newJobRequestsProviders = [];
+    const idToken = await firebaseAuth().currentUser.getIdToken();
+    const response = await fetch(PENDING_JOB_PROVIDER + providerId + '/pending', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + idToken,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
     });
+    const responseJson = await response.json();
+    if (responseJson.result) {
+      responseJson.data.map(async (job, index) => {
+        if (job && job.customer_details) {
+          var jobData = {
+            id: job._id,
+            order_id: job.order_id,
+            user_id: job.customer_details && job.customer_details._id,
+            image: job.customer_details && job.customer_details.image,
+            fcm_id: job.customer_details && job.customer_details.fcm_id,
+            name: job.customer_details && job.customer_details.username,
+            mobile: job.customer_details && job.customer_details.mobile,
+            dob: job.customer_details && job.customer_details.dob,
+            address: job.customer_details && job.customer_details.address,
+            lat: job.customer_details && job.customer_details.lat,
+            lang: job.customer_details && job.customer_details.lang,
+            imageAvailable: job.customer_details && job.customer_details.image_available,
+            service_name: job.service_details.service_name,
+            chat_status: job.chat_status,
+            status: job.status,
+            delivery_address: job.delivery_address,
+            delivery_lat: job.delivery_lat,
+            delivery_lang: job.delivery_lang,
+            customer_details: job.customer_details,
+          };
+          newJobRequestsProviders.push(jobData);
+        }
+      });
+    }
     dispatch(fetchedJobProviderInfo({ data: newJobRequestsProviders, metaData: responseJson.metadata }));
+    SimpleToast.show(responseJson.message);
     if (navigation && navTo) navigation.navigate(navTo);
-  } else {
-    SimpleToast.show('Could not fetch pending jobs');
-    if (navigation && navTo) navigation.navigate(navTo);
+  } catch (e) {
+    SimpleToast.show(e.message);
   }
 };
 
@@ -566,19 +568,19 @@ export const getAllWorkRequestProFunc = async ({ providerId, fetchedDataWorkSour
     });
     const responseJson = await response.json();
     const newDataWorkSource = [];
+    let newAllJobRequests = [];
     if (responseJson.result) {
-      const newAllJobRequests = responseJson.data;
+      newAllJobRequests = responseJson.data;
       await responseJson.data.map((dt) => {
         if (dt?.status !== 'Pending') {
           newDataWorkSource.push(dt);
         }
       });
-      // take care of rare refetch issues
-      dispatch(fetchedDataWorkSource({ data: page === 1 && dataWorkSource.length > 0 ? newDataWorkSource : [...dataWorkSource, ...newDataWorkSource], metaData: responseJson.metadata }));
-      dispatch(fetchedAllJobRequestsPro({ data: page === 1 && allJobRequestsProviders.length > 0 ? newAllJobRequests : [...allJobRequestsProviders, ...newAllJobRequests], metaData: responseJson.metadata }));
-    } else {
-      SimpleToast.show(responseJson.message);
     }
+    // take care of rare refetch issues
+    dispatch(fetchedDataWorkSource({ data: page === 1 ? newDataWorkSource : [...dataWorkSource, ...newDataWorkSource], metaData: responseJson.metadata }));
+    dispatch(fetchedAllJobRequestsPro({ data: page === 1 ? newAllJobRequests : [...allJobRequestsProviders, ...newAllJobRequests], metaData: responseJson.metadata }));
+    SimpleToast.show(responseJson.message);
   } catch (e) {
     SimpleToast.show(e.message);
   }
@@ -596,19 +598,19 @@ export const getAllWorkRequestClientFunc = async ({ clientId, props, page, fetch
       }
     });
     const responseJson = await response.json();
+    let newAllJobRequestsClient = [];
+    const newDataWorkSource = [];
     if (responseJson.result) {
-      const newAllJobRequestsClient = responseJson.data;
-      const newDataWorkSource = [];
+      newAllJobRequestsClient = responseJson.data;
       await responseJson.data.map((dt) => {
         if (dt?.status !== 'Pending') {
           dataWorkSource.push(dt);
         };
       });
-      dispatch(fetchedDataWorkSource({ data: page === 1 && dataWorkSource.length > 0 ? newDataWorkSource : [...dataWorkSource, ...newDataWorkSource], metaData: responseJson.metadata }));
-      dispatch(fetchedAllJobRequestsClient({ data: page === 1 && allJobRequestsClient.length > 0 ? newAllJobRequestsClient : [...allJobRequestsClient, ...newAllJobRequestsClient], metaData: responseJson.metadata }));
-    } else {
-      SimpleToast.show(responseJson.message);
     }
+    dispatch(fetchedDataWorkSource({ data: page === 1 ? newDataWorkSource : [...dataWorkSource, ...newDataWorkSource], metaData: responseJson.metadata }));
+    dispatch(fetchedAllJobRequestsClient({ data: page === 1 ? newAllJobRequestsClient : [...allJobRequestsClient, ...newAllJobRequestsClient], metaData: responseJson.metadata }));
+    SimpleToast.show(responseJson.message);
   } catch (e) {
     SimpleToast.show(e.message);
   }
@@ -652,11 +654,9 @@ export const getPendingJobRequestFunc = async (userId, navigation, navTo, fetche
         newJobRequest.push(jobData);
       }
     });
-    dispatch(fetchedJobCustomerInfo({ data: newJobRequest, metaData: responseJson.metadata }));
-    /** navigate away */
-    if (navigation && navTo) navigation.navigate(navTo);
-  } else {
-    SimpleToast.show('Could not fetch pending jobs');
-    if (navigation && navTo) navigation.navigate(navTo);
   }
+  dispatch(fetchedJobCustomerInfo({ data: newJobRequest, metaData: responseJson.metadata }));
+  /** navigate away */
+  SimpleToast.show(responseJson.message);
+  if (navigation && navTo) navigation.navigate(navTo);
 };
