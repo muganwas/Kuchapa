@@ -22,7 +22,6 @@ import SimpleToast from 'react-native-simple-toast';
 import ReviewDialog from '../ReviewDialog';
 import Config from '../Config';
 import ProHamburger from '../ProHamburger';
-import WaitingDialog from '../WaitingDialog';
 import {
   startFetchingNotification,
   notificationsFetched,
@@ -528,6 +527,7 @@ class ProDashboardScreen extends Component {
     const {
       navigation: { navigate },
       generalInfo: { othersCoordinates },
+      userInfo: { providerDetails },
       jobsInfo: { jobRequestsProviders },
       fetchedOthersCoordinates,
     } = this.props;
@@ -548,6 +548,13 @@ class ProDashboardScreen extends Component {
         if (!othersCoordinates || !othersCoordinates[jobInfo.user_id]) {
           fetchUserLocation({ id: jobInfo.user_id, othersCoordinates, updateOthersCoordinates: fetchedOthersCoordinates });
           return SimpleToast.show('Fetching co-ordinates, please wait');
+        }
+        if (!providerDetails.lat || !providerDetails.lang) {
+          SimpleToast.show('Please update your address first.');
+          this.props.navigation.navigate('ProMyProfile', {
+            from: "ProDashboard"
+          });
+          return;
         }
         navigate('ProMapDirection', {
           currentPos: jobInfo.currentPos,

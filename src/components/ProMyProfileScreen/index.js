@@ -190,7 +190,7 @@ class ProMyProfileScreen extends Component {
     this.setState({
       address: data[0],
       lat: data[1],
-      lng: data[2],
+      lang: data[2],
     });
   };
 
@@ -203,7 +203,6 @@ class ProMyProfileScreen extends Component {
   updateInformation = async providerId => {
     const {
       name,
-      fcmId,
       surname,
       mobile,
       email,
@@ -215,7 +214,6 @@ class ProMyProfileScreen extends Component {
       invoice,
     } = this.state;
     const {
-      fetchProviderProfile,
       validationInfo: { countryAlpha2 },
     } = this.props;
     this.setState({

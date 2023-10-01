@@ -129,7 +129,6 @@ class Hamburger extends React.Component {
     const currentUser = firebaseAuth().currentUser;
     if (!currentUser) this.logout();
     const senderId = userDetails.userId;
-    console.log('receiver id --', { senderId })
     const locationRef = database().ref(`liveLocation/${senderId}`);
     messaging().setBackgroundMessageHandler(message => {
       if (message && message.data) {
