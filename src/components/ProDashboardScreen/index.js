@@ -128,7 +128,7 @@ class ProDashboardScreen extends Component {
 
   //Get All Bookings
   componentDidMount = () => {
-    const { jobsInfo, generalInfo: { online, connectivityAvailable }, messagesInfo: { fetchedLatestChats } } = this.props;
+    const { generalInfo: { online, connectivityAvailable }, userInfo: { providerDetails }, messagesInfo: { fetchedLatestChats } } = this.props;
     if (!online && connectivityAvailable) Config.socket.connect();
     BackHandler.addEventListener(
       'hardwareBackPress',

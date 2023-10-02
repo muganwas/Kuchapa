@@ -361,12 +361,6 @@ class Hamburger extends React.Component {
       updateOnlineStatus(false);
     });
 
-    socket.on('user-disconnected', users => {
-      updateLiveChatUsers(users);
-    });
-    socket.on('user-joined', users => {
-      updateLiveChatUsers(users);
-    });
     socket.on('chat-message', data => {
       const { sender } = cloneDeep(data);
       const { notificationsInfo, messagesInfo, dbMessagesFetched } = this.props;

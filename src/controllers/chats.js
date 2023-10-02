@@ -433,15 +433,14 @@ export const setOnlineStatusListener = ({ OnlineUsers, userId, setStatus }) => {
   userRef.on('value', data => {
     if (data) {
       const { status } = data.val();
-      if (userId) {
-        if (OnlineUsers[userId]) {
-          if (OnlineUsers[userId] && status === '1') {
-            const onlineStatus = OnlineUsers[userId].status === '1';
-            setStatus(status, onlineStatus);
-          } else {
-            const onlineStatus = status === '1';
-            setStatus(status, onlineStatus);
-          }
+      if (userId && OnlineUsers[userId] != undefined) {
+        if (status != undefined) {
+          const onlineStatus = OnlineUsers[userId] === '1' && status === '1';
+          const newStatus = OnlineUsers[userId] === '1' && status === '1' ? '1' : 0;
+          setStatus(newStatus, onlineStatus);
+        } else {
+          const onlineStatus = OnlineUsers[userId] === '1';
+          setStatus(OnlineUsers[userId], onlineStatus);
         }
       }
     }

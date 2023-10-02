@@ -11,6 +11,7 @@ import SimpleToast from 'react-native-simple-toast';
 import moment from 'moment';
 import { synchroniseOnlineStatus } from '../controllers/users';
 import Config from '../components/Config';
+import { updateLiveChatUsers } from '../Redux/Actions/generalActions';
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 const emailRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
@@ -520,6 +521,8 @@ export const getPendingJobRequestProviderFunc = async (providerId, navigation, n
     });
     const responseJson = await response.json();
     if (responseJson.result) {
+      const userIds = responseJson.data.map(usr => usr.user_id);
+      await fetchUserLiveStatus({ userIds, updateLiveChatUsers, userType: 'Employee', idToken, dispatch });
       responseJson.data.map(async (job, index) => {
         if (job && job.customer_details) {
           var jobData = {
@@ -554,6 +557,25 @@ export const getPendingJobRequestProviderFunc = async (providerId, navigation, n
     SimpleToast.show(e.message);
   }
 };
+
+export const fetchUserLiveStatus = async ({ userIds, userType, updateLiveChatUsers, idToken, dispatch }) => {
+  try {
+    const response = await fetch(Config.baseURL + 'users/db/liveStatuses', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + idToken,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userIds, userType })
+    });
+    const responseJson = await response.json();
+    if (responseJson.result)
+      return dispatch(updateLiveChatUsers(responseJson.data));
+    SimpleToast.show(responseJson.message);
+  } catch (e) {
+    SimpleToast.show(e.message);
+  }
+}
 
 export const getAllWorkRequestProFunc = async ({ providerId, fetchedDataWorkSource, page, props, fetchedAllJobRequestsPro, dispatch, only = '' }) => {
   try {
@@ -629,6 +651,8 @@ export const getPendingJobRequestFunc = async (userId, navigation, navTo, fetche
   const responseJson = await response.json();
   const newJobRequest = [];
   if (responseJson.result) {
+    const userIds = responseJson.data.map(usr => usr.employee_id);
+    await fetchUserLiveStatus({ userIds, updateLiveChatUsers, userType: 'Client', idToken, dispatch });
     responseJson.data.map(async (job, index) => {
       if (job && job.employee_details) {
         let jobData = {

@@ -152,6 +152,7 @@ class ChatScreen extends Component {
     }
     const { employee_id } = selectedJobRequest;
     const providerId = route.params.providerId || employee_id;
+    console.log('post process statuses ', { OnlineUsers })
     this.setState({
       senderId: userDetails.userId,
       senderImage: userDetails.image,

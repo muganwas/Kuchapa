@@ -144,6 +144,7 @@ class ProChatAfterBookingDetailsScreen extends Component {
     const {
       messagesInfo: { fetchedDBMessages },
       route,
+      generalInfo: { OnlineUsers },
       userInfo: { providerDetails },
     } = this.props;
     if (!socket.connected) {
