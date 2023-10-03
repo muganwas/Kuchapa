@@ -149,7 +149,7 @@ class ProChatScreen extends Component {
       generalInfo: { OnlineUsers },
       userInfo: { providerDetails },
     } = this.props;
-    if (!socket.connected) {
+    if (!socket.connected && providerDetails.online == "1") {
       socket.connect();
     }
     const { user_id } = selectedJobRequest;

@@ -103,12 +103,12 @@ class ProHamburger extends React.Component {
   async componentDidMount() {
     const {
       fetchedNotifications,
-      updateLiveChatUsers,
       userInfo: { providerDetails },
       navigation,
       dispatchFetchedProJobRequests,
       getAllWorkRequestPro,
       getPendingJobRequests,
+      generalInfo: { connectivityAvailable }
     } = this.props;
     const currentUser = firebaseAuth().currentUser;
     if (!currentUser) this.logout();
@@ -214,16 +214,13 @@ class ProHamburger extends React.Component {
     });
 
     socket.on('disconnect', info => {
-      const {
-        generalInfo: { connectivityAvailable },
-      } = this.props;
       try {
-        updateLiveChatUsers({});
+        const { userInfo: { providerDetails } } = this.props;
         updateOnlineStatus(false);
-        if (connectivityAvailable) {
+        if (connectivityAvailable && providerDetails.online == "1") {
           setTimeout(() => {
             socket.connect();
-          }, 1000);
+          }, 1000)
         }
       } catch (e) {
         SimpleToast.show(e.message);
@@ -253,7 +250,7 @@ class ProHamburger extends React.Component {
         SimpleToast.show(e.message);
       }
     });
-    socket.connect();
+    providerDetails.online == "1" && socket.connect();
     const userRef = database().ref(`liveLocation/${receiverId}`);
     locationPermissionRequest(() => {
       const {

@@ -221,7 +221,6 @@ export const updateAvailabilityInDB = async ({
     const { result, data, message } = response;
     if (result && data) {
       newProDits.online = data.online;
-      await synchroniseOnlineStatus(providerDetails.providerId, data.online);
       updateProviderDetails(newProDits);
       onSuccess(message, online, data.online);
     } else {

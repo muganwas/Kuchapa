@@ -178,7 +178,7 @@ class ProAcceptRejectJobScreen extends Component {
       generalInfo: { OnlineUsers },
       route
     } = this.props;
-    if (!socket.connected) {
+    if (!socket.connected && providerDetails.online == "1") {
       socket.connect();
     }
     const { user_id } = selectedJobRequest;

@@ -129,7 +129,7 @@ class ProDashboardScreen extends Component {
   //Get All Bookings
   componentDidMount = () => {
     const { generalInfo: { online, connectivityAvailable }, userInfo: { providerDetails }, messagesInfo: { fetchedLatestChats } } = this.props;
-    if (!online && connectivityAvailable) Config.socket.connect();
+    if (!online && connectivityAvailable && providerDetails.online == "1") Config.socket.connect();
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
@@ -426,7 +426,7 @@ class ProDashboardScreen extends Component {
       },
     });
 
-  changeAvailabilityStatus = () => {
+  changeAvailabilityStatus = async () => {
     const {
       generalInfo: { online, connectivityAvailable },
       userInfo: { providerDetails },
@@ -448,14 +448,14 @@ class ProDashboardScreen extends Component {
         online: '1',
       });
     } else if (combinedOffline) {
-      Config.socket.connect();
-      this.updateOnlineAvailability({
+      await this.updateOnlineAvailability({
         online: '1',
       });
+      Config.socket.connect();
     } else {
       const newStatus = providerDetails.online === '1' ? '0' : '1';
+      await this.updateOnlineAvailability({ online: newStatus });
       !online ? Config.socket.connect() : Config.socket.close();
-      this.updateOnlineAvailability({ online: newStatus });
     }
   };
 
